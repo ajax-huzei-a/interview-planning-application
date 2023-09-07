@@ -1,0 +1,949 @@
+{
+	"info": {
+		"_postman_id": "c9e1dd7a-61d5-4985-ac9c-8ad99a079408",
+		"name": "Interview planning",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29560949"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Get FB token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authenticate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"facebookToken\": \"{{facebook_token}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/authenticate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{default_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Week",
+			"item": [
+				{
+					"name": "Current week",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/weeks/current",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"weeks",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next week",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/weeks/next",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"weeks",
+								"next"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Candidate use case",
+			"item": [
+				{
+					"name": "Candidate Slot",
+					"item": [
+						{
+							"name": "Create CandidateSlot",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{candidate_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"date\": \"2022-12-16\",\n    \"from\": \"09:00\",\n    \"to\": \"17:00\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/candidates/current/slots",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"candidates",
+										"current",
+										"slots"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update CandidateSlot",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{candidate_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"date\": \"2022-12-16\",\n    \"from\": \"09:30\",\n    \"to\": \"18:00\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/candidates/current/slots/2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"candidates",
+										"current",
+										"slots",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Slots Of Candidate",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{candidate_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/candidates/current/slots",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"candidates",
+										"current",
+										"slots"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Interviewer use case",
+			"item": [
+				{
+					"name": "Booking Limit",
+					"item": [
+						{
+							"name": "Create Booking Limit",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{interviewer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"bookingLimit\": 12\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/interviewers/2/booking-limits",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"interviewers",
+										"2",
+										"booking-limits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Booking Limit For Next Week",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{interviewer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/interviewers/2/booking-limits/next-week",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"interviewers",
+										"2",
+										"booking-limits",
+										"next-week"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Booking Limit For Current Week",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{interviewer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/interviewers/2/booking-limits/current-week",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"interviewers",
+										"2",
+										"booking-limits",
+										"current-week"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Infinite Booking Limit",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{interviewer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/interviewers/3/booking-limits/next-week",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"interviewers",
+										"3",
+										"booking-limits",
+										"next-week"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Interviewer Slot",
+					"item": [
+						{
+							"name": "Create Interviewer Slot",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{interviewer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"week\":48,\r\n    \"dayOfWeek\":\"TUE\",\r\n    \"from\":\"16:00\",\r\n    \"to\":\"19:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/interviewers/1/slots",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"interviewers",
+										"1",
+										"slots"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Slots Current Week",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{interviewer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/interviewers/current/slots",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"interviewers",
+										"current",
+										"slots"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Slots Next Week",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{interviewer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/interviewers/next/slots",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"interviewers",
+										"next",
+										"slots"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Interviewer Slot",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{interviewer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "    {\r\n    \"week\":49,\r\n    \"dayOfWeek\":\"TUE\",\r\n    \"from\":\"10:00\",\r\n    \"to\":\"17:00\"\r\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/interviewers/1/slots/2",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"interviewers",
+										"1",
+										"slots",
+										"2"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Coordinator use case",
+			"item": [
+				{
+					"name": "Role Management",
+					"item": [
+						{
+							"name": "Interviewers",
+							"item": [
+								{
+									"name": "Grant The User Interviewer",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{coordinator_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\"email\": \"bielobrov.8864899@stud.op.edu.ua\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8080/users/interviewers",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"users",
+												"interviewers"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get All User Interviewers",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{coordinator_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8080/users/interviewers",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"users",
+												"interviewers"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Interviewer By Id",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{coordinator_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8080/users/interviewers/3",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"users",
+												"interviewers",
+												"3"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Coordinators",
+							"item": [
+								{
+									"name": "Grant User Coordinators",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{coordinator_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\"email\": \"test_coordinator@gmail.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8080/users/coordinators",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"users",
+												"coordinators"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get All User Coordinators",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{coordinator_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8080/users/coordinators",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"users",
+												"coordinators"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Coordinator By Id",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{coordinator_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8080/users/coordinators/5",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"users",
+												"coordinators",
+												"5"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Bookings",
+					"item": [
+						{
+							"name": "Create Booking",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{coordinator_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"interviewerSlotId\": 1,\r\n    \"candidateSlotId\": 1,\r\n    \"from\": \"15:30\",\r\n    \"to\": \"17:00\",\r\n    \"subject\": \"Java Middle Interview\",\r\n    \"description\": \"interviewer: Crazy Parrot, candidate: Madonna\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bookings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Booking",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{coordinator_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"interviewerSlotId\": 1,\r\n    \"candidateSlotId\": 1,\r\n    \"from\": \"12:00\",\r\n    \"to\": \"13:30\",\r\n    \"subject\": \"Ruby Middle Interview\",\r\n    \"description\": \"interviewer: Crazy Parrot, candidate: Madonna\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bookings/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bookings",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Booking",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{coordinator_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bookings/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bookings",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DashBoard",
+					"item": [
+						{
+							"name": "Dashboard",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{coordinator_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/weeks/50/dashboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"weeks",
+										"50",
+										"dashboard"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "default_token",
+			"value": "123"
+		},
+		{
+			"key": "candidate_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "coordinator_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "interviewer_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "facebook_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

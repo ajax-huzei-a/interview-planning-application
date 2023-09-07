@@ -1,0 +1,29 @@
+jwt:
+  secret: oneweek
+  validity: 86400
+  caching: 86400
+
+first-coordinator-email: be@oneweek.ua
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          facebook:
+            clientId: 123456
+            clientSecret: qwerty
+            redirectUri: uriuri
+
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
+
+redis:
+  host: localhost
+  port: 1111

@@ -1,0 +1,39 @@
+server:
+  port: ${APPLICATION_PORT}
+
+jwt:
+  secret: ${JWT_SECRET}
+  validity: ${JWT_VALIDITY}
+  caching: ${JWT_CACHING}
+
+first-coordinator-email: ${FIRST_COORDINATOR_EMAIL}
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          facebook:
+            clientId: ${FACEBOOK_CLIENT_ID}
+            clientSecret: ${FACEBOOK_SECRET}
+            redirectUri: ${FACEBOOK_REDIRECT_URI}
+
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO}
+    database: postgresql
+
+  datasource:
+    platform: postgres
+    url: "jdbc:postgresql://postgresql:${POSTGRES_PORT}/${POSTGRES_DB}"
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    initialization-mode: always
+    continue-on-error: true
+
+redis:
+  host: ${REDIS_HOSTNAME}
+  port: ${REDIS_PORT}
