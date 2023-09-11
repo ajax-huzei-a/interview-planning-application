@@ -1,18 +1,6 @@
-package intellistart.interviewplanning.controllers.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+package intellistart.interviewplanning.controllers.dto
 
 /**
  * DAO for JWT.
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public class JwtResponse {
-
-  private String token;
-}
+data class JwtResponse (val token:String)

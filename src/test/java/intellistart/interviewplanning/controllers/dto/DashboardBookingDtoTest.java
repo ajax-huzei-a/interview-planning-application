@@ -40,7 +40,7 @@ public class DashboardBookingDtoTest {
   @MethodSource("createTestArgs")
   void initializeBookingDto(Booking rawBooking, DashboardBookingDto expected) {
 
-    DashboardBookingDto actual = new DashboardBookingDto(rawBooking);
+    DashboardBookingDto actual = DashboardBookingDtoKt.toDTOForDashBoard(rawBooking);
     Assertions.assertEquals(expected, actual);
   }
 }

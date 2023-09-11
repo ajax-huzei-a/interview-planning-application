@@ -21,17 +21,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * InterviewerSlot entity.
  */
 @Entity
 @Table(name = "interviewer_slots")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class InterviewerSlot {
@@ -73,6 +69,54 @@ public class InterviewerSlot {
         + ", period=" + period
         + ", user=" + user.getId()
         + '}';
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Week getWeek() {
+    return week;
+  }
+
+  public void setWeek(Week week) {
+    this.week = week;
+  }
+
+  public DayOfWeek getDayOfWeek() {
+    return dayOfWeek;
+  }
+
+  public void setDayOfWeek(DayOfWeek dayOfWeek) {
+    this.dayOfWeek = dayOfWeek;
+  }
+
+  public Period getPeriod() {
+    return period;
+  }
+
+  public void setPeriod(Period period) {
+    this.period = period;
+  }
+
+  public Set<Booking> getBookings() {
+    return bookings;
+  }
+
+  public void setBookings(Set<Booking> bookings) {
+    this.bookings = bookings;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 
   @Override

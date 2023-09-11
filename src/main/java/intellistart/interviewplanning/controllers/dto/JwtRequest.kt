@@ -1,18 +1,6 @@
-package intellistart.interviewplanning.controllers.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+package intellistart.interviewplanning.controllers.dto
 
 /**
  * DAO for Facebook Token.
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public class JwtRequest {
-
-  private String facebookToken;
-}
+data class JwtRequest (var facebookToken:String = "")

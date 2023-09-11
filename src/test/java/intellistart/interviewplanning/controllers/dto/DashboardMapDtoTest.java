@@ -4,6 +4,8 @@ import intellistart.interviewplanning.model.dayofweek.DayOfWeek;
 import intellistart.interviewplanning.model.week.WeekService;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,9 +19,8 @@ public class DashboardMapDtoTest {
   private static Arguments[] getArgsForInitializing() {
 
     DashboardMapDto firstExpected = new DashboardMapDto(10L, weekService);
-    firstExpected.setDashboard(new HashMap<>());
     Arrays.stream(DayOfWeek.values()).forEach(d -> firstExpected.getDashboard().put(
-        weekService.convertToLocalDate(10L, d), new DashboardDto()
+        weekService.convertToLocalDate(10L, d), new DashboardDto(new HashSet<>(), new HashSet<>(), new HashMap<>())
     ));
 
     return new Arguments[] {

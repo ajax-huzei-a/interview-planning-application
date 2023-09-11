@@ -16,17 +16,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * CandidateSlot entity.
  */
 @Entity
 @Table(name = "candidate_slots")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CandidateSlot {
@@ -61,6 +57,54 @@ public class CandidateSlot {
         + ", email='" + email
         + '\'' + ", name='"
         + name + '\'' + '}';
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public LocalDate getDate() {
+    return date;
+  }
+
+  public void setDate(LocalDate date) {
+    this.date = date;
+  }
+
+  public Period getPeriod() {
+    return period;
+  }
+
+  public void setPeriod(Period period) {
+    this.period = period;
+  }
+
+  public Set<Booking> getBookings() {
+    return bookings;
+  }
+
+  public void setBookings(Set<Booking> bookings) {
+    this.bookings = bookings;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   @Override

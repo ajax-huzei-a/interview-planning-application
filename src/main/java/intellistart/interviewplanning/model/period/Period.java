@@ -16,17 +16,13 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Entity for period of time.
  */
 @Entity
 @Table(name = "periods")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Period {
@@ -64,6 +60,54 @@ public class Period {
 
   public void addBooking(Booking booking) {
     bookings.add(booking);
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public LocalTime getFrom() {
+    return from;
+  }
+
+  public void setFrom(LocalTime from) {
+    this.from = from;
+  }
+
+  public LocalTime getTo() {
+    return to;
+  }
+
+  public void setTo(LocalTime to) {
+    this.to = to;
+  }
+
+  public Set<InterviewerSlot> getInterviewerSlots() {
+    return interviewerSlots;
+  }
+
+  public void setInterviewerSlots(Set<InterviewerSlot> interviewerSlots) {
+    this.interviewerSlots = interviewerSlots;
+  }
+
+  public Set<CandidateSlot> getCandidateSlots() {
+    return candidateSlots;
+  }
+
+  public void setCandidateSlots(Set<CandidateSlot> candidateSlots) {
+    this.candidateSlots = candidateSlots;
+  }
+
+  public Set<Booking> getBookings() {
+    return bookings;
+  }
+
+  public void setBookings(Set<Booking> bookings) {
+    this.bookings = bookings;
   }
 
   @Override

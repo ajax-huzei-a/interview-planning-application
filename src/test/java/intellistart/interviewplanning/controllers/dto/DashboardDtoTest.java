@@ -12,7 +12,7 @@ public class DashboardDtoTest {
   @Test
   void initializeDashboard() {
 
-    DashboardDto actual = new DashboardDto();
+    DashboardDto actual = new DashboardDto(new HashSet<>(), new HashSet<>(), new HashMap<>());
     Assertions.assertEquals(expected, actual);
   }
 }

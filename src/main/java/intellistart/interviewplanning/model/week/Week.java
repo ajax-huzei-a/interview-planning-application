@@ -13,17 +13,13 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Entity for week.
  */
 @Entity
 @Table(name = "weeks")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Week {
@@ -47,6 +43,22 @@ public class Week {
         + "id=" + id
         + ", interviewerSlots=" + interviewerSlots
         + '}';
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Set<InterviewerSlot> getInterviewerSlots() {
+    return interviewerSlots;
+  }
+
+  public void setInterviewerSlots(Set<InterviewerSlot> interviewerSlots) {
+    this.interviewerSlots = interviewerSlots;
   }
 
   @Override

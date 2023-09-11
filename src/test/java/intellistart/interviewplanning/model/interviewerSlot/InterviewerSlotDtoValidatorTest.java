@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import intellistart.interviewplanning.controllers.dto.InterviewerSlotDto;
+import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoRequest;
 import intellistart.interviewplanning.exceptions.SlotException;
 import intellistart.interviewplanning.exceptions.UserException;
 import intellistart.interviewplanning.model.dayofweek.DayOfWeek;
@@ -116,13 +116,13 @@ static Period p1 = new Period(null, LocalTime.of(12, 0), LocalTime.of(18, 0),
   static Period p2 = new Period(null, LocalTime.of(11, 0), LocalTime.of(17, 30),
       new HashSet<>(), new HashSet<>(), new HashSet<>());
 
-  static InterviewerSlotDto dto1 = new InterviewerSlotDto(1L, null, 40L,
+  static InterviewerSlotDtoRequest dto1 = new InterviewerSlotDtoRequest( 40L,
       "TUE", "12:00", "18:00");
-  static InterviewerSlotDto dto1b = new InterviewerSlotDto(1L, null, 400L,
+  static InterviewerSlotDtoRequest dto1b = new InterviewerSlotDtoRequest(400L,
       "TUEyy", "12:00", "18:00");
-  static InterviewerSlotDto dto2 = new InterviewerSlotDto(1L, null, 100L,
+  static InterviewerSlotDtoRequest dto2 = new InterviewerSlotDtoRequest(100L,
       "TUE", "12:00", "18:00");
-  static InterviewerSlotDto dto3 = new InterviewerSlotDto(1L, null, 103L,
+  static InterviewerSlotDtoRequest dto3 = new InterviewerSlotDtoRequest(103L,
       "THU", "11:00", "17:30");
   static User u4 = new User(2L, "interviewer@gmail2.com", Role.INTERVIEWER);
   static Week w4 = new Week(103L, new HashSet<>());
