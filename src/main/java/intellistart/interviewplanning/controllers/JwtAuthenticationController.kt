@@ -12,6 +12,8 @@ import intellistart.interviewplanning.security.JwtUserDetailsService
 import intellistart.interviewplanning.utils.FacebookUtil
 import intellistart.interviewplanning.utils.FacebookUtil.FacebookScopes
 import intellistart.interviewplanning.utils.JwtUtil
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -43,6 +45,8 @@ class JwtAuthenticationController(
     @Value("\${jwt.caching}")
     private val jwtValidity: Long = 0
 
+    private val logger: Logger = LogManager.getLogger(JwtAuthenticationController::class.java)
+
     /**
      * Method that mappings the authentication request through generating
      * JWT by Facebook Token.
@@ -61,6 +65,7 @@ class JwtAuthenticationController(
         val userScopes: Map<FacebookScopes, String> = try {
             facebookUtil.getScope(jwtRequest.facebookToken)
         } catch (e: RestClientException) {
+            logger.warn("RestClientException was thrown", e)
             throw SecurityException(SecurityExceptionProfile.BAD_FACEBOOK_TOKEN)
         }
         val email = userScopes[FacebookScopes.EMAIL]
@@ -79,6 +84,7 @@ class JwtAuthenticationController(
                 UsernamePasswordAuthenticationToken(username, username)
             )
         } catch (e: BadCredentialsException) {
+            logger.warn("BadCredentialsException was thrown", e)
             throw SecurityException(SecurityExceptionProfile.BAD_CREDENTIALS)
         }
     }
