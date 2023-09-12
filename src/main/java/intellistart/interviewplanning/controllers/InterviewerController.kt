@@ -119,7 +119,7 @@ class InterviewerController(
     @PostMapping("/interviewers/{interviewerId}/booking-limits")
     fun createBookingLimit(
         @RequestBody bookingLimitDto: BookingLimitDto,
-        @PathVariable("interviewerId") interviewerId: Long?
+        @PathVariable("interviewerId") interviewerId: Long
     ): ResponseEntity<BookingLimitDto> {
         val user = userService.getUserById(interviewerId)
         val bookingLimit = bookingLimitService.createBookingLimit(
@@ -138,7 +138,7 @@ class InterviewerController(
      */
     @GetMapping("/interviewers/{interviewerId}/booking-limits/current-week")
     fun getBookingLimitForCurrentWeek(
-        @PathVariable("interviewerId") interviewerId: Long?
+        @PathVariable("interviewerId") interviewerId: Long
     ): ResponseEntity<BookingLimitDto> {
         val user = userService.getUserById(interviewerId)
         val bookingLimit = bookingLimitService.getBookingLimitForCurrentWeek(user)
@@ -154,7 +154,7 @@ class InterviewerController(
      */
     @GetMapping("/interviewers/{interviewerId}/booking-limits/next-week")
     fun getBookingLimitForNextWeek(
-        @PathVariable("interviewerId") interviewerId: Long?
+        @PathVariable("interviewerId") interviewerId: Long
     ): ResponseEntity<BookingLimitDto> {
         val user = userService.getUserById(interviewerId)
         val bookingLimit = bookingLimitService.getBookingLimitForNextWeek(user)

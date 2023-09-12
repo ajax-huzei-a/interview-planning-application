@@ -67,7 +67,7 @@ class CandidateController(
     @PostMapping("/candidates/current/slots/{slotId}")
     fun updateCandidateSlot(
         @RequestBody request: CandidateSlotDto,
-        @PathVariable("slotId") id: Long?, authentication: Authentication
+        @PathVariable("slotId") id: Long, authentication: Authentication
     ): ResponseEntity<CandidateSlotDto> {
         val candidateSlot = getCandidateSlotFromDto(request, authentication)
         candidateSlot.id = id
