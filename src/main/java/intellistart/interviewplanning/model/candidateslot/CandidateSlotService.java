@@ -78,7 +78,7 @@ public class CandidateSlotService {
    *
    * @throws SlotException if slot with given id is not present
    */
-  public CandidateSlot findById(Long id) throws SlotException {
+  public CandidateSlot getById(Long id) throws SlotException {
     return candidateSlotRepository
         .findById(id)
         .orElseThrow(() -> new SlotException(SlotExceptionProfile.CANDIDATE_SLOT_NOT_FOUND));

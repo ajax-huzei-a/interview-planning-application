@@ -91,10 +91,10 @@ class CoordinatorControllerTest {
   void okayWhenOkay(BookingDto bookingDto, Booking expected)
       throws SlotException {
     Mockito
-        .when(candidateSlotService.findById(bookingDto.getCandidateSlotId()))
+        .when(candidateSlotService.getById(bookingDto.getCandidateSlotId()))
         .thenReturn(candidateSlot);
     Mockito
-        .when(interviewerSlotService.findById(bookingDto.getInterviewerSlotId()))
+        .when(interviewerSlotService.getById(bookingDto.getInterviewerSlotId()))
         .thenReturn(interviewerSlot);
 
     Mockito

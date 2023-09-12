@@ -128,7 +128,7 @@ public class CandidateSlotServiceTest {
 //    Mockito.when(candidateSlotRepository.findById(id)).thenReturn(Optional.of(expected));
     Mockito.when(candidateSlotRepository.findById(id)).thenReturn(Optional.of(expected));
 
-    CandidateSlot actual = cut.findById(id);
+    CandidateSlot actual = cut.getById(id);
 //    CandidateSlot actual = candidateSlot.orElse(null);
     Assertions.assertEquals(actual, expected);
   }

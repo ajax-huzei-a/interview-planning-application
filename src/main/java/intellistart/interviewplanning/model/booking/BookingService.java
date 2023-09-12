@@ -36,7 +36,7 @@ public class BookingService {
    *
    * @throws BookingException if no booking with given id
    */
-  public Booking findById(Long id) throws BookingException {
+  public Booking getById(Long id) throws BookingException {
     return bookingRepository.findById(id).orElseThrow(() -> new BookingException(
         BookingExceptionProfile.BOOKING_NOT_FOUND));
   }

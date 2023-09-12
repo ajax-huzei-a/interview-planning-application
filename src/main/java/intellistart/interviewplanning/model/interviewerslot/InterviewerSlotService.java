@@ -37,7 +37,7 @@ public class InterviewerSlotService {
    *
    * @throws SlotException if no instance with given id
    */
-  public InterviewerSlot findById(Long id) throws SlotException {
+  public InterviewerSlot getById(Long id) throws SlotException {
     return interviewerSlotRepository
         .findById(id)
         .orElseThrow(() -> new SlotException(SlotExceptionProfile.INTERVIEWER_SLOT_NOT_FOUND));

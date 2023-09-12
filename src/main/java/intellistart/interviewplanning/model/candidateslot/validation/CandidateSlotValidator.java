@@ -101,7 +101,7 @@ public class CandidateSlotValidator {
    */
   private void validateSlotIsBookingAndTheSlotExists(Long id)
       throws SlotException {
-    CandidateSlot candidateSlot = candidateSlotService.findById(id);
+    CandidateSlot candidateSlot = candidateSlotService.getById(id);
 
     if (!candidateSlot.getBookings().isEmpty()) {
       throw new SlotException(SlotExceptionProfile.SLOT_IS_BOOKED);

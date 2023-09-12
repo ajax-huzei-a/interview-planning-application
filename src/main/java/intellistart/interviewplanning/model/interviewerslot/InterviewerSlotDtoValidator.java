@@ -115,7 +115,7 @@ public class InterviewerSlotDtoValidator {
       Authentication authentication, Long userId, Long slotId)
       throws UserException, SlotException {
 
-    InterviewerSlot interviewerSlot = interviewerSlotService.findById(slotId);
+    InterviewerSlot interviewerSlot = interviewerSlotService.getById(slotId);
 
     if (!(interviewerSlot.getUser().getId().equals(userId))) {
       throw new SecurityException(SecurityExceptionProfile.ACCESS_DENIED);

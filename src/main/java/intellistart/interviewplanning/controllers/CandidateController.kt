@@ -9,7 +9,6 @@ import intellistart.interviewplanning.model.candidateslot.CandidateSlot
 import intellistart.interviewplanning.model.candidateslot.CandidateSlotService
 import intellistart.interviewplanning.model.candidateslot.validation.CandidateSlotValidator
 import intellistart.interviewplanning.security.JwtUserDetails
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody
  */
 @RestController
 @CrossOrigin
-class CandidateController @Autowired constructor(
+class CandidateController(
     private val candidateSlotService: CandidateSlotService,
     private val candidateSlotValidator: CandidateSlotValidator
 ) {
@@ -40,7 +39,6 @@ class CandidateController @Autowired constructor(
      * @throws SlotException - when parameters are incorrect or slot is overlapping.
      */
     @PostMapping("/candidates/current/slots")
-    @Throws(SlotException::class)
     fun createCandidateSlot(
         @RequestBody request: CandidateSlotDto,
         authentication: Authentication
@@ -65,7 +63,6 @@ class CandidateController @Autowired constructor(
      * or slot is overlapping.
      */
     @PostMapping("/candidates/current/slots/{slotId}")
-    @Throws(SlotException::class)
     fun updateCandidateSlot(
         @RequestBody request: CandidateSlotDto,
         @PathVariable("slotId") id: Long?, authentication: Authentication
@@ -97,7 +94,6 @@ class CandidateController @Autowired constructor(
      *
      * @return CandidateSlot object by given DTO.
      */
-    @Throws(SlotException::class)
     private fun getCandidateSlotFromDto(
         candidateSlotDto: CandidateSlotDto,
         authentication: Authentication
