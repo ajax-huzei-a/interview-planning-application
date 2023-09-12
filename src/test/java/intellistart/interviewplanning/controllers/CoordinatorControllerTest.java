@@ -17,6 +17,9 @@ import intellistart.interviewplanning.model.period.PeriodService;
 import intellistart.interviewplanning.model.user.UserService;
 import intellistart.interviewplanning.model.week.Week;
 import intellistart.interviewplanning.model.week.WeekService;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
@@ -89,7 +92,7 @@ class CoordinatorControllerTest {
   @ParameterizedTest
   @MethodSource("provideCorrectParameters")
   void okayWhenOkay(BookingDto bookingDto, Booking expected)
-      throws SlotException {
+          throws SlotException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Mockito
         .when(candidateSlotService.getById(bookingDto.getCandidateSlotId()))
         .thenReturn(candidateSlot);
@@ -101,7 +104,9 @@ class CoordinatorControllerTest {
         .when(periodService.obtainPeriod(bookingDto.getFrom(), bookingDto.getTo()))
         .thenReturn(expected.getPeriod());
 
-    Booking actual = cut.getFromDto(bookingDto);
+    Method privateMethod = CoordinatorController.class.getDeclaredMethod("getFromDto", BookingDto.class);
+    privateMethod.setAccessible(true);
+    Booking actual = (Booking) privateMethod.invoke(cut, bookingDto);
 
     assertEquals(expected, actual);
   }
