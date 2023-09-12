@@ -1,9 +1,11 @@
 package intellistart.interviewplanning.controllers;
 
 import intellistart.interviewplanning.controllers.dto.BookingDto;
+import intellistart.interviewplanning.controllers.dto.BookingDtoKt;
 import intellistart.interviewplanning.controllers.dto.DashboardMapDto;
 import intellistart.interviewplanning.controllers.dto.EmailDto;
 import intellistart.interviewplanning.controllers.dto.UsersDto;
+import intellistart.interviewplanning.controllers.dto.UsersDtoKt;
 import intellistart.interviewplanning.exceptions.BookingException;
 import intellistart.interviewplanning.exceptions.BookingLimitException;
 import intellistart.interviewplanning.exceptions.SlotException;
@@ -102,9 +104,8 @@ public class CoordinatorController {
    */
   @GetMapping("/users/interviewers")
   public ResponseEntity<UsersDto> getAllInterviewers() {
-    UsersDto usersDto = new UsersDto();
-    usersDto.setUsers(userService.obtainUsersByRole(Role.INTERVIEWER));
-    return ResponseEntity.ok(usersDto);
+    return ResponseEntity
+            .ok(UsersDtoKt.toUsersDto(userService.obtainUsersByRole(Role.INTERVIEWER)));
   }
 
   /**
@@ -114,9 +115,8 @@ public class CoordinatorController {
    */
   @GetMapping("/users/coordinators")
   public ResponseEntity<UsersDto> getAllCoordinators() {
-    UsersDto usersDto = new UsersDto();
-    usersDto.setUsers(userService.obtainUsersByRole(Role.COORDINATOR));
-    return ResponseEntity.ok(usersDto);
+    return ResponseEntity
+            .ok(UsersDtoKt.toUsersDto(userService.obtainUsersByRole(Role.COORDINATOR)));
   }
 
   /**
@@ -167,7 +167,6 @@ public class CoordinatorController {
     dashboard.addInterviewerSlots(interviewerSlots);
 
     for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
-
       LocalDate date = weekService.convertToLocalDate(weekId, dayOfWeek);
       Set<CandidateSlot> candidateSlots = candidateSlotService.getCandidateSlotsByDate(date);
       dashboard.addCandidateSlots(candidateSlots);
@@ -202,7 +201,7 @@ public class CoordinatorController {
     populateFields(updatingBooking, newDataBooking);
 
     Booking savedBooking = bookingService.save(updatingBooking);
-    return ResponseEntity.ok(new BookingDto(savedBooking));
+    return ResponseEntity.ok(BookingDtoKt.toDto(savedBooking));
   }
 
   /**
@@ -228,7 +227,7 @@ public class CoordinatorController {
     bookingValidator.validateCreating(newBooking);
     Booking savedBooking = bookingService.save(newBooking);
 
-    return ResponseEntity.ok(new BookingDto(savedBooking));
+    return ResponseEntity.ok(BookingDtoKt.toDto(savedBooking));
   }
 
   Booking getFromDto(BookingDto bookingDto) throws SlotException {
@@ -272,6 +271,6 @@ public class CoordinatorController {
     Booking bookingToDelete = bookingService.findById(bookingId);
     bookingService.deleteBooking(bookingToDelete);
 
-    return ResponseEntity.ok(new BookingDto(bookingToDelete));
+    return ResponseEntity.ok(BookingDtoKt.toDto(bookingToDelete));
   }
 }

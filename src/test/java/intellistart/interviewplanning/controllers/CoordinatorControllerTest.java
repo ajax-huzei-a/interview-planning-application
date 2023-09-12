@@ -81,7 +81,7 @@ class CoordinatorControllerTest {
   static Stream<Arguments> provideCorrectParameters(){
     return Stream.of(
         Arguments.arguments(
-            new BookingDto(null, 1L, 1L, "19:30",
+            new BookingDto( 1L, 1L, "19:30",
                 "21:00", "subj", "desc"),
             new Booking(null, "subj", "desc",
                 interviewerSlot, candidateSlot, bookingPeriod)));

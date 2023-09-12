@@ -13,17 +13,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Booking entity.
  */
 @Entity
 @Table(name = "bookings")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Booking {
@@ -60,6 +56,54 @@ public class Booking {
         + ", interviewerSlot=" + interviewerSlot.getId()
         + ", candidateSlot=" + candidateSlot.getId()
         + '}';
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setInterviewerSlot(InterviewerSlot interviewerSlot) {
+    this.interviewerSlot = interviewerSlot;
+  }
+
+  public void setCandidateSlot(CandidateSlot candidateSlot) {
+    this.candidateSlot = candidateSlot;
+  }
+
+  public void setPeriod(Period period) {
+    this.period = period;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public String getSubject() {
+    return subject;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public InterviewerSlot getInterviewerSlot() {
+    return interviewerSlot;
+  }
+
+  public CandidateSlot getCandidateSlot() {
+    return candidateSlot;
+  }
+
+  public Period getPeriod() {
+    return period;
   }
 
   @Override

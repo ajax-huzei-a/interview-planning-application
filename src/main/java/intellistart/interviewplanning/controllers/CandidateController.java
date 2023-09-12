@@ -1,14 +1,15 @@
 package intellistart.interviewplanning.controllers;
 
 import intellistart.interviewplanning.controllers.dto.CandidateSlotDto;
+import intellistart.interviewplanning.controllers.dto.CandidateSlotDtoKt;
 import intellistart.interviewplanning.controllers.dto.CandidateSlotsDto;
+import intellistart.interviewplanning.controllers.dto.CandidateSlotsDtoKt;
 import intellistart.interviewplanning.exceptions.SlotException;
 import intellistart.interviewplanning.model.candidateslot.CandidateSlot;
 import intellistart.interviewplanning.model.candidateslot.CandidateSlotService;
 import intellistart.interviewplanning.model.candidateslot.validation.CandidateSlotValidator;
 import intellistart.interviewplanning.security.JwtUserDetails;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -57,7 +58,7 @@ public class CandidateController {
 
     candidateSlot = candidateSlotService.create(candidateSlot);
 
-    return ResponseEntity.ok(new CandidateSlotDto(candidateSlot));
+    return ResponseEntity.ok(CandidateSlotDtoKt.toDto(candidateSlot));
   }
 
   /**
@@ -84,7 +85,7 @@ public class CandidateController {
 
     candidateSlot = candidateSlotService.update(candidateSlot);
 
-    return ResponseEntity.ok(new CandidateSlotDto(candidateSlot));
+    return ResponseEntity.ok(CandidateSlotDtoKt.toDto(candidateSlot));
   }
 
   /**
@@ -96,11 +97,11 @@ public class CandidateController {
   public ResponseEntity<CandidateSlotsDto> getAllSlotsOfCandidate(Authentication authentication) {
 
     JwtUserDetails jwtUserDetails = (JwtUserDetails) authentication.getPrincipal();
-    
+
     List<CandidateSlot> candidateSlots = candidateSlotService
         .getAllSlotsByEmail(jwtUserDetails.getEmail());
 
-    return ResponseEntity.ok(getCandidateSlotsDtoFromListOf(candidateSlots));
+    return ResponseEntity.ok(CandidateSlotsDtoKt.toDtoList(candidateSlots));
   }
 
   /**
@@ -118,24 +119,5 @@ public class CandidateController {
     return candidateSlotService.createCandidateSlot(candidateSlotDto.getDate(),
         candidateSlotDto.getFrom(), candidateSlotDto.getTo(), jwtUserDetails.getEmail(),
         jwtUserDetails.getName());
-  }
-
-  /**
-   * Created the list of CandidateSlotDto object by given list of CandidateSlot.
-   *
-   * @param candidateSlotList - List of candidates to convert.
-   *
-   * @return candidateSlotsDto - List of DTO by given list of CandidateSlot.
-   */
-  private CandidateSlotsDto getCandidateSlotsDtoFromListOf(List<CandidateSlot> candidateSlotList) {
-    List<CandidateSlotDto> candidateSlotDtoList = candidateSlotList
-        .stream()
-        .map(CandidateSlotDto::new)
-        .collect(Collectors.toList());
-
-    CandidateSlotsDto candidateSlotsDto = new CandidateSlotsDto();
-    candidateSlotsDto.setCandidateSlotDtoList(candidateSlotDtoList);
-
-    return candidateSlotsDto;
   }
 }

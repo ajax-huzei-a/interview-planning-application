@@ -47,7 +47,7 @@ public class DashboardInterviewerSlotDtoTest {
   @MethodSource("createTestArgs")
   void initializeInterviewerSlotDto(InterviewerSlot rawSlot, DashboardInterviewerSlotDto expected) {
 
-    DashboardInterviewerSlotDto actual = new DashboardInterviewerSlotDto(rawSlot);
+    DashboardInterviewerSlotDto actual = DashboardInterviewerSlotDtoKt.toDtoForDashboard(rawSlot);
     Assertions.assertEquals(expected, actual);
   }
 }

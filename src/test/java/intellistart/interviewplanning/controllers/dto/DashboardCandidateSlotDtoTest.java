@@ -15,7 +15,7 @@ public class DashboardCandidateSlotDtoTest {
   private static Arguments[] createTestArgs() {
     return new Arguments[]{
         Arguments.of(new CandidateSlot(
-              null, null,
+              1L, null,
               new Period(2L, LocalTime.of(10, 0), LocalTime.of(20, 0), null, null, null),
               Set.of(),
               "email@test.com", "candidate name"
@@ -25,7 +25,7 @@ public class DashboardCandidateSlotDtoTest {
         ),
 
         Arguments.of(new CandidateSlot(
-                null, null,
+                1L, null,
                 new Period(2L, LocalTime.of(21, 30), LocalTime.of(23, 0), null, null, null),
                 Set.of(
                     new Booking(1L, null, null, null, null, null),
@@ -46,7 +46,7 @@ public class DashboardCandidateSlotDtoTest {
   @MethodSource("createTestArgs")
   void initializeCandidateSlotDto(CandidateSlot rawSlot, DashboardCandidateSlotDto expected) {
 
-    DashboardCandidateSlotDto actual = new DashboardCandidateSlotDto(rawSlot);
+    DashboardCandidateSlotDto actual = DashboardCandidateSlotDtoKt.toDtoForDashboard(rawSlot);
     Assertions.assertEquals(expected, actual);
   }
 }

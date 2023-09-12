@@ -1,6 +1,6 @@
 package intellistart.interviewplanning.model.interviewerslot;
 
-import intellistart.interviewplanning.controllers.dto.InterviewerSlotDto;
+import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoRequest;
 import intellistart.interviewplanning.exceptions.SecurityException;
 import intellistart.interviewplanning.exceptions.SecurityException.SecurityExceptionProfile;
 import intellistart.interviewplanning.exceptions.SlotException;
@@ -51,8 +51,13 @@ public class InterviewerSlotDtoValidator {
    * Validate interviewerSlotDTO for User, DayOfWeek, Period. If interviewerSlotDTO is correct:
    * save InterviewerSlot in database. If not - throws one of the exceptions.
    *
-   * @param interviewerSlotDto from Controller's request
+   * @param interviewerSlotDtoRequest from Controller's request
+   * @param authentication - authentication
+   * @param userId - userId
    *
+   * @return interviewerSlot
+   *
+   * @throws UserException when user not found
    * @throws SlotException when:
    *     <ul>
    *     <li>invalid interviewer id, role not Interviewer
@@ -60,35 +65,30 @@ public class InterviewerSlotDtoValidator {
    *     <li>invalid boundaries of time period
    *     </ul>
    */
-  public void validateAndCreate(InterviewerSlotDto interviewerSlotDto,
-      Authentication authentication, Long userId)
+  public InterviewerSlot validateAndCreate(InterviewerSlotDtoRequest interviewerSlotDtoRequest,
+                                           Authentication authentication, Long userId)
       throws UserException, SlotException {
 
-    validateIfCorrectDay(interviewerSlotDto.getDayOfWeek());
+    validateIfCorrectDay(interviewerSlotDtoRequest.getDayOfWeek());
 
-    Period period = periodService.obtainPeriod(interviewerSlotDto.getFrom(),
-        interviewerSlotDto.getTo());
-    Week week = weekService.getWeekByWeekNum(interviewerSlotDto.getWeek());
+    Period period = periodService.obtainPeriod(interviewerSlotDtoRequest.getFrom(),
+            interviewerSlotDtoRequest.getTo());
+    Week week = weekService.getWeekByWeekNum(interviewerSlotDtoRequest.getWeek());
     validateIfCanEditThisWeek(week);
 
-    DayOfWeek dayOfWeek = DayOfWeek.valueOf(interviewerSlotDto.getDayOfWeek());
+    DayOfWeek dayOfWeek = DayOfWeek.valueOf(interviewerSlotDtoRequest.getDayOfWeek());
 
     User user = validateAndGetUser(userId, authentication);
-    interviewerSlotDto.setInterviewerId(userId);
-
 
     InterviewerSlot interviewerSlot = new InterviewerSlot(null, week,
         dayOfWeek, period, null, user);
 
-    if (interviewerSlotDto.getInterviewerSlotId() != null) {
-      interviewerSlot.setId(interviewerSlotDto.getInterviewerSlotId());
-    }
     validateIfPeriodIsOverlapping(interviewerSlot);
 
     interviewerSlot.getWeek().addInterviewerSlot(interviewerSlot);
     interviewerSlot = interviewerSlotService.create(interviewerSlot);
-    interviewerSlotDto.setInterviewerSlotId(interviewerSlot.getId());
 
+    return interviewerSlot;
   }
 
   /**
@@ -111,7 +111,7 @@ public class InterviewerSlotDtoValidator {
    *
    * @throws UserException - when invalid interviewer id, role not Interviewer
    */
-  public void validateAndUpdate(InterviewerSlotDto interviewerSlotDto,
+  public InterviewerSlot validateAndUpdate(InterviewerSlotDtoRequest interviewerSlotDto,
       Authentication authentication, Long userId, Long slotId)
       throws UserException, SlotException {
 
@@ -126,13 +126,12 @@ public class InterviewerSlotDtoValidator {
     }
 
     if (isCoordinator(authentication)) {
-      validationForCoordinator(interviewerSlotDto, userId, slotId);
+      interviewerSlot = validationForCoordinator(interviewerSlotDto, userId, slotId);
     } else {
-      interviewerSlotDto.setInterviewerSlotId(slotId);
-
-      validateAndCreate(interviewerSlotDto,
+      interviewerSlot = validateAndCreate(interviewerSlotDto,
           authentication, userId);
     }
+    return interviewerSlot;
   }
 
   /**
@@ -143,7 +142,7 @@ public class InterviewerSlotDtoValidator {
    * @param userId             - from path (url)
    * @throws SlotException - when slot has at least one or more bookings
    */
-  public void validationForCoordinator(InterviewerSlotDto interviewerSlotDto,
+  public InterviewerSlot validationForCoordinator(InterviewerSlotDtoRequest interviewerSlotDto,
       Long userId, Long slotId)
       throws SlotException, UserException {
 
@@ -163,9 +162,7 @@ public class InterviewerSlotDtoValidator {
 
     validateIfPeriodIsOverlapping(interviewerSlotNew);
 
-    interviewerSlotNew = interviewerSlotService.create(interviewerSlotNew);
-    interviewerSlotDto.setInterviewerSlotId(interviewerSlotNew.getId());
-    interviewerSlotDto.setInterviewerId(interviewerSlotNew.getUser().getId());
+    return interviewerSlotService.create(interviewerSlotNew);
   }
 
   /**

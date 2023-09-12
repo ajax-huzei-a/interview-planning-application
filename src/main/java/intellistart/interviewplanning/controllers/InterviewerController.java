@@ -1,8 +1,12 @@
 package intellistart.interviewplanning.controllers;
 
 import intellistart.interviewplanning.controllers.dto.BookingLimitDto;
-import intellistart.interviewplanning.controllers.dto.InterviewerSlotDto;
+import intellistart.interviewplanning.controllers.dto.BookingLimitDtoKt;
+import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoKt;
+import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoRequest;
+import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoResponse;
 import intellistart.interviewplanning.controllers.dto.InterviewerSlotsDto;
+import intellistart.interviewplanning.controllers.dto.InterviewerSlotsDtoKt;
 import intellistart.interviewplanning.exceptions.BookingLimitException;
 import intellistart.interviewplanning.exceptions.SlotException;
 import intellistart.interviewplanning.exceptions.UserException;
@@ -16,7 +20,6 @@ import intellistart.interviewplanning.model.user.UserService;
 import intellistart.interviewplanning.model.week.WeekService;
 import intellistart.interviewplanning.security.JwtUserDetails;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,22 +85,22 @@ public class InterviewerController {
    * @throws UserException invalid user (interviewer) exception
    */
   @PostMapping("/interviewers/{interviewerId}/slots")
-  public ResponseEntity<InterviewerSlotDto> createInterviewerSlot(
-      @RequestBody InterviewerSlotDto interviewerSlotDto,
+  public ResponseEntity<InterviewerSlotDtoResponse> createInterviewerSlot(
+      @RequestBody InterviewerSlotDtoRequest interviewerSlotDto,
       @PathVariable("interviewerId") Long interviewerId,
       Authentication authentication
   ) throws SlotException, UserException {
 
-    interviewerSlotDtoValidator
+    InterviewerSlot interviewerSlot = interviewerSlotDtoValidator
         .validateAndCreate(interviewerSlotDto, authentication, interviewerId);
 
-    return new ResponseEntity<>(interviewerSlotDto, HttpStatus.OK);
+    return new ResponseEntity<>(InterviewerSlotDtoKt.toDtoResponse(interviewerSlot), HttpStatus.OK);
   }
 
   /**
    * Post Request for updating slot.
    *
-   * @param interviewerSlotDto - DTO from request
+   * @param interviewerSlotDtoRequest - DTO from request
    * @param interviewerId      - user Id from request
    * @param slotId             - slot Id from request
    *
@@ -113,17 +116,18 @@ public class InterviewerController {
    * @throws SlotException - when slot has at least one booking or slot overlaps
    */
   @PostMapping("/interviewers/{interviewerId}/slots/{slotId}")
-  public ResponseEntity<InterviewerSlotDto> updateInterviewerSlot(
-      @RequestBody InterviewerSlotDto interviewerSlotDto,
+  public ResponseEntity<InterviewerSlotDtoResponse> updateInterviewerSlot(
+      @RequestBody InterviewerSlotDtoRequest interviewerSlotDtoRequest,
       @PathVariable("interviewerId") Long interviewerId,
       @PathVariable("slotId") Long slotId,
       Authentication authentication
   ) throws SlotException, UserException {
 
-    interviewerSlotDtoValidator.validateAndUpdate(interviewerSlotDto,
+    InterviewerSlot interviewerSlot = interviewerSlotDtoValidator
+            .validateAndUpdate(interviewerSlotDtoRequest,
         authentication, interviewerId, slotId);
 
-    return new ResponseEntity<>(interviewerSlotDto, HttpStatus.OK);
+    return new ResponseEntity<>(InterviewerSlotDtoKt.toDtoResponse(interviewerSlot), HttpStatus.OK);
   }
 
   /**
@@ -143,12 +147,10 @@ public class InterviewerController {
 
     User user = userService.getUserById(interviewerId);
 
-    bookingLimitDto.setUserId(interviewerId);
-
     BookingLimit bookingLimit = bookingLimitService.createBookingLimit(user,
         bookingLimitDto.getBookingLimit());
 
-    return ResponseEntity.ok(new BookingLimitDto(bookingLimit));
+    return ResponseEntity.ok(BookingLimitDtoKt.toDto(bookingLimit));
   }
 
   /**
@@ -167,7 +169,7 @@ public class InterviewerController {
 
     BookingLimit bookingLimit = bookingLimitService.getBookingLimitForCurrentWeek(user);
 
-    return ResponseEntity.ok(new BookingLimitDto(bookingLimit));
+    return ResponseEntity.ok(BookingLimitDtoKt.toDto(bookingLimit));
   }
 
   /**
@@ -186,7 +188,7 @@ public class InterviewerController {
 
     BookingLimit bookingLimit = bookingLimitService.getBookingLimitForNextWeek(user);
 
-    return ResponseEntity.ok(new BookingLimitDto(bookingLimit));
+    return ResponseEntity.ok(BookingLimitDtoKt.toDto(bookingLimit));
   }
 
   /**
@@ -205,11 +207,7 @@ public class InterviewerController {
 
     List<InterviewerSlot> slots = interviewerSlotService.getSlotsByWeek(email, currentWeekId);
 
-    InterviewerSlotsDto response = new InterviewerSlotsDto(slots.stream()
-            .map(InterviewerSlotDto::new)
-            .collect(Collectors.toList()));
-
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(InterviewerSlotsDtoKt.toDtoList(slots));
   }
 
   /**
@@ -228,10 +226,6 @@ public class InterviewerController {
 
     List<InterviewerSlot> slots = interviewerSlotService.getSlotsByWeek(email, nextWeekId);
 
-    InterviewerSlotsDto response = new InterviewerSlotsDto(slots.stream()
-        .map(InterviewerSlotDto::new)
-        .collect(Collectors.toList()));
-
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(InterviewerSlotsDtoKt.toDtoList(slots));
   }
 }

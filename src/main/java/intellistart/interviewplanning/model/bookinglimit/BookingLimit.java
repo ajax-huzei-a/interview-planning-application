@@ -10,20 +10,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Entity for storing limit of booking per week for users with Interviewer role.
  */
 @Entity
 @Table(name = "booking_limits")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class BookingLimit {
 
   @EmbeddedId
@@ -42,12 +34,62 @@ public class BookingLimit {
   @JoinColumn(name = "week_id")
   private Week week;
 
+  /**
+   * Constructor.
+   *
+   * @param id - id
+   * @param bookingLimit - bookingLimit
+   * @param user - user
+   * @param week - week
+   */
+  public BookingLimit(BookingLimitKey id, Integer bookingLimit, User user, Week week) {
+    this.id = id;
+    this.bookingLimit = bookingLimit;
+    this.user = user;
+    this.week = week;
+  }
+
+  public BookingLimit() {
+  }
+
   @Override
   public String toString() {
     return "BookingLimit{"
-        + "id=" + id
-        + ", bookingLimit=" + bookingLimit
-        + '}';
+            + "id=" + id
+            + ", bookingLimit=" + bookingLimit
+            + '}';
+  }
+
+  public BookingLimitKey getId() {
+    return id;
+  }
+
+  public void setId(BookingLimitKey id) {
+    this.id = id;
+  }
+
+  public Integer getBookingLimit() {
+    return bookingLimit;
+  }
+
+  public void setBookingLimit(Integer bookingLimit) {
+    this.bookingLimit = bookingLimit;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public Week getWeek() {
+    return week;
+  }
+
+  public void setWeek(Week week) {
+    this.week = week;
   }
 
   @Override
