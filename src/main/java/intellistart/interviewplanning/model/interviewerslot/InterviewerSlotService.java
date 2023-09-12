@@ -54,6 +54,16 @@ public class InterviewerSlotService {
   }
 
   /**
+   * Get InterviewerSlot and update it in the DB.
+   *
+   * @param interviewerSlot - interviewerSlot
+   * @return InterviewerSlot
+   */
+  public InterviewerSlot update(InterviewerSlot interviewerSlot) {
+    return create(interviewerSlot);
+  }
+
+  /**
    * Method deletes all slots of the given user,
    * before deleting a slot it deletes all bookings in the slots being deleted.
    *

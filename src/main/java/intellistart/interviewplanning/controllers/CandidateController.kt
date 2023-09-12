@@ -8,15 +8,16 @@ import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.model.candidateslot.CandidateSlot
 import intellistart.interviewplanning.model.candidateslot.CandidateSlotService
 import intellistart.interviewplanning.model.candidateslot.validation.CandidateSlotValidator
+import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.security.JwtUserDetails
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 
 /**
  * Controller for processing requests from Candidate.
@@ -25,7 +26,8 @@ import org.springframework.web.bind.annotation.RequestBody
 @CrossOrigin
 class CandidateController(
     private val candidateSlotService: CandidateSlotService,
-    private val candidateSlotValidator: CandidateSlotValidator
+    private val candidateSlotValidator: CandidateSlotValidator,
+    private val periodService: PeriodService
 ) {
     /**
      * POST request for adding a new CandidateSlot.
@@ -43,10 +45,10 @@ class CandidateController(
         @RequestBody request: CandidateSlotDto,
         authentication: Authentication
     ): ResponseEntity<CandidateSlotDto> {
-        var candidateSlot = getCandidateSlotFromDto(request, authentication)
+        val candidateSlot = getCandidateSlotFromDto(request, authentication)
         candidateSlotValidator.validateCreating(candidateSlot)
-        candidateSlot = candidateSlotService.create(candidateSlot)
-        return ResponseEntity.ok(candidateSlot.toDto())
+        val createdCandidateSlot = candidateSlotService.create(candidateSlot)
+        return ResponseEntity.ok(createdCandidateSlot.toDto())
     }
 
     /**
@@ -67,11 +69,11 @@ class CandidateController(
         @RequestBody request: CandidateSlotDto,
         @PathVariable("slotId") id: Long?, authentication: Authentication
     ): ResponseEntity<CandidateSlotDto> {
-        var candidateSlot = getCandidateSlotFromDto(request, authentication)
+        val candidateSlot = getCandidateSlotFromDto(request, authentication)
         candidateSlot.id = id
         candidateSlotValidator.validateUpdating(candidateSlot)
-        candidateSlot = candidateSlotService.update(candidateSlot)
-        return ResponseEntity.ok(candidateSlot.toDto())
+        val updatedCandidateSlot = candidateSlotService.update(candidateSlot)
+        return ResponseEntity.ok(updatedCandidateSlot.toDto())
     }
 
     /**
@@ -99,12 +101,12 @@ class CandidateController(
         authentication: Authentication
     ): CandidateSlot {
         val jwtUserDetails = authentication.principal as JwtUserDetails
-        return candidateSlotService.createCandidateSlot(
-            candidateSlotDto.date,
-            candidateSlotDto.from,
-            candidateSlotDto.to,
-            jwtUserDetails.email,
-            jwtUserDetails.name
-        )
+        val candidateSlot = CandidateSlot()
+        candidateSlot.date = candidateSlotDto.date
+        candidateSlot.period = periodService
+            .obtainPeriod(candidateSlotDto.from, candidateSlotDto.to)
+        candidateSlot.email = jwtUserDetails.email
+        candidateSlot.name = jwtUserDetails.name
+        return candidateSlot
     }
 }

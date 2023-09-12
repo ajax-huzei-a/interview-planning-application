@@ -28,8 +28,7 @@ public class CandidateSlotServiceTest {
   static void initialize() {
     candidateSlotRepository = Mockito.mock(CandidateSlotRepository.class);
     periodService = Mockito.mock(PeriodService.class);
-    cut = new CandidateSlotService(candidateSlotRepository,
-        periodService);
+    cut = new CandidateSlotService(candidateSlotRepository);
 
     period1 = new Period();
     period1.setFrom(LocalTime.of(9,0));
@@ -125,30 +124,9 @@ public class CandidateSlotServiceTest {
   @ParameterizedTest
   @MethodSource("getCandidateSlotByIdArgs")
   void getCandidateSlotByIdTest(CandidateSlot expected, Long id) throws SlotException {
-//    Mockito.when(candidateSlotRepository.findById(id)).thenReturn(Optional.of(expected));
     Mockito.when(candidateSlotRepository.findById(id)).thenReturn(Optional.of(expected));
 
     CandidateSlot actual = cut.getById(id);
-//    CandidateSlot actual = candidateSlot.orElse(null);
-    Assertions.assertEquals(actual, expected);
-  }
-
-  static Arguments[] createCandidateSlotArgs(){
-    return new Arguments[]{
-        Arguments.arguments(LocalDate.of(2023, 1, 1),
-            "9:00","10:30", "test@mail.com", "AAA", candidateSlot1, period1),
-        Arguments.arguments(LocalDate.of(2023, 4, 24),
-            "14:00","20:30", "test@mail.com", "AAA",  candidateSlot1, period2),
-    };
-  }
-  @ParameterizedTest
-  @MethodSource("createCandidateSlotArgs")
-  void createCandidateSlotTest(LocalDate date, String from, String to, String email, String name,
-      CandidateSlot expected, Period period) throws SlotException {
-      
-    Mockito.when(periodService.obtainPeriod(from, to)).thenReturn(period);
-
-    CandidateSlot actual = cut.createCandidateSlot(date, from, to, email, name);
     Assertions.assertEquals(actual, expected);
   }
 }
