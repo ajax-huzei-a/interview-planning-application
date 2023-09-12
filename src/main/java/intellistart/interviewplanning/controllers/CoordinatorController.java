@@ -105,7 +105,7 @@ public class CoordinatorController {
   @GetMapping("/users/interviewers")
   public ResponseEntity<UsersDto> getAllInterviewers() {
     return ResponseEntity
-            .ok(UsersDtoKt.toUsersDTO(userService.obtainUsersByRole(Role.INTERVIEWER)));
+            .ok(UsersDtoKt.toUsersDto(userService.obtainUsersByRole(Role.INTERVIEWER)));
   }
 
   /**
@@ -116,7 +116,7 @@ public class CoordinatorController {
   @GetMapping("/users/coordinators")
   public ResponseEntity<UsersDto> getAllCoordinators() {
     return ResponseEntity
-            .ok(UsersDtoKt.toUsersDTO(userService.obtainUsersByRole(Role.COORDINATOR)));
+            .ok(UsersDtoKt.toUsersDto(userService.obtainUsersByRole(Role.COORDINATOR)));
   }
 
   /**
@@ -201,7 +201,7 @@ public class CoordinatorController {
     populateFields(updatingBooking, newDataBooking);
 
     Booking savedBooking = bookingService.save(updatingBooking);
-    return ResponseEntity.ok(BookingDtoKt.toDTO(savedBooking));
+    return ResponseEntity.ok(BookingDtoKt.toDto(savedBooking));
   }
 
   /**
@@ -227,7 +227,7 @@ public class CoordinatorController {
     bookingValidator.validateCreating(newBooking);
     Booking savedBooking = bookingService.save(newBooking);
 
-    return ResponseEntity.ok(BookingDtoKt.toDTO(savedBooking));
+    return ResponseEntity.ok(BookingDtoKt.toDto(savedBooking));
   }
 
   Booking getFromDto(BookingDto bookingDto) throws SlotException {
@@ -271,6 +271,6 @@ public class CoordinatorController {
     Booking bookingToDelete = bookingService.findById(bookingId);
     bookingService.deleteBooking(bookingToDelete);
 
-    return ResponseEntity.ok(BookingDtoKt.toDTO(bookingToDelete));
+    return ResponseEntity.ok(BookingDtoKt.toDto(bookingToDelete));
   }
 }

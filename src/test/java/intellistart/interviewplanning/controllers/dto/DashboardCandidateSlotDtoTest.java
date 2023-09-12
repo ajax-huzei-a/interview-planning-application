@@ -46,7 +46,7 @@ public class DashboardCandidateSlotDtoTest {
   @MethodSource("createTestArgs")
   void initializeCandidateSlotDto(CandidateSlot rawSlot, DashboardCandidateSlotDto expected) {
 
-    DashboardCandidateSlotDto actual = DashboardCandidateSlotDtoKt.toDTOForDashboard(rawSlot);
+    DashboardCandidateSlotDto actual = DashboardCandidateSlotDtoKt.toDtoForDashboard(rawSlot);
     Assertions.assertEquals(expected, actual);
   }
 }

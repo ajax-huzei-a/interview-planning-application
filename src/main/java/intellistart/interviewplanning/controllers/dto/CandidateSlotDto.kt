@@ -9,12 +9,12 @@ import java.time.LocalDate
  */
 data class CandidateSlotDto(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    var date:LocalDate = LocalDate.now(),
+    var date: LocalDate = LocalDate.now(),
     var from: String = "",
     var to: String = ""
 )
 
-fun CandidateSlot.toDTO():CandidateSlotDto = CandidateSlotDto(
+fun CandidateSlot.toDto(): CandidateSlotDto = CandidateSlotDto(
     date = date,
     from = period.from.toString(),
     to = period.to.toString()

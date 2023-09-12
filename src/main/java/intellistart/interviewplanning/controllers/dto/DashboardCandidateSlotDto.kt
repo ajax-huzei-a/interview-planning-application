@@ -14,7 +14,7 @@ data class DashboardCandidateSlotDto(
     val bookings: Set<Long>
 )
 
-fun CandidateSlot.toDTOForDashboard():DashboardCandidateSlotDto = DashboardCandidateSlotDto(
+fun CandidateSlot.toDtoForDashboard(): DashboardCandidateSlotDto = DashboardCandidateSlotDto(
     candidateSlotId = id,
     from = period.from.toString(),
     to = period.to.toString(),

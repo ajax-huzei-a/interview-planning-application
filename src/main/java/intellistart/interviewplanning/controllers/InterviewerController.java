@@ -94,7 +94,7 @@ public class InterviewerController {
     InterviewerSlot interviewerSlot = interviewerSlotDtoValidator
         .validateAndCreate(interviewerSlotDto, authentication, interviewerId);
 
-    return new ResponseEntity<>(InterviewerSlotDtoKt.toDTOResponse(interviewerSlot), HttpStatus.OK);
+    return new ResponseEntity<>(InterviewerSlotDtoKt.toDtoResponse(interviewerSlot), HttpStatus.OK);
   }
 
   /**
@@ -127,7 +127,7 @@ public class InterviewerController {
             .validateAndUpdate(interviewerSlotDtoRequest,
         authentication, interviewerId, slotId);
 
-    return new ResponseEntity<>(InterviewerSlotDtoKt.toDTOResponse(interviewerSlot), HttpStatus.OK);
+    return new ResponseEntity<>(InterviewerSlotDtoKt.toDtoResponse(interviewerSlot), HttpStatus.OK);
   }
 
   /**
@@ -150,7 +150,7 @@ public class InterviewerController {
     BookingLimit bookingLimit = bookingLimitService.createBookingLimit(user,
         bookingLimitDto.getBookingLimit());
 
-    return ResponseEntity.ok(BookingLimitDtoKt.toDTO(bookingLimit));
+    return ResponseEntity.ok(BookingLimitDtoKt.toDto(bookingLimit));
   }
 
   /**
@@ -169,7 +169,7 @@ public class InterviewerController {
 
     BookingLimit bookingLimit = bookingLimitService.getBookingLimitForCurrentWeek(user);
 
-    return ResponseEntity.ok(BookingLimitDtoKt.toDTO(bookingLimit));
+    return ResponseEntity.ok(BookingLimitDtoKt.toDto(bookingLimit));
   }
 
   /**
@@ -188,7 +188,7 @@ public class InterviewerController {
 
     BookingLimit bookingLimit = bookingLimitService.getBookingLimitForNextWeek(user);
 
-    return ResponseEntity.ok(BookingLimitDtoKt.toDTO(bookingLimit));
+    return ResponseEntity.ok(BookingLimitDtoKt.toDto(bookingLimit));
   }
 
   /**
@@ -207,7 +207,7 @@ public class InterviewerController {
 
     List<InterviewerSlot> slots = interviewerSlotService.getSlotsByWeek(email, currentWeekId);
 
-    return ResponseEntity.ok(InterviewerSlotsDtoKt.toDTOList(slots));
+    return ResponseEntity.ok(InterviewerSlotsDtoKt.toDtoList(slots));
   }
 
   /**
@@ -226,6 +226,6 @@ public class InterviewerController {
 
     List<InterviewerSlot> slots = interviewerSlotService.getSlotsByWeek(email, nextWeekId);
 
-    return ResponseEntity.ok(InterviewerSlotsDtoKt.toDTOList(slots));
+    return ResponseEntity.ok(InterviewerSlotsDtoKt.toDtoList(slots));
   }
 }

@@ -5,8 +5,6 @@ import intellistart.interviewplanning.model.interviewerslot.InterviewerSlot
 /**
  * DTO for list of InterviewerSlotDto.
  */
-data class InterviewerSlotsDto (val interviewerSlotDtoList: List<InterviewerSlotDtoResponse>)
+data class InterviewerSlotsDto(val interviewerSlotDtoList: List<InterviewerSlotDtoResponse>)
 
-fun List<InterviewerSlot>.toDTOList():InterviewerSlotsDto = InterviewerSlotsDto(map { it.toDTOResponse() })
-
-
+fun List<InterviewerSlot>.toDtoList(): InterviewerSlotsDto = InterviewerSlotsDto(map { it.toDtoResponse() })

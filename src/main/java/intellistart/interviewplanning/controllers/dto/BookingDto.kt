@@ -14,7 +14,7 @@ data class BookingDto(
     var description: String = ""
 )
 
-fun Booking.toDTO():BookingDto = BookingDto(
+fun Booking.toDto(): BookingDto = BookingDto(
     interviewerSlotId = interviewerSlot.id,
     candidateSlotId = candidateSlot.id,
     from = period.from.toString(),

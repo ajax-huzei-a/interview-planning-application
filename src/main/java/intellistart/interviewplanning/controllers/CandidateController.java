@@ -58,7 +58,7 @@ public class CandidateController {
 
     candidateSlot = candidateSlotService.create(candidateSlot);
 
-    return ResponseEntity.ok(CandidateSlotDtoKt.toDTO(candidateSlot));
+    return ResponseEntity.ok(CandidateSlotDtoKt.toDto(candidateSlot));
   }
 
   /**
@@ -85,7 +85,7 @@ public class CandidateController {
 
     candidateSlot = candidateSlotService.update(candidateSlot);
 
-    return ResponseEntity.ok(CandidateSlotDtoKt.toDTO(candidateSlot));
+    return ResponseEntity.ok(CandidateSlotDtoKt.toDto(candidateSlot));
   }
 
   /**
@@ -97,11 +97,11 @@ public class CandidateController {
   public ResponseEntity<CandidateSlotsDto> getAllSlotsOfCandidate(Authentication authentication) {
 
     JwtUserDetails jwtUserDetails = (JwtUserDetails) authentication.getPrincipal();
-    
+
     List<CandidateSlot> candidateSlots = candidateSlotService
         .getAllSlotsByEmail(jwtUserDetails.getEmail());
 
-    return ResponseEntity.ok(CandidateSlotsDtoKt.toDTOList(candidateSlots));
+    return ResponseEntity.ok(CandidateSlotsDtoKt.toDtoList(candidateSlots));
   }
 
   /**

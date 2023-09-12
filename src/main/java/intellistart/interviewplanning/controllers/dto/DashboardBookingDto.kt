@@ -15,7 +15,7 @@ data class DashboardBookingDto (
     var to: String,
 )
 
-fun Booking.toDTOForDashBoard() = DashboardBookingDto(
+fun Booking.toDtoForDashboard() = DashboardBookingDto(
     bookingId = id,
     subject = subject,
     description = description,

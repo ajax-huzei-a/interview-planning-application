@@ -7,5 +7,4 @@ import intellistart.interviewplanning.model.candidateslot.CandidateSlot
  */
 data class CandidateSlotsDto(val candidateSlotDtoList: List<CandidateSlotDto>)
 
-fun List<CandidateSlot>.toDTOList():CandidateSlotsDto = CandidateSlotsDto(map { it.toDTO() })
-
+fun List<CandidateSlot>.toDtoList(): CandidateSlotsDto = CandidateSlotsDto(map { it.toDto() })

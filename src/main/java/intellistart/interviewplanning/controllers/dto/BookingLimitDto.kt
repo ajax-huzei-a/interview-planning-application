@@ -12,7 +12,7 @@ data class BookingLimitDto(
     var bookingLimit: Int = 0
 )
 
-fun BookingLimit.toDTO():BookingLimitDto = BookingLimitDto(
+fun BookingLimit.toDto(): BookingLimitDto = BookingLimitDto(
     userId = user.id,
     weekNum = week.id,
     bookingLimit = bookingLimit

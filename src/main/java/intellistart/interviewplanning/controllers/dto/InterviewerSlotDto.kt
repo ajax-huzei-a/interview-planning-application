@@ -24,7 +24,7 @@ data class InterviewerSlotDtoResponse(
     val to: String
 )
 
-fun InterviewerSlot.toDTOResponse():InterviewerSlotDtoResponse = InterviewerSlotDtoResponse(
+fun InterviewerSlot.toDtoResponse(): InterviewerSlotDtoResponse = InterviewerSlotDtoResponse(
     interviewerId = user.id,
     interviewerSlotId = id,
     week = week.id,

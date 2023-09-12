@@ -13,7 +13,7 @@ data class DashboardInterviewerSlotDto(
     val bookings: Set<Long>
 )
 
-fun InterviewerSlot.toDTOForDashboard():DashboardInterviewerSlotDto = DashboardInterviewerSlotDto(
+fun InterviewerSlot.toDtoForDashboard(): DashboardInterviewerSlotDto = DashboardInterviewerSlotDto(
     interviewerSlotId = id,
     interviewerId = user.id,
     from = period.from.toString(),
