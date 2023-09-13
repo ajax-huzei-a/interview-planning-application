@@ -38,7 +38,8 @@ public class InterviewerSlotDtoValidator {
    */
   @Autowired
   public InterviewerSlotDtoValidator(PeriodService periodService,
-                                     UserService userService, InterviewerSlotService interviewerSlotService,
+                                     UserService userService,
+                                     InterviewerSlotService interviewerSlotService,
                                      WeekService weekService) {
     this.periodService = periodService;
     this.userService = userService;
