@@ -38,8 +38,8 @@ public class InterviewerSlotDtoValidator {
    */
   @Autowired
   public InterviewerSlotDtoValidator(PeriodService periodService,
-      UserService userService, InterviewerSlotService interviewerSlotService,
-      WeekService weekService) {
+                                     UserService userService, InterviewerSlotService interviewerSlotService,
+                                     WeekService weekService) {
     this.periodService = periodService;
     this.userService = userService;
     this.interviewerSlotService = interviewerSlotService;
@@ -62,9 +62,10 @@ public class InterviewerSlotDtoValidator {
    *     <li>invalid boundaries of time period
    *     </ul>
    */
-  public void validateCreating(InterviewerSlot interviewerSlot,
-                                          Authentication authentication, Long userId)
-      throws UserException, SlotException {
+  public void validateCreating(
+          InterviewerSlot interviewerSlot,
+          Authentication authentication, Long userId
+  ) throws UserException, SlotException {
 
     validateIfCorrectDay(interviewerSlot.getDayOfWeek().toString());
 
@@ -97,9 +98,11 @@ public class InterviewerSlotDtoValidator {
    *
    * @throws UserException - when invalid interviewer id, role not Interviewer
    */
-  public void validateUpdating(InterviewerSlot interviewerSlot,
-                                          Authentication authentication, Long userId, Long slotId)
-      throws UserException, SlotException {
+  public void validateUpdating(
+          InterviewerSlot interviewerSlot,
+          Authentication authentication,
+          Long userId, Long slotId
+  ) throws UserException, SlotException {
 
     if (!(interviewerSlot.getUser().getId().equals(userId))) {
       throw new SecurityException(SecurityExceptionProfile.ACCESS_DENIED);
@@ -125,9 +128,10 @@ public class InterviewerSlotDtoValidator {
    * @param userId             - from path (url)
    * @throws SlotException - when slot has at least one or more bookings
    */
-  public void validationForCoordinator(InterviewerSlot interviewerSlot,
-      Long userId, Long slotId)
-      throws SlotException, UserException {
+  public void validationForCoordinator(
+          InterviewerSlot interviewerSlot,
+          Long userId, Long slotId
+  ) throws SlotException, UserException {
 
     LocalDate dateFromDto = LocalDate.from(interviewerSlot.getPeriod().getFrom());
     if (LocalDate.now().isAfter(dateFromDto)) {

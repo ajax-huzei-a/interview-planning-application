@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.PathVariable
  */
 @RestController
 @CrossOrigin
-@Suppress("constructor and functions is too large")
+@Suppress("Many fields and functions in the class")
 class CoordinatorController(
     private val bookingService: BookingService,
     private val bookingValidator: BookingValidator,
@@ -45,7 +45,7 @@ class CoordinatorController(
     private val candidateSlotService: CandidateSlotService,
     private val periodService: PeriodService,
     private val userService: UserService,
-    private val weekService: WeekService
+    private val weekService: WeekService,
 ) {
 
     /**
@@ -108,7 +108,10 @@ class CoordinatorController(
      * @throws UserException - when the user is not found by the given id or the coordinator removes himself.
      */
     @DeleteMapping("/users/coordinators/{id}")
-    fun deleteCoordinatorById(@PathVariable("id") id: Long, authentication: Authentication): ResponseEntity<User> {
+    fun deleteCoordinatorById(
+        @PathVariable("id") id: Long,
+        authentication: Authentication
+    ): ResponseEntity<User> {
         val jwtUserDetails = authentication.principal as JwtUserDetails
         val currentEmailCoordinator = jwtUserDetails.email
         return ResponseEntity.ok(userService.deleteCoordinator(id, currentEmailCoordinator))
@@ -149,7 +152,10 @@ class CoordinatorController(
      * @throws BookingException if CandidateSlot, InterviewerSlot do not intersect with Period
      */
     @PostMapping("bookings/{id}")
-    fun updateBooking(@RequestBody bookingDto: BookingDto, @PathVariable id: Long): ResponseEntity<BookingDto> {
+    fun updateBooking(
+        @RequestBody bookingDto: BookingDto,
+        @PathVariable id: Long
+    ): ResponseEntity<BookingDto> {
         val updatingBooking = bookingService.getById(id)
         val newDataBooking = getFromDto(bookingDto)
 
@@ -196,19 +202,14 @@ class CoordinatorController(
     }
 
     private fun getFromDto(bookingDto: BookingDto): Booking {
-        val booking = Booking()
-        booking.subject = bookingDto.subject
-        booking.description = bookingDto.description
-
-        booking.interviewerSlot = interviewerSlotService.getById(bookingDto.interviewerSlotId)
-        booking.candidateSlot = candidateSlotService.getById(bookingDto.candidateSlotId)
-
-        booking.period = periodService.obtainPeriod(
-            bookingDto.from,
-            bookingDto.to
-        )
-
-        return booking
+        return Booking().apply {
+            subject = bookingDto.subject
+            description = bookingDto.description
+            interviewerSlot = interviewerSlotService.getById(bookingDto.interviewerSlotId)
+            candidateSlot = candidateSlotService.getById(bookingDto.candidateSlotId)
+            period = periodService
+                .obtainPeriod(bookingDto.from, bookingDto.to)
+        }
     }
 
     private fun Booking.populateFields(newDataBooking: Booking) {

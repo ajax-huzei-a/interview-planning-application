@@ -4,21 +4,11 @@ import intellistart.interviewplanning.controllers.dto.CandidateDto
 import intellistart.interviewplanning.controllers.dto.FacebookOauthInfoDto
 import intellistart.interviewplanning.controllers.dto.JwtRequest
 import intellistart.interviewplanning.controllers.dto.JwtResponse
-import intellistart.interviewplanning.exceptions.SecurityException
-import intellistart.interviewplanning.exceptions.SecurityException.SecurityExceptionProfile
 import intellistart.interviewplanning.model.user.UserService
 import intellistart.interviewplanning.security.JwtUserDetails
-import intellistart.interviewplanning.security.JwtUserDetailsService
 import intellistart.interviewplanning.utils.FacebookUtil
-import intellistart.interviewplanning.utils.FacebookUtil.FacebookScopes
-import intellistart.interviewplanning.utils.JwtUtil
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -26,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.client.RestClientException
-import redis.clients.jedis.JedisPooled
 
 /**
  * Controller for authentication and authenticated requests.
@@ -35,18 +23,8 @@ import redis.clients.jedis.JedisPooled
 @RestController
 @CrossOrigin
 class JwtAuthenticationController(
-    private val authenticationManager: AuthenticationManager,
-    private val jwtUtil: JwtUtil,
-    private val userDetailsService: JwtUserDetailsService,
-    private val facebookUtil: FacebookUtil,
     private val userService: UserService,
-    private val jedis: JedisPooled
 ) {
-    @Value("\${jwt.caching}")
-    private val jwtValidity: Long = 0
-
-    private val logger: Logger = LogManager.getLogger(JwtAuthenticationController::class.java)
-
     /**
      * Method that mappings the authentication request through generating
      * JWT by Facebook Token.
@@ -58,35 +36,7 @@ class JwtAuthenticationController(
     fun createAuthenticationToken(
         @RequestBody jwtRequest: JwtRequest
     ): ResponseEntity<*> {
-        val fbCached = jedis[jwtRequest.facebookToken]
-        if (fbCached != null) {
-            return ResponseEntity.ok(JwtResponse(fbCached))
-        }
-        val userScopes: Map<FacebookScopes, String> = try {
-            facebookUtil.getScope(jwtRequest.facebookToken)
-        } catch (e: RestClientException) {
-            logger.warn("RestClientException was thrown", e)
-            throw SecurityException(SecurityExceptionProfile.BAD_FACEBOOK_TOKEN)
-        }
-        val email = userScopes[FacebookScopes.EMAIL]
-        val name = userScopes[FacebookScopes.NAME]
-        authenticate(email)
-        val userDetails = userDetailsService
-            .loadUserByEmailAndName(email, name) as JwtUserDetails
-        val jwt = jwtUtil.generateToken(userDetails)
-        jedis.setex(jwtRequest.facebookToken, jwtValidity, jwt)
-        return ResponseEntity.ok(JwtResponse(jwt))
-    }
-
-    private fun authenticate(username: String?) {
-        try {
-            authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(username, username)
-            )
-        } catch (e: BadCredentialsException) {
-            logger.warn("BadCredentialsException was thrown", e)
-            throw SecurityException(SecurityExceptionProfile.BAD_CREDENTIALS)
-        }
+        return ResponseEntity.ok(JwtResponse(userService.getJwtToken(jwtRequest)))
     }
 
     /**
@@ -99,9 +49,9 @@ class JwtAuthenticationController(
     @GetMapping("/me")
     fun getMyself(authentication: Authentication): ResponseEntity<*> {
         val jwtUserDetails = authentication.principal as JwtUserDetails
-        val user = userService.getUserByEmail(jwtUserDetails.email)
-            ?: return ResponseEntity.ok(CandidateDto(jwtUserDetails.email))
-        return ResponseEntity.ok(user)
+        return userService.getUserByEmail(jwtUserDetails.email)
+            ?.let { user -> ResponseEntity.ok(user) }
+            ?: ResponseEntity.ok(CandidateDto(jwtUserDetails.email))
     }
 
     /**

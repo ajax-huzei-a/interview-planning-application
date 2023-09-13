@@ -101,7 +101,9 @@ class InterviewerController(
         interviewerSlotDtoValidator
             .validateUpdating(
                 interviewerSlot,
-                authentication, interviewerId, slotId
+                authentication,
+                interviewerId,
+                slotId
             )
         val updatedInterviewerSlot = interviewerSlotService.update(interviewerSlot)
         return ResponseEntity(updatedInterviewerSlot.toDtoResponse(), HttpStatus.OK)

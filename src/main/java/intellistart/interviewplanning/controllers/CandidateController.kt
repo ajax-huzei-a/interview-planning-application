@@ -67,7 +67,8 @@ class CandidateController(
     @PostMapping("/candidates/current/slots/{slotId}")
     fun updateCandidateSlot(
         @RequestBody request: CandidateSlotDto,
-        @PathVariable("slotId") id: Long, authentication: Authentication
+        @PathVariable("slotId") id: Long,
+        authentication: Authentication
     ): ResponseEntity<CandidateSlotDto> {
         val candidateSlot = getCandidateSlotFromDto(request, authentication)
         candidateSlot.id = id
@@ -82,7 +83,9 @@ class CandidateController(
      * @return ResponseEntity - Response of the list of slots converted to a DTO.
      */
     @GetMapping("/candidates/current/slots")
-    fun getAllSlotsOfCandidate(authentication: Authentication): ResponseEntity<CandidateSlotsDto> {
+    fun getAllSlotsOfCandidate(
+        authentication: Authentication
+    ): ResponseEntity<CandidateSlotsDto> {
         val jwtUserDetails = authentication.principal as JwtUserDetails
         val candidateSlots = candidateSlotService
             .getAllSlotsByEmail(jwtUserDetails.email)
@@ -101,12 +104,12 @@ class CandidateController(
         authentication: Authentication
     ): CandidateSlot {
         val jwtUserDetails = authentication.principal as JwtUserDetails
-        val candidateSlot = CandidateSlot()
-        candidateSlot.date = candidateSlotDto.date
-        candidateSlot.period = periodService
-            .obtainPeriod(candidateSlotDto.from, candidateSlotDto.to)
-        candidateSlot.email = jwtUserDetails.email
-        candidateSlot.name = jwtUserDetails.name
-        return candidateSlot
+        return CandidateSlot().apply {
+            date = candidateSlotDto.date
+            period = periodService
+                .obtainPeriod(candidateSlotDto.from, candidateSlotDto.to)
+            email = jwtUserDetails.email
+            name = jwtUserDetails.name
+        }
     }
 }
