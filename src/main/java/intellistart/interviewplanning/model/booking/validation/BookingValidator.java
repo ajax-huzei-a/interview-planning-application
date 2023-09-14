@@ -14,7 +14,7 @@ import intellistart.interviewplanning.model.interviewerslot.InterviewerSlot;
 import intellistart.interviewplanning.model.interviewerslot.InterviewerSlotService;
 import intellistart.interviewplanning.model.period.Period;
 import intellistart.interviewplanning.model.period.PeriodService;
-import intellistart.interviewplanning.model.period.services.TimeService;
+import intellistart.interviewplanning.model.period.TimeService;
 import intellistart.interviewplanning.model.user.User;
 import intellistart.interviewplanning.model.week.WeekService;
 import java.time.LocalDate;
@@ -67,7 +67,7 @@ public class BookingValidator {
    *                                CandidateSlot
    */
   public void validateUpdating(Booking updatingBooking, Booking newDataBooking)
-      throws SlotException, BookingException, UserException, BookingLimitException {
+      throws SlotException, BookingException, BookingLimitException {
 
     Period newPeriod = newDataBooking.getPeriod();
 

@@ -1,4 +1,4 @@
-package intellistart.interviewplanning.model.period.services.validation;
+package intellistart.interviewplanning.model.period.validation;
 
 import static org.junit.jupiter.api.Assertions.*;
 

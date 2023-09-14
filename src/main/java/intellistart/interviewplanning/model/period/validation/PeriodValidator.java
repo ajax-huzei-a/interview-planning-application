@@ -1,11 +1,11 @@
-package intellistart.interviewplanning.model.period.services.validation;
+package intellistart.interviewplanning.model.period.validation;
 
 import intellistart.interviewplanning.exceptions.SlotException;
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile;
-import intellistart.interviewplanning.model.period.services.validation.chain.DurationValidator;
-import intellistart.interviewplanning.model.period.services.validation.chain.ExtremeValuesValidator;
-import intellistart.interviewplanning.model.period.services.validation.chain.PeriodChainValidator;
-import intellistart.interviewplanning.model.period.services.validation.chain.RoundingMinutesValidator;
+import intellistart.interviewplanning.model.period.validation.chain.DurationValidator;
+import intellistart.interviewplanning.model.period.validation.chain.ExtremeValuesValidator;
+import intellistart.interviewplanning.model.period.validation.chain.PeriodChainValidator;
+import intellistart.interviewplanning.model.period.validation.chain.RoundingMinutesValidator;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -207,6 +207,7 @@ class InterviewerController(
         interviewerSlot.dayOfWeek = DayOfWeek.valueOf(interviewerSlotDto.dayOfWeek)
         interviewerSlot.period = periodService.obtainPeriod(interviewerSlotDto.from, interviewerSlotDto.to)
         interviewerSlot.user = userService.getUserByEmail(jwtUserDetails.email)
+            ?: throw UserException(UserException.UserExceptionProfile.USER_NOT_FOUND)
         return interviewerSlot
     }
 }

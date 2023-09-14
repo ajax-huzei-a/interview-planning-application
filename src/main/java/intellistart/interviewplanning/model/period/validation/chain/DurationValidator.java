@@ -1,6 +1,6 @@
-package intellistart.interviewplanning.model.period.services.validation.chain;
+package intellistart.interviewplanning.model.period.validation.chain;
 
-import intellistart.interviewplanning.model.period.services.TimeService;
+import intellistart.interviewplanning.model.period.TimeService;
 import java.time.LocalTime;
 import lombok.NoArgsConstructor;
 

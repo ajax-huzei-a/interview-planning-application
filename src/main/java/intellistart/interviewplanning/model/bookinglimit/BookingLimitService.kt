@@ -1,109 +1,91 @@
-package intellistart.interviewplanning.model.bookinglimit;
+package intellistart.interviewplanning.model.bookinglimit
 
-import intellistart.interviewplanning.exceptions.BookingLimitException;
-import intellistart.interviewplanning.exceptions.BookingLimitException.BookingLimitExceptionProfile;
-import intellistart.interviewplanning.exceptions.UserException;
-import intellistart.interviewplanning.model.user.Role;
-import intellistart.interviewplanning.model.user.User;
-import intellistart.interviewplanning.model.week.Week;
-import intellistart.interviewplanning.model.week.WeekService;
-import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import intellistart.interviewplanning.exceptions.BookingLimitException
+import intellistart.interviewplanning.exceptions.UserException
+import intellistart.interviewplanning.model.user.Role
+import intellistart.interviewplanning.model.user.User
+import intellistart.interviewplanning.model.week.Week
+import intellistart.interviewplanning.model.week.WeekService
+import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrDefault
 
 /**
  * Service for BookingLimit entity.
  */
 @Service
-public class BookingLimitService {
+class BookingLimitService(
+    private val bookingLimitRepository: BookingLimitRepository,
+    private val weekService: WeekService
+) {
 
-  private final BookingLimitRepository bookingLimitRepository;
-  private final WeekService weekService;
-  private static final Integer INFINITE_BOOKING_LIMITS_NUMBER = 1000;
+    /**
+     * Return booking limit of a certain interviewer for a certain week,
+     * or create an infinite booking limit.
+     *
+     * @param user - interviewer
+     * @param week - certain week
+     * @return BookingLimit
+     * @throws UserException - not an interviewer id
+     */
+    fun getBookingLimitByInterviewer(user: User, week: Week): BookingLimit {
+        if (user.role != Role.INTERVIEWER) {
+            throw UserException(UserException.UserExceptionProfile.NOT_INTERVIEWER)
+        }
 
-  /**
-   * Constructor for BookingLimitService.
-   *
-   * @param bookingLimitRepository - bookingLimitRepository
-   * @param weekService - weekService
-   */
-  @Autowired
-  public BookingLimitService(BookingLimitRepository bookingLimitRepository,
-      WeekService weekService) {
-    this.bookingLimitRepository = bookingLimitRepository;
-    this.weekService = weekService;
-  }
-
-  public BookingLimit getBookingLimitForNextWeek(User user)
-      throws UserException {
-    return getBookingLimitByInterviewer(user, weekService.getNextWeek());
-  }
-
-  public BookingLimit getBookingLimitForCurrentWeek(User user)
-      throws UserException {
-    return getBookingLimitByInterviewer(user, weekService.getCurrentWeek());
-  }
-
-  /**
-   * Return booking limit of certain interviewer for certain week,
-   * or create infinite booking limit.
-   *
-   * @param user - interviewer
-   * @param week - certain week
-   * @return BookingLimit
-   * @throws UserException - not interviewer id
-   */
-  public BookingLimit getBookingLimitByInterviewer(User user, Week week)
-      throws UserException {
-    if (user.getRole() != Role.INTERVIEWER) {
-      throw new UserException(UserException.UserExceptionProfile.NOT_INTERVIEWER);
+        val bookingLimit = bookingLimitRepository.findById(BookingLimitKey(user.id, week.id))
+        return bookingLimit.getOrDefault(createInfiniteBookingLimit(user, week))
     }
 
-    long weekNum = week.getId();
+    private fun createInfiniteBookingLimit(user: User, week: Week): BookingLimit =
+        BookingLimit(BookingLimitKey(user.id, week.id), INFINITE_BOOKING_LIMITS_NUMBER, user, week)
 
-    while (weekNum > 0) {
-      Optional<BookingLimit> bookingLimit = bookingLimitRepository
-          .findById(new BookingLimitKey(user.getId(), weekNum));
-      if (bookingLimit.isPresent()) {
-        return bookingLimit.get();
-      }
-      weekNum--;
+
+    /**
+     * Create BookingLimit for the next week.
+     *
+     * @param user - interviewer
+     * @param bookingLimit - booking limit
+     * @return BookingLimit
+     * @throws BookingLimitException - invalid bookingLimit exception
+     * @throws UserException - not an interviewer id
+     */
+    fun createBookingLimit(user: User, bookingLimit: Int): BookingLimit {
+        if (user.role != Role.INTERVIEWER) {
+            throw UserException(UserException.UserExceptionProfile.NOT_INTERVIEWER)
+        }
+
+        if (bookingLimit <= 0) {
+            throw BookingLimitException(BookingLimitException.BookingLimitExceptionProfile.INVALID_BOOKING_LIMIT)
+        }
+
+        val nextWeek = weekService.getNextWeek()
+
+        val newBookingLimit = BookingLimit(BookingLimitKey(user.id, nextWeek.id), bookingLimit, user, nextWeek)
+
+        return bookingLimitRepository.save(newBookingLimit)
     }
 
-    return createInfiniteBookingLimit(user, week);
-  }
+    /**
+     * Get booking limit for the next week.
+     *
+     * @param user - interviewer
+     * @return BookingLimit
+     * @throws UserException - not an interviewer id
+     */
+    fun getBookingLimitForNextWeek(user: User): BookingLimit =
+        getBookingLimitByInterviewer(user, weekService.getNextWeek())
 
-  private BookingLimit createInfiniteBookingLimit(User user, Week week) {
-    return new BookingLimit(new BookingLimitKey(user.getId(),
-        week.getId()), INFINITE_BOOKING_LIMITS_NUMBER, user, week);
-  }
+    /**
+     * Get booking limit for the current week.
+     *
+     * @param user - interviewer
+     * @return BookingLimit
+     * @throws UserException - not an interviewer id
+     */
+    fun getBookingLimitForCurrentWeek(user: User): BookingLimit =
+        getBookingLimitByInterviewer(user, weekService.getCurrentWeek())
 
-  /**
-   * Create BookingLimit for next week.
-   *
-   * @param user - interviewer
-   * @param bookingLimit - booking limit
-   * @return BookingLimit
-   * @throws BookingLimitException - invalid bookingLimit exception
-   * @throws UserException - not interviewer id
-   */
-  public BookingLimit createBookingLimit(User user, Integer bookingLimit)
-      throws BookingLimitException, UserException {
-
-    if (user.getRole() != Role.INTERVIEWER) {
-      throw new UserException(UserException.UserExceptionProfile.NOT_INTERVIEWER);
+    companion object {
+        private const val INFINITE_BOOKING_LIMITS_NUMBER = 1000
     }
-
-    if (bookingLimit <= 0) {
-      throw new BookingLimitException(BookingLimitExceptionProfile.INVALID_BOOKING_LIMIT);
-    }
-
-    Week nextWeek = weekService.getNextWeek();
-
-    BookingLimit newBookingLimit = new BookingLimit(
-        new BookingLimitKey(user.getId(), nextWeek.getId()),
-        bookingLimit, user, nextWeek);
-
-    return bookingLimitRepository.save(newBookingLimit);
-  }
 }

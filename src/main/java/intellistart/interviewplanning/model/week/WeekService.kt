@@ -1,156 +1,149 @@
-package intellistart.interviewplanning.model.week;
+package intellistart.interviewplanning.model.week
 
-import intellistart.interviewplanning.model.dayofweek.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.WeekFields;
-import java.util.HashSet;
-import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import intellistart.interviewplanning.model.dayofweek.DayOfWeek
+import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.temporal.WeekFields
 
 /**
  * Service for Week entity.
  */
 @Service
-public class WeekService {
+class WeekService(private val weekRepository: WeekRepository) {
 
-  private final WeekRepository weekRepository;
+    /**
+     * Get date and convert it to number of week.
+     *
+     * @param date any date
+     * @return number of week
+     */
+    fun getNumberOfWeek(date: LocalDate): Long {
+        val sumOfWeeks: Long = if (date.year != START_YEAR) {
+            (START_YEAR until date.year).sumOf {
+                date.withYear(it).range(WeekFields.ISO.weekOfYear()).maximum.toInt()
+            }.toLong()
+        } else 0
 
-
-  @Autowired
-  public WeekService(WeekRepository weekRepository) {
-    this.weekRepository = weekRepository;
-  }
-
-  /**
-   * Get date and convert it to number of week.
-   *
-   * @param date any date
-   * @return number of week
-   */
-  public long getNumberOfWeek(LocalDate date) {
-    long sumOfWeeks = 0;
-    if (date.getYear() != 2022) {
-      for (int i = 2022; i < date.getYear(); i++) {
-        sumOfWeeks += date.withYear(i).range(WeekFields.ISO.weekOfYear()).getMaximum();
-      }
+        val weeksOfCurrentYear = date.get(WeekFields.ISO.weekOfYear())
+        if (checkBeginOfYear(date.year)) {
+            return sumOfWeeks + weeksOfCurrentYear - 1
+        }
+        return sumOfWeeks + weeksOfCurrentYear
     }
-    long weeksOfCurrentYear = date.get(WeekFields.ISO.weekOfYear());
-    if (checkBeginOfYear(date.getYear())) {
-      weeksOfCurrentYear = weeksOfCurrentYear - 1;
+
+    /**
+     * Method checks if the first day of year is Tuesday, Wednesday, or Thursday
+     * for right calculating of the number of the week.
+     *
+     * @param year current year
+     * @return true if the year begins from Tuesday, Wednesday, or Thursday
+     */
+    private fun checkBeginOfYear(year: Int): Boolean {
+        val date = LocalDate.of(year, 1, 1)
+        return date.dayOfWeek in setOf(
+            java.time.DayOfWeek.TUESDAY,
+            java.time.DayOfWeek.WEDNESDAY,
+            java.time.DayOfWeek.THURSDAY
+        )
     }
-    return sumOfWeeks + weeksOfCurrentYear;
-  }
 
-  /**
-   * Method checks if the first day of year is tuesday,wednesday or thursday
-   * for right calculating of number of week.
-   *
-   * @param year current year
-   * @return true if year begins from tuesday,wednesday or thursday
-   */
-  private boolean checkBeginOfYear(int year) {
-    LocalDate date = LocalDate.of(year, 1, 1);
-    return date.getDayOfWeek().equals(java.time.DayOfWeek.TUESDAY)
-        || date.getDayOfWeek().equals(java.time.DayOfWeek.WEDNESDAY)
-        || date.getDayOfWeek().equals(java.time.DayOfWeek.THURSDAY);
-  }
-
-  /**
-   * Get date and convert it to day of week.
-   *
-   * @param date any date
-   * @return day of week
-   */
-  public DayOfWeek getDayOfWeek(LocalDate date) {
-    String dayOfWeek = date.getDayOfWeek().toString().substring(0, 3);
-    return DayOfWeek.valueOf(dayOfWeek);
-  }
-
-  /**
-   * Get number of week and day of week
-   * and convert them to date (LocalDate).
-   *
-   * @param weekNum number of week
-   *
-   * @param dayOfWeek day of week
-   * @return date
-   */
-  public LocalDate convertToLocalDate(long weekNum, DayOfWeek dayOfWeek) {
-    return LocalDate.now()
-        .with(WeekFields.ISO.weekBasedYear(), getYear(weekNum))
-        .with(WeekFields.ISO.weekOfYear(), getWeek(weekNum))
-        .with(WeekFields.ISO.dayOfWeek(), dayOfWeek.ordinal() + 1L);
-  }
-
-  /**
-   * Get number of week and return current year.
-   *
-   * @param weekNum number of week from 2022
-   * @return current year
-   */
-  private long getYear(long weekNum) {
-    LocalDate date = LocalDate.parse("2022-01-01");
-    LocalDate currentDate = date.plusDays(weekNum * 7);
-    return currentDate.getYear();
-  }
-
-  /**
-   * Get number of week and calculate number of week from current year.
-   *
-   * @param weekNum number of week from 2022
-   * @return number of week from current year
-   */
-  private long getWeek(long weekNum) {
-    LocalDate date = LocalDate.parse("2022-01-01");
-    long year = getYear(weekNum);
-    for (int i = 2022; i < year; i++) {
-      weekNum -=  date.withYear(i).range(WeekFields.ISO.weekOfYear()).getMaximum();
+    /**
+     * Get date and convert it to day of the week.
+     *
+     * @param date any date
+     * @return day of the week
+     */
+    fun getDayOfWeek(date: LocalDate): DayOfWeek {
+        val dayOfWeek = date.dayOfWeek.toString().substring(0, NUM_OF_LETTERS__OF_DAY_CODE)
+        return DayOfWeek.valueOf(dayOfWeek)
     }
-    return weekNum;
-  }
 
-  /**
-   * Return object Week for request for getting number of current week.
-   *
-   * @return Week object
-   */
-  public Week getCurrentWeek() {
-    LocalDate date = LocalDate.now();
-    return getWeekByWeekNum(getNumberOfWeek(date));
-  }
+    /**
+     * Get number of the week and day of the week
+     * and convert them to date (LocalDate).
+     *
+     * @param weekNum number of the week
+     * @param dayOfWeek day of the week
+     * @return date
+     */
+    fun convertToLocalDate(weekNum: Long, dayOfWeek: DayOfWeek): LocalDate {
+        return LocalDate.now()
+            .with(WeekFields.ISO.weekBasedYear(), getYear(weekNum).toLong())
+            .with(WeekFields.ISO.weekOfYear(), getWeek(weekNum))
+            .with(WeekFields.ISO.dayOfWeek(), dayOfWeek.ordinal.toLong() + 1)
+    }
 
-  /**
-   * Return object Week for request for getting number of next week.
-   *
-   * @return object Week
-   */
-  public Week getNextWeek() {
-    LocalDate date = LocalDate.now();
-    return getWeekByWeekNum(getNumberOfWeek(date) + 1L);
-  }
+    /**
+     * Get number of the week and return the current year.
+     *
+     * @param weekNum number of the week from 2022
+     * @return current year
+     */
+    private fun getYear(weekNum: Long): Int {
+        val date = LocalDate.parse("2022-01-01")
+        val currentDate = date.plusDays(weekNum * NUM_OF_DAYS_OF_WEEK)
+        return currentDate.year
+    }
 
-  /**
-   * Get number of week and check if object Week with id weekNum exists.
-   * If it exists return this object if not object with such id is created and
-   * also returned.
-   *
-   * @param weekNum number of week
-   * @return object Week
-   */
-  public Week getWeekByWeekNum(Long weekNum) {
-    Optional<Week> week = weekRepository.findById(weekNum);
-    return week.orElseGet(() -> createWeek(weekNum));
-  }
+    /**
+     * Get number of the week and calculate the number of the week from the current year.
+     *
+     * @param weekNum number of the week from 2022
+     * @return number of the week from the current year
+     */
+    private fun getWeek(weekNum: Long): Long {
+        val date = LocalDate.parse("2022-01-01")
+        val year = getYear(weekNum)
+        var remainingWeeks = weekNum
+        for (i in START_YEAR until year) {
+            remainingWeeks -= date.withYear(i).range(WeekFields.ISO.weekOfYear()).maximum
+        }
+        return remainingWeeks
+    }
 
-  /**
-   * Create Week with id weekNum and return it.
-   *
-   * @param weekNum number of week
-   * @return object Week
-   */
-  public Week createWeek(Long weekNum) {
-    Week newWeek = new Week(weekNum, new HashSet<>());
-    return weekRepository.save(newWeek);
-  }
+    /**
+     * Return the Week object for the request for getting the number of the current week.
+     *
+     * @return Week object
+     */
+    fun getCurrentWeek(): Week {
+        val date = LocalDate.now()
+        return getWeekByWeekNum(getNumberOfWeek(date))
+    }
+
+    /**
+     * Return the Week object for the request for getting the number of the next week.
+     *
+     * @return Week object
+     */
+    fun getNextWeek(): Week {
+        val date = LocalDate.now()
+        return getWeekByWeekNum(getNumberOfWeek(date) + 1)
+    }
+
+    /**
+     * Get the number of the week and check if the Week object with id weekNum exists.
+     * If it exists, return this object; if not, create an object with such id and return it.
+     *
+     * @param weekNum number of the week
+     * @return Week object
+     */
+    fun getWeekByWeekNum(weekNum: Long): Week {
+        val week = weekRepository.findById(weekNum)
+        return week.orElseGet { createWeek(weekNum) }
+    }
+
+    /**
+     * Create a Week object with id weekNum and return it.
+     *
+     * @param weekNum number of the week
+     * @return Week object
+     */
+    private fun createWeek(weekNum: Long): Week = weekRepository.save(Week(weekNum, HashSet()))
+
+    companion object {
+        private const val START_YEAR = 2022
+        private const val NUM_OF_DAYS_OF_WEEK = 7
+        private const val NUM_OF_LETTERS__OF_DAY_CODE = 3
+    }
 }
