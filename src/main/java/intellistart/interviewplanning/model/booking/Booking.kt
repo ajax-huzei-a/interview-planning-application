@@ -40,13 +40,23 @@ class Booking(
     @JoinColumn(name = "period_id")
     var period: Period = Period(),
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Booking) return false
-        return id == other.id
-    }
-
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Booking
+
+        if (id != other.id) return false
+        if (subject != other.subject) return false
+        if (description != other.description) return false
+        if (interviewerSlot != other.interviewerSlot) return false
+        if (candidateSlot != other.candidateSlot) return false
+        if (period != other.period) return false
+
+        return true
     }
 }

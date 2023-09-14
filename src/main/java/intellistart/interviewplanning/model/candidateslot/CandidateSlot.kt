@@ -38,13 +38,23 @@ data class CandidateSlot (
 
     var name: String = ""
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is CandidateSlot) return false
-        return id == other.id
-    }
-
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as CandidateSlot
+
+        if (id != other.id) return false
+        if (date != other.date) return false
+        if (period != other.period) return false
+        if (bookings != other.bookings) return false
+        if (email != other.email) return false
+        if (name != other.name) return false
+
+        return true
     }
 }

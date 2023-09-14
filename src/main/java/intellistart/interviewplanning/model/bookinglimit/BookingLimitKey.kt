@@ -17,14 +17,20 @@ data class BookingLimitKey(
     @Column(name = "week_id")
     var weekId: Long = 0
 ) : Serializable {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is BookingLimitKey) return false
-        return userId == other.userId && weekId == other.weekId
-    }
-
     override fun hashCode(): Int {
         return Objects.hash(userId, weekId)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BookingLimitKey
+
+        if (userId != other.userId) return false
+        if (weekId != other.weekId) return false
+
+        return true
     }
 
     companion object {

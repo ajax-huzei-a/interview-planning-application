@@ -25,13 +25,19 @@ data class Week(
     @JsonIgnore
     var interviewerSlots: MutableSet<InterviewerSlot> = HashSet()
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Week) return false
-        return id == other.id
-    }
-
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Week
+
+        if (id != other.id) return false
+        if (interviewerSlots != other.interviewerSlots) return false
+
+        return true
     }
 }

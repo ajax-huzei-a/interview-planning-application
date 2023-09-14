@@ -48,13 +48,23 @@ data class InterviewerSlot(
     @JoinColumn(name = "user_id")
     var user: User = User()
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is InterviewerSlot) return false
-        return id == other.id
-    }
-
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as InterviewerSlot
+
+        if (id != other.id) return false
+        if (week != other.week) return false
+        if (dayOfWeek != other.dayOfWeek) return false
+        if (period != other.period) return false
+        if (bookings != other.bookings) return false
+        if (user != other.user) return false
+
+        return true
     }
 }

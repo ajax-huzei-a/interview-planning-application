@@ -33,13 +33,21 @@ data class BookingLimit(
     @JoinColumn(name = "week_id")
     var week: Week = Week()
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is BookingLimit) return false
-        return id == other.id
-    }
-
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BookingLimit
+
+        if (id != other.id) return false
+        if (bookingLimit != other.bookingLimit) return false
+        if (user != other.user) return false
+        if (week != other.week) return false
+
+        return true
     }
 }

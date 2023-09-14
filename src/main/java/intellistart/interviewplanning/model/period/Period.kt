@@ -42,13 +42,23 @@ data class Period(
     @JsonIgnore
     var bookings: MutableSet<Booking> = HashSet()
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Period) return false
-        return id == other.id
-    }
-
     override fun hashCode(): Int {
         return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Period
+
+        if (id != other.id) return false
+        if (from != other.from) return false
+        if (to != other.to) return false
+        if (interviewerSlots != other.interviewerSlots) return false
+        if (candidateSlots != other.candidateSlots) return false
+        if (bookings != other.bookings) return false
+
+        return true
     }
 }
