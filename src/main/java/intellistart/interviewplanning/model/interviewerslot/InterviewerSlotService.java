@@ -37,7 +37,7 @@ public class InterviewerSlotService {
    *
    * @throws SlotException if no instance with given id
    */
-  public InterviewerSlot findById(Long id) throws SlotException {
+  public InterviewerSlot getById(Long id) throws SlotException {
     return interviewerSlotRepository
         .findById(id)
         .orElseThrow(() -> new SlotException(SlotExceptionProfile.INTERVIEWER_SLOT_NOT_FOUND));
@@ -51,6 +51,16 @@ public class InterviewerSlotService {
    */
   public InterviewerSlot create(InterviewerSlot interviewerSlot) {
     return interviewerSlotRepository.save(interviewerSlot);
+  }
+
+  /**
+   * Get InterviewerSlot and update it in the DB.
+   *
+   * @param interviewerSlot - interviewerSlot
+   * @return InterviewerSlot
+   */
+  public InterviewerSlot update(InterviewerSlot interviewerSlot) {
+    return create(interviewerSlot);
   }
 
   /**

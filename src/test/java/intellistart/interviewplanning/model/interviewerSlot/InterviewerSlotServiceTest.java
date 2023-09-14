@@ -65,7 +65,7 @@ public class InterviewerSlotServiceTest {
   @Test
   void getSlotsByWeekTest() throws SlotException {
     when(interviewerSlotRepository.findById(1L)).thenReturn(Optional.of(is1));
-    InterviewerSlot actual = cut.findById(1L);
+    InterviewerSlot actual = cut.getById(1L);
     InterviewerSlot expected = is1;
     assertEquals(expected, actual);
   }

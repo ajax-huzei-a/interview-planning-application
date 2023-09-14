@@ -191,14 +191,14 @@ public class CandidateSlotValidatorTest {
       throws SlotException {
     Mockito.when(candidateSlotService.getCandidateSlotsByEmailAndDate(candidateSlot.getEmail(),
         candidateSlot.getDate())).thenReturn(List.of());
-    Mockito.when(candidateSlotService.findById(candidateSlot.getId()))
+    Mockito.when(candidateSlotService.getById(candidateSlot.getId()))
         .thenReturn(candidateSlot);
 
     cut.validateUpdating(candidateSlot);
 
     Mockito.verify(candidateSlotService).getCandidateSlotsByEmailAndDate(candidateSlot.getEmail(),
         candidateSlot.getDate());
-    Mockito.verify(candidateSlotService).findById(candidateSlot.getId());
+    Mockito.verify(candidateSlotService).getById(candidateSlot.getId());
   }
 
   static Arguments[] validateUpdateCandidateSlotExc1Args(){
@@ -211,7 +211,7 @@ public class CandidateSlotValidatorTest {
   @MethodSource("validateUpdateCandidateSlotExc1Args")
   void validateUpdateCandidateSlotSlotNotFoundExceptionTest(CandidateSlot candidateSlot,
       Class<Exception> actual) throws SlotException {
-    Mockito.when(candidateSlotService.findById(candidateSlot.getId())).thenThrow(SlotException.class);
+    Mockito.when(candidateSlotService.getById(candidateSlot.getId())).thenThrow(SlotException.class);
 
     Assertions.assertThrows(actual,
         ()-> cut.validateUpdating(candidateSlot));
@@ -227,7 +227,7 @@ public class CandidateSlotValidatorTest {
   @MethodSource("validateUpdateCandidateSlotExc2Args")
   void validateUpdateCandidateSlotSlotIsBookedExceptionTest(CandidateSlot candidateSlot,
       Class<Exception> actual) throws SlotException {
-    Mockito.when(candidateSlotService.findById(candidateSlot.getId()))
+    Mockito.when(candidateSlotService.getById(candidateSlot.getId()))
         .thenReturn(candidateSlot);
 
     Assertions.assertThrows(actual,

@@ -4,17 +4,28 @@ import intellistart.interviewplanning.exceptions.UserException;
 import intellistart.interviewplanning.model.interviewerslot.InterviewerSlotService;
 import java.util.List;
 import java.util.Optional;
+
+import intellistart.interviewplanning.security.JwtUserDetailsService;
+import intellistart.interviewplanning.utils.FacebookUtil;
+import intellistart.interviewplanning.utils.JwtUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
+import org.springframework.security.authentication.AuthenticationManager;
+import redis.clients.jedis.JedisPooled;
 
 public class UserServiceTest {
 
   private static UserRepository userRepository;
   private static InterviewerSlotService interviewerSlotService;
+  private static JedisPooled jedis;
+  private static FacebookUtil facebookUtil;
+  private static JwtUserDetailsService userDetailsService;
+  private static JwtUtil jwtUtil;
+  private static AuthenticationManager authenticationManager;
   private static UserService cut;
   private static User user1;
   private static User user2;
@@ -26,7 +37,21 @@ public class UserServiceTest {
   static void initialize() {
     userRepository = Mockito.mock(UserRepository.class);
     interviewerSlotService = Mockito.mock(InterviewerSlotService.class);
-    cut = new UserService(userRepository, interviewerSlotService);
+    jedis = Mockito.mock(JedisPooled.class);
+    facebookUtil = Mockito.mock(FacebookUtil.class);
+    userDetailsService = Mockito.mock(JwtUserDetailsService.class);
+    authenticationManager = Mockito.mock(AuthenticationManager.class);
+    jwtUtil = Mockito.mock(JwtUtil.class);
+    facebookUtil = Mockito.mock(FacebookUtil.class);
+    cut = new UserService(
+            userRepository,
+            interviewerSlotService,
+            jedis,
+            facebookUtil,
+            userDetailsService,
+            jwtUtil,
+            authenticationManager
+    );
 
     user1 = new User();
     user1.setId(1L);

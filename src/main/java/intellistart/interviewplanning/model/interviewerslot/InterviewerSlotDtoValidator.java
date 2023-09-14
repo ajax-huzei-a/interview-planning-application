@@ -1,6 +1,5 @@
 package intellistart.interviewplanning.model.interviewerslot;
 
-import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoRequest;
 import intellistart.interviewplanning.exceptions.SecurityException;
 import intellistart.interviewplanning.exceptions.SecurityException.SecurityExceptionProfile;
 import intellistart.interviewplanning.exceptions.SlotException;
@@ -39,8 +38,9 @@ public class InterviewerSlotDtoValidator {
    */
   @Autowired
   public InterviewerSlotDtoValidator(PeriodService periodService,
-      UserService userService, InterviewerSlotService interviewerSlotService,
-      WeekService weekService) {
+                                     UserService userService,
+                                     InterviewerSlotService interviewerSlotService,
+                                     WeekService weekService) {
     this.periodService = periodService;
     this.userService = userService;
     this.interviewerSlotService = interviewerSlotService;
@@ -51,11 +51,9 @@ public class InterviewerSlotDtoValidator {
    * Validate interviewerSlotDTO for User, DayOfWeek, Period. If interviewerSlotDTO is correct:
    * save InterviewerSlot in database. If not - throws one of the exceptions.
    *
-   * @param interviewerSlotDtoRequest from Controller's request
+   * @param interviewerSlot from Controller's request
    * @param authentication - authentication
    * @param userId - userId
-   *
-   * @return interviewerSlot
    *
    * @throws UserException when user not found
    * @throws SlotException when:
@@ -65,37 +63,27 @@ public class InterviewerSlotDtoValidator {
    *     <li>invalid boundaries of time period
    *     </ul>
    */
-  public InterviewerSlot validateAndCreate(InterviewerSlotDtoRequest interviewerSlotDtoRequest,
-                                           Authentication authentication, Long userId)
-      throws UserException, SlotException {
+  public void validateCreating(
+          InterviewerSlot interviewerSlot,
+          Authentication authentication, Long userId
+  ) throws UserException, SlotException {
 
-    validateIfCorrectDay(interviewerSlotDtoRequest.getDayOfWeek());
+    validateIfCorrectDay(interviewerSlot.getDayOfWeek().toString());
 
-    Period period = periodService.obtainPeriod(interviewerSlotDtoRequest.getFrom(),
-            interviewerSlotDtoRequest.getTo());
-    Week week = weekService.getWeekByWeekNum(interviewerSlotDtoRequest.getWeek());
-    validateIfCanEditThisWeek(week);
+    validateIfCanEditThisWeek(interviewerSlot.getWeek());
 
-    DayOfWeek dayOfWeek = DayOfWeek.valueOf(interviewerSlotDtoRequest.getDayOfWeek());
-
-    User user = validateAndGetUser(userId, authentication);
-
-    InterviewerSlot interviewerSlot = new InterviewerSlot(null, week,
-        dayOfWeek, period, null, user);
+    validateAndGetUser(userId, authentication);
 
     validateIfPeriodIsOverlapping(interviewerSlot);
 
     interviewerSlot.getWeek().addInterviewerSlot(interviewerSlot);
-    interviewerSlot = interviewerSlotService.create(interviewerSlot);
-
-    return interviewerSlot;
   }
 
   /**
    * Get slotId from request, check if it exists and if it belongs to current user.
    * Go to interviewerSlotValidateDtoAndCreate.
    *
-   * @param interviewerSlotDto - from request
+   * @param interviewerSlot - from request
    * @param authentication - from springSecurity
    * @param userId - from request
    * @param slotId - from request
@@ -111,11 +99,11 @@ public class InterviewerSlotDtoValidator {
    *
    * @throws UserException - when invalid interviewer id, role not Interviewer
    */
-  public InterviewerSlot validateAndUpdate(InterviewerSlotDtoRequest interviewerSlotDto,
-      Authentication authentication, Long userId, Long slotId)
-      throws UserException, SlotException {
-
-    InterviewerSlot interviewerSlot = interviewerSlotService.findById(slotId);
+  public void validateUpdating(
+          InterviewerSlot interviewerSlot,
+          Authentication authentication,
+          Long userId, Long slotId
+  ) throws UserException, SlotException {
 
     if (!(interviewerSlot.getUser().getId().equals(userId))) {
       throw new SecurityException(SecurityExceptionProfile.ACCESS_DENIED);
@@ -126,43 +114,39 @@ public class InterviewerSlotDtoValidator {
     }
 
     if (isCoordinator(authentication)) {
-      interviewerSlot = validationForCoordinator(interviewerSlotDto, userId, slotId);
+      validationForCoordinator(interviewerSlot, userId, slotId);
     } else {
-      interviewerSlot = validateAndCreate(interviewerSlotDto,
+      validateCreating(interviewerSlot,
           authentication, userId);
     }
-    return interviewerSlot;
   }
 
   /**
    * Special validation for Coordinator. Check if the date of slot is in the future, check
    * overlapping and existing bookings. If all is okay - update slot in database.
    *
-   * @param interviewerSlotDto - from request
+   * @param interviewerSlot - from request
    * @param userId             - from path (url)
    * @throws SlotException - when slot has at least one or more bookings
    */
-  public InterviewerSlot validationForCoordinator(InterviewerSlotDtoRequest interviewerSlotDto,
-      Long userId, Long slotId)
-      throws SlotException, UserException {
+  public void validationForCoordinator(
+          InterviewerSlot interviewerSlot,
+          Long userId, Long slotId
+  ) throws SlotException, UserException {
 
-    LocalDate dateFromDto = weekService.convertToLocalDate(interviewerSlotDto.getWeek(),
-        DayOfWeek.valueOf(interviewerSlotDto.getDayOfWeek()));
+    LocalDate dateFromDto = LocalDate.from(interviewerSlot.getPeriod().getFrom());
     if (LocalDate.now().isAfter(dateFromDto)) {
       throw new SlotException(SlotExceptionProfile.SLOT_IS_IN_THE_PAST);
     }
 
-    validateIfCorrectDay(interviewerSlotDto.getDayOfWeek());
-    Week week = weekService.getWeekByWeekNum(interviewerSlotDto.getWeek());
-    Period period = periodService.obtainPeriod(interviewerSlotDto.getFrom(),
-        interviewerSlotDto.getTo());
-    DayOfWeek dayOfWeek = DayOfWeek.valueOf(interviewerSlotDto.getDayOfWeek());
+    validateIfCorrectDay(interviewerSlot.getDayOfWeek().toString());
+    Week week = interviewerSlot.getWeek();
+    Period period = interviewerSlot.getPeriod();
+    DayOfWeek dayOfWeek = interviewerSlot.getDayOfWeek();
     InterviewerSlot interviewerSlotNew = new InterviewerSlot(slotId, week,
         dayOfWeek, period, null, userService.getUserById(userId));
 
     validateIfPeriodIsOverlapping(interviewerSlotNew);
-
-    return interviewerSlotService.create(interviewerSlotNew);
   }
 
   /**
@@ -185,17 +169,16 @@ public class InterviewerSlotDtoValidator {
    *
    * @param userId         - id from request
    * @param authentication - authentication
-   * @return User
    * @throws UserException - when user by id and by authentication is not the same
    */
-  public User validateAndGetUser(Long userId, Authentication authentication)
+  public void validateAndGetUser(Long userId, Authentication authentication)
       throws UserException, SecurityException {
     JwtUserDetails jwtUserDetails = (JwtUserDetails) authentication.getPrincipal();
     String email = jwtUserDetails.getEmail();
     User userById = userService.getUserById(userId);
     if (email.equals(userById.getEmail())) {
       validateIfInterviewerRoleInterviewer(userById);
-      return userById;
+      return;
     }
 
     throw new SecurityException(SecurityExceptionProfile.ACCESS_DENIED);

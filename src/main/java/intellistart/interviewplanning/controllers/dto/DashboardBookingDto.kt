@@ -5,7 +5,7 @@ import intellistart.interviewplanning.model.booking.Booking
 /**
  * Dto object for mapping [Booking] into a part of Dashboard.
  */
-data class DashboardBookingDto (
+data class DashboardBookingDto(
     var bookingId: Long,
     var subject: String,
     var description: String,
