@@ -2,8 +2,12 @@ package intellistart.interviewplanning.controllers.dto;
 
 import intellistart.interviewplanning.model.booking.Booking;
 import intellistart.interviewplanning.model.candidateslot.CandidateSlot;
+import intellistart.interviewplanning.model.interviewerslot.InterviewerSlot;
 import intellistart.interviewplanning.model.period.Period;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,8 +19,8 @@ public class DashboardCandidateSlotDtoTest {
   private static Arguments[] createTestArgs() {
     return new Arguments[]{
         Arguments.of(new CandidateSlot(
-              1L, null,
-              new Period(2L, LocalTime.of(10, 0), LocalTime.of(20, 0), null, null, null),
+              1L, LocalDate.now(),
+              new Period(2L, LocalTime.of(10, 0), LocalTime.of(20, 0), new HashSet<>(), new HashSet<>(), new HashSet<>()),
               Set.of(),
               "email@test.com", "candidate name"
             ),
@@ -25,14 +29,14 @@ public class DashboardCandidateSlotDtoTest {
         ),
 
         Arguments.of(new CandidateSlot(
-                1L, null,
-                new Period(2L, LocalTime.of(21, 30), LocalTime.of(23, 0), null, null, null),
+                1L, LocalDate.now(),
+                new Period(2L, LocalTime.of(21, 30), LocalTime.of(23, 0), new HashSet<>(), new HashSet<>(), new HashSet<>()),
                 Set.of(
-                    new Booking(1L, null, null, null, null, null),
-                    new Booking(2L, null, null, null, null, null),
-                    new Booking(3L, null, null, null, null, null),
-                    new Booking(4L, null, null, null, null, null),
-                    new Booking(5L, null, null, null, null, null)
+                    new Booking(1L, "null", "null", new InterviewerSlot(), new CandidateSlot(), new Period()),
+                    new Booking(2L, "null", "null", new InterviewerSlot(), new CandidateSlot(), new Period()),
+                    new Booking(3L, "null", "null", new InterviewerSlot(), new CandidateSlot(), new Period()),
+                    new Booking(4L, "null", "null", new InterviewerSlot(), new CandidateSlot(), new Period()),
+                    new Booking(5L, "null", "null", new InterviewerSlot(), new CandidateSlot(), new Period())
                 ),
                 "candEmail@slot.test", "name name name"
             ),

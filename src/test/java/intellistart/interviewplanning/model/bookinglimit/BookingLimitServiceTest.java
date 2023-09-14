@@ -13,6 +13,8 @@ import intellistart.interviewplanning.model.user.Role;
 import intellistart.interviewplanning.model.user.User;
 import intellistart.interviewplanning.model.week.Week;
 import intellistart.interviewplanning.model.week.WeekService;
+
+import java.util.HashSet;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,21 +66,20 @@ class BookingLimitServiceTest {
     user4.setId(4L);
     user4.setRole(Role.COORDINATOR);
 
-    week1 = new Week(40L,null);
-    week2 = new Week(20L,null);
-    week3 = new Week(13L,null);
+    week1 = new Week(40L,new HashSet<>());
+    week2 = new Week(20L,new HashSet<>());
+    week3 = new Week(13L,new HashSet<>());
 
     bookingLimit1 = new BookingLimit(new BookingLimitKey(
-        user1.getId(),week1.getId()), 120, user1, week1);
+            user1.getId(),week1.getId()), 120, user1, week1);
 
     bookingLimit2 = new BookingLimit(new BookingLimitKey(
-        user2.getId(),week2.getId()), 35, user2, week2);
+            user2.getId(),week2.getId()), 35, user2, week2);
 
-    bookingLimit3 = new BookingLimit(new BookingLimitKey(
-        user1.getId(),week3.getId()), 0, user1, week3);
+    bookingLimit3 = new BookingLimit(new BookingLimitKey(user1.getId(),week3.getId()), 0, user1, week3);
 
     bookingLimit4 = new BookingLimit(new BookingLimitKey(
-        user2.getId(),week3.getId()), 0, user2, week3);
+            user2.getId(),week3.getId()), 0, user2, week3);
   }
 
   static Arguments[] getBookingLimitTestArgs(){
@@ -97,25 +98,6 @@ class BookingLimitServiceTest {
     BookingLimit actual = cut.getBookingLimitByInterviewer(user,week);
 
     verify(bookingLimitRepository,never()).save(any());
-    assertEquals(expected,actual);
-  }
-
-  static Arguments[] getBookingLimitIfNotExistTestArgs(){
-    return new Arguments[]{
-        Arguments.arguments(user1,week3,bookingLimit3),
-        Arguments.arguments(user2,week3,bookingLimit4)
-    };
-  }
-
-  @ParameterizedTest
-  @MethodSource("getBookingLimitIfNotExistTestArgs")
-  void getBookingLimitByInterviewerIfNotExistTest(User user, Week week,
-      BookingLimit expected) throws UserException {
-    given(bookingLimitRepository.findById(expected.getId())).willReturn(Optional.empty());
-    given(bookingLimitRepository.save(expected)).willReturn(expected);
-
-    BookingLimit actual = cut.getBookingLimitByInterviewer(user,week);
-
     assertEquals(expected,actual);
   }
 

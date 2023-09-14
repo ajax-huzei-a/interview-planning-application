@@ -5,6 +5,7 @@ import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProf
 import intellistart.interviewplanning.model.period.services.TimeService;
 import intellistart.interviewplanning.model.period.services.validation.PeriodValidator;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class PeriodService {
     Optional<Period> periodOptional = periodRepository.findPeriodByFromAndTo(from, to);
 
     return periodOptional.orElseGet(() -> periodRepository.save(
-        new Period(null, from, to, null, null, null)));
+        new Period(0L, from, to, new HashSet<>(), new HashSet<>(), new HashSet<>())));
   }
 
   /**
@@ -89,15 +90,15 @@ public class PeriodService {
    * @return true if first period is inside the second period.
    */
   public boolean isFirstInsideSecond(Period first, Period second) {
-    return first.getFrom().compareTo(second.getFrom()) >= 0
-        && first.getTo().compareTo(second.getTo()) <= 0;
+    return !first.getFrom().isBefore(second.getFrom())
+        && !first.getTo().isAfter(second.getTo());
   }
 
   /**
    * Tell if given time isn't smaller than "from" and smaller than "to".
    */
   private boolean isTimeInPeriod(LocalTime time, Period period) {
-    return time.compareTo(period.getFrom()) >= 0
-        && time.compareTo(period.getTo()) < 0;
+    return !time.isBefore(period.getFrom())
+        && time.isBefore(period.getTo());
   }
 }

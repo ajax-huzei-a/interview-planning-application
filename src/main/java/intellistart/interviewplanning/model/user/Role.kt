@@ -1,8 +1,9 @@
-package intellistart.interviewplanning.model.user;
+package intellistart.interviewplanning.model.user
 
 /**
  * Role enumeration.
  */
-public enum Role {
-  INTERVIEWER, COORDINATOR
+enum class Role {
+    INTERVIEWER,
+    COORDINATOR
 }

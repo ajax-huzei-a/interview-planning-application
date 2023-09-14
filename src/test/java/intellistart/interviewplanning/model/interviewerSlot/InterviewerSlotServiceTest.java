@@ -42,21 +42,21 @@ public class InterviewerSlotServiceTest {
   static Week w3 = new Week(103L, new HashSet<>());
 
   static Period p1 =
-      new Period(null, LocalTime.of(10, 0), LocalTime.of(20, 0),
+      new Period(0L, LocalTime.of(10, 0), LocalTime.of(20, 0),
       new HashSet<>(), new HashSet<>(), new HashSet<>());
   static Period p2 =
-      new Period(null, LocalTime.of(12, 0), LocalTime.of(18, 0),
+      new Period(0L, LocalTime.of(12, 0), LocalTime.of(18, 0),
       new HashSet<>(), new HashSet<>(), new HashSet<>());
-  static Period p3 = new Period(null, LocalTime.of(11, 0),
+  static Period p3 = new Period(0L, LocalTime.of(11, 0),
       LocalTime.of(17, 30),
       new HashSet<>(), new HashSet<>(), new HashSet<>());
 
   static InterviewerSlot is1 =
-      new InterviewerSlot(null, w1, DayOfWeek.TUE, p1, null, u1);
+      new InterviewerSlot(0L, w1, DayOfWeek.TUE, p1, new HashSet<>(), u1);
   static InterviewerSlot is2 =
-      new InterviewerSlot(null, w2, DayOfWeek.TUE, p2, null, u1);
+      new InterviewerSlot(0L, w2, DayOfWeek.TUE, p2, new HashSet<>(), u1);
   static InterviewerSlot is3 =
-      new InterviewerSlot(null, w3, DayOfWeek.TUE, p3, Set.of(new Booking()), u2);
+      new InterviewerSlot(0L, w3, DayOfWeek.TUE, p3, Set.of(new Booking()), u2);
 
   InterviewerSlotService cut = new InterviewerSlotService(
       interviewerSlotRepository, bookingService
@@ -72,7 +72,7 @@ public class InterviewerSlotServiceTest {
 
   @Test
   void createInterviewerSlotsTest() {
-    InterviewerSlot expected = new InterviewerSlot(null, w1, DayOfWeek.TUE, p1, null, u1);
+    InterviewerSlot expected = new InterviewerSlot(0L, w1, DayOfWeek.TUE, p1, new HashSet<>(), u1);
     cut.create(expected);
     ArgumentCaptor<InterviewerSlot> slotArgumentCaptor = ArgumentCaptor.forClass(
         InterviewerSlot.class);

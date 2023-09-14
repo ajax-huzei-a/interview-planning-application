@@ -1,95 +1,41 @@
-package intellistart.interviewplanning.model.user;
+package intellistart.interviewplanning.model.user
 
-
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import javax.persistence.Entity
+import javax.persistence.Table
+import javax.persistence.Id
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Column
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 
 /**
  * User entity.
  */
 @Entity
 @Table(name = "users")
-@JsonPropertyOrder({"email", "role", "id"})
-public class User {
+@JsonPropertyOrder("email", "role", "id")
+data class User(
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "user_id")
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    var id: Long = 0,
 
-  @Column(unique = true)
-  private String email;
+    @Column(unique = true)
+    var email: String = "",
 
-  @Enumerated(EnumType.STRING)
-  private Role role;
-
-  /**
-   * Constructor.
-   *
-   * @param id - id
-   * @param email - email
-   * @param role - role
-   */
-  public User(Long id, String email, Role role) {
-    this.id = id;
-    this.email = email;
-    this.role = role;
-  }
-
-  public User() {
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    @Enumerated(EnumType.STRING)
+    var role: Role = Role.INTERVIEWER
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is User) return false
+        return id == other.id
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+
+    override fun hashCode(): Int {
+        return id.hashCode()
     }
-    User user = (User) o;
-    return Objects.equals(id, user.id);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id);
-  }
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public String getEmail() {
-    return this.email;
-  }
-
-  public Role getRole() {
-    return this.role;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public void setRole(Role role) {
-    this.role = role;
-  }
-
-  public String toString() {
-    return "User(id=" + this.getId() + ", email=" + this.getEmail() + ", role="
-            + this.getRole() + ")";
-  }
 }

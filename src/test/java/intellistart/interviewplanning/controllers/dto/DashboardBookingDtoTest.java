@@ -2,9 +2,16 @@ package intellistart.interviewplanning.controllers.dto;
 
 import intellistart.interviewplanning.model.booking.Booking;
 import intellistart.interviewplanning.model.candidateslot.CandidateSlot;
+import intellistart.interviewplanning.model.dayofweek.DayOfWeek;
 import intellistart.interviewplanning.model.interviewerslot.InterviewerSlot;
 import intellistart.interviewplanning.model.period.Period;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
+
+import intellistart.interviewplanning.model.user.User;
+import intellistart.interviewplanning.model.week.Week;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,9 +22,9 @@ public class DashboardBookingDtoTest {
   static Arguments[] createTestArgs() {
     return new Arguments[]{
         Arguments.arguments(new Booking(11L, "Test", "Test test",
-            new InterviewerSlot(12L, null, null, null, null, null),
-            new CandidateSlot(13L, null, null, null, null, null),
-            new Period(1L, LocalTime.of(10, 0), LocalTime.of(20, 30), null, null, null)
+            new InterviewerSlot(12L, new Week(), DayOfWeek.MON, new Period(), new HashSet<>(), new User()),
+            new CandidateSlot(13L, LocalDate.now(), new Period(), new HashSet<>(), "null", "null"),
+            new Period(1L, LocalTime.of(10, 0), LocalTime.of(20, 30), new HashSet<>(), new HashSet<>(), new HashSet<>())
             ),
 
             new DashboardBookingDto(11L, "Test", "Test test", 12L, 13L,
@@ -25,9 +32,9 @@ public class DashboardBookingDtoTest {
         ),
 
         Arguments.arguments(new Booking(12345L, "test sub", "test desc",
-                new InterviewerSlot(78L, null, null, null, null, null),
-                new CandidateSlot(90L, null, null, null, null, null),
-                new Period(1L, LocalTime.of(16, 30), LocalTime.of(22, 30), null, null, null)
+                new InterviewerSlot(78L, new Week(), DayOfWeek.MON, new Period(), new HashSet<>(), new User()),
+                new CandidateSlot(90L, LocalDate.now(), new Period(), new HashSet<>(), "null", "null"),
+                new Period(1L, LocalTime.of(16, 30), LocalTime.of(22, 30), new HashSet<>(), new HashSet<>(), new HashSet<>())
             ),
 
             new DashboardBookingDto(12345L, "test sub", "test desc", 78L, 90L,

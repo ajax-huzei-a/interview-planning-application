@@ -120,8 +120,9 @@ public class BookingValidator {
           .count();
 
       long bookingLimit = bookingLimitService
-          .getBookingLimitByInterviewer(newInterviewer, newInterviewerSlot.getWeek())
-          .getBookingLimit();
+          .getBookingLimitByInterviewer(
+                  newInterviewer,
+                  newInterviewerSlot.getWeek()).getBookingLimit();
 
       if (bookingsNumber >= bookingLimit) {
         throw new BookingLimitException(BookingLimitExceptionProfile.BOOKING_LIMIT_IS_EXCEEDED);
@@ -146,6 +147,6 @@ public class BookingValidator {
    */
   public void validateCreating(Booking newBooking)
       throws SlotException, BookingException, BookingLimitException, UserException {
-    validateUpdating(new BookingNullable(), newBooking);
+    validateUpdating(new Booking(), newBooking);
   }
 }
