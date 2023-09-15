@@ -3,6 +3,8 @@ package intellistart.interviewplanning.model.period.services;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalTime;
+
+import intellistart.interviewplanning.model.period.TimeService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

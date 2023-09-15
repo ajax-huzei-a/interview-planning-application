@@ -1,4 +1,4 @@
-package intellistart.interviewplanning.model.period.services.validation.chain;
+package intellistart.interviewplanning.model.period.validation.chain;
 
 import java.time.LocalTime;
 

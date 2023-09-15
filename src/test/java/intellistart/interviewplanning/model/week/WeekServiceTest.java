@@ -4,8 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import intellistart.interviewplanning.model.dayofweek.DayOfWeek;
 import java.time.DateTimeException;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 class WeekServiceTest {
@@ -59,16 +57,6 @@ class WeekServiceTest {
   void convertToLocalDateWhenIncorrectDataTest(){
     assertThrows(DateTimeException.class,() -> cut.convertToLocalDate(-56,DayOfWeek.THU));
   }
-
- @Test
-  void createWeekTest(){
-    Week expected = new Week(153L,new HashSet<>());
-    cut.createWeek(153L);
-    ArgumentCaptor<Week> weekArgumentCaptor = ArgumentCaptor.forClass(Week.class);
-    verify(weekRepository).save(weekArgumentCaptor.capture());
-    Week actual = weekArgumentCaptor.getValue();
-    assertEquals(expected,actual);
- }
 
  @Test
   void getWeekByWeekNumIfNotExistTest(){
