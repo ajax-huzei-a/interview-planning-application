@@ -24,15 +24,13 @@ class PeriodService(
      * wrong business logic
      */
     fun obtainPeriod(fromString: String, toString: String): Period {
-        var from: LocalTime = LocalTime.MIN
-        var to: LocalTime = LocalTime.MIN
-        runCatching {
-            from = timeService.convert(fromString)
-            to = timeService.convert(toString)
+        return runCatching {
+            val from = timeService.convert(fromString)
+            val to = timeService.convert(toString)
+            obtainPeriod(from, to)
         }.getOrElse {
             throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
         }
-        return obtainPeriod(from, to)
     }
 
     /**
