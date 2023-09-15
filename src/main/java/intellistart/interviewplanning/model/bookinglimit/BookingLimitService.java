@@ -59,7 +59,7 @@ public class BookingLimitService {
       throw new UserException(UserException.UserExceptionProfile.NOT_INTERVIEWER);
     }
 
-    Long weekNum = week.getId();
+    long weekNum = week.getId();
 
     while (weekNum > 0) {
       Optional<BookingLimit> bookingLimit = bookingLimitRepository

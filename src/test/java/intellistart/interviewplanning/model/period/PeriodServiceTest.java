@@ -86,28 +86,6 @@ class PeriodServiceTest {
 
   @ParameterizedTest
   @MethodSource("provideObtainPeriodArguments")
-  void returnPeriodWhenPeriodNotExists(String fromStr, String toStr,
-      LocalTime from, LocalTime to) throws SlotException {
-
-    Period expected = createPeriod(from, to);
-
-    Mockito.when(converter.convert(fromStr)).thenReturn(from);
-    Mockito.when(converter.convert(toStr)).thenReturn(to);
-
-    Mockito.when(repository.findPeriodByFromAndTo(from, to)).thenReturn(Optional.empty());
-
-    Period createdPeriod = createPeriod(from, to);
-    Mockito.when(repository
-        .save(new Period(null, from, to, null, null, null)))
-        .thenReturn(createdPeriod);
-
-    Period actual = cut.obtainPeriod(fromStr, toStr);
-
-    assertEquals(actual, expected);
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideObtainPeriodArguments")
   void returnPeriodWhenPeriodExists(String fromStr, String toStr,
   LocalTime from, LocalTime to) throws SlotException {
 

@@ -14,6 +14,7 @@ import intellistart.interviewplanning.model.interviewerslot.InterviewerSlot;
 import intellistart.interviewplanning.model.interviewerslot.InterviewerSlotService;
 import intellistart.interviewplanning.model.period.Period;
 import intellistart.interviewplanning.model.period.PeriodService;
+import intellistart.interviewplanning.model.user.User;
 import intellistart.interviewplanning.model.user.UserService;
 import intellistart.interviewplanning.model.week.Week;
 import intellistart.interviewplanning.model.week.WeekService;
@@ -22,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
@@ -73,12 +75,12 @@ class CoordinatorControllerTest {
     bookingPeriod.setTo(LocalTime.of(21, 0));
 
     interviewerSlot = new InterviewerSlot(
-        1L, new Week(1L, null), DayOfWeek.TUE, slotPeriod,
-        new LinkedHashSet<>(), null);
+        1L, new Week(1L, new HashSet<>()), DayOfWeek.TUE, slotPeriod,
+        new LinkedHashSet<>(), new User());
 
     candidateSlot = new CandidateSlot(
         1L, LocalDate.of(2022, 1, 1), slotPeriod,
-        new LinkedHashSet<>(), null, null);
+        new LinkedHashSet<>(), "null", "null");
   }
 
   static Stream<Arguments> provideCorrectParameters(){
@@ -86,7 +88,7 @@ class CoordinatorControllerTest {
         Arguments.arguments(
             new BookingDto( 1L, 1L, "19:30",
                 "21:00", "subj", "desc"),
-            new Booking(null, "subj", "desc",
+            new Booking(0L, "subj", "desc",
                 interviewerSlot, candidateSlot, bookingPeriod)));
   }
   @ParameterizedTest

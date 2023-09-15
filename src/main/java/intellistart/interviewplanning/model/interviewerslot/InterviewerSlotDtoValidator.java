@@ -15,6 +15,7 @@ import intellistart.interviewplanning.model.week.Week;
 import intellistart.interviewplanning.model.week.WeekService;
 import intellistart.interviewplanning.security.JwtUserDetails;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,7 @@ public class InterviewerSlotDtoValidator {
 
     validateIfPeriodIsOverlapping(interviewerSlot);
 
-    interviewerSlot.getWeek().addInterviewerSlot(interviewerSlot);
+    interviewerSlot.getWeek().getInterviewerSlots().add(interviewerSlot);
   }
 
   /**
@@ -105,11 +106,11 @@ public class InterviewerSlotDtoValidator {
           Long userId, Long slotId
   ) throws UserException, SlotException {
 
-    if (!(interviewerSlot.getUser().getId().equals(userId))) {
+    if (!(interviewerSlot.getUser().getId() == userId)) {
       throw new SecurityException(SecurityExceptionProfile.ACCESS_DENIED);
     }
 
-    if (interviewerSlot.getBookings() != null && !interviewerSlot.getBookings().isEmpty()) {
+    if (!interviewerSlot.getBookings().isEmpty()) {
       throw new SlotException(SlotExceptionProfile.SLOT_IS_BOOKED);
     }
 
@@ -144,7 +145,7 @@ public class InterviewerSlotDtoValidator {
     Period period = interviewerSlot.getPeriod();
     DayOfWeek dayOfWeek = interviewerSlot.getDayOfWeek();
     InterviewerSlot interviewerSlotNew = new InterviewerSlot(slotId, week,
-        dayOfWeek, period, null, userService.getUserById(userId));
+        dayOfWeek, period, new HashSet<>(), userService.getUserById(userId));
 
     validateIfPeriodIsOverlapping(interviewerSlotNew);
   }
@@ -247,14 +248,14 @@ public class InterviewerSlotDtoValidator {
 
     List<InterviewerSlot> interviewerSlotsList = interviewerSlotService
         .getInterviewerSlotsByUserAndWeekAndDayOfWeek(interviewerSlot.getUser(),
-            interviewerSlot.getWeek(), interviewerSlot.getDayOfWeek());
+                interviewerSlot.getWeek(), interviewerSlot.getDayOfWeek());
 
     if (!interviewerSlotsList.isEmpty()) {
 
-      if (interviewerSlot.getId() != null) {
+      if (interviewerSlot.getId() != 0) {
         interviewerSlotsList = interviewerSlotsList
             .stream()
-            .filter(slot -> !slot.getId().equals(interviewerSlot.getId()))
+            .filter(slot -> slot.getId() == interviewerSlot.getId())
             .collect(Collectors.toList());
       }
 

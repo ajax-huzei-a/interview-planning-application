@@ -30,10 +30,10 @@ public class StartDataLoader implements ApplicationRunner {
   }
 
   @Override
-  public void run(ApplicationArguments args) throws Exception {
+  public void run(ApplicationArguments args) {
 
 
-    User firstCoordinator = new User(null, email, Role.COORDINATOR);
+    User firstCoordinator = new User(1L, email, Role.COORDINATOR);
     firstCoordinator = userRepository.save(firstCoordinator);
 
     //    User interviewer = new User(null, "guzey2001@gmail.com", Role.INTERVIEWER);

@@ -81,7 +81,7 @@ public class CandidateSlotValidatorTest {
     candidateSlot5.setPeriod(period2);
     candidateSlot5.setEmail("test@unit.com");
     candidateSlot5.setName("AAA");
-    candidateSlot5.addBooking(new Booking());
+    candidateSlot5.getBookings().add(new Booking());
 
     candidateSlot6 = new CandidateSlot();
     candidateSlot6.setId(6L);
@@ -89,7 +89,7 @@ public class CandidateSlotValidatorTest {
     candidateSlot6.setPeriod(period1);
     candidateSlot6.setEmail("test@mail.com");
     candidateSlot6.setName("AAA");
-    candidateSlot6.addBooking(new Booking());
+    candidateSlot6.getBookings().add(new Booking());
 
     candidateSlot7 = new CandidateSlot();
     candidateSlot7.setId(7L);
@@ -111,7 +111,7 @@ public class CandidateSlotValidatorTest {
     candidateSlot9.setPeriod(period2);
     candidateSlot9.setEmail("test@mail.com");
     candidateSlot9.setName("AAA");
-    candidateSlot9.addBooking(new Booking());
+    candidateSlot9.getBookings().add(new Booking());
 
     candidateSlot10 = new CandidateSlot();
     candidateSlot10.setId(10L);
@@ -119,7 +119,7 @@ public class CandidateSlotValidatorTest {
     candidateSlot10.setPeriod(period2);
     candidateSlot10.setEmail("test@mail.com");
     candidateSlot10.setName("AAA");
-    candidateSlot10.addBooking(new Booking());
+    candidateSlot10.getBookings().add(new Booking());
   }
 
   static Arguments[] validateCreateCandidateSlotArgs(){
