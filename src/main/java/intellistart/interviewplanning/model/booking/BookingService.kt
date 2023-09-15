@@ -18,7 +18,6 @@ class BookingService(private val bookingRepository: BookingRepository) {
     fun getById(id: Long): Booking = bookingRepository.findById(id)
         .orElseThrow { BookingException(BookingExceptionProfile.BOOKING_NOT_FOUND) }
 
-
     /**
      * Alias for method in [BookingRepository].
      */

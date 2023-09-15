@@ -10,19 +10,15 @@ import intellistart.interviewplanning.security.JwtUserDetailsService
 import intellistart.interviewplanning.utils.FacebookUtil
 import intellistart.interviewplanning.utils.FacebookUtil.FacebookScopes
 import intellistart.interviewplanning.utils.JwtUtil
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestClientException
 import redis.clients.jedis.JedisPooled
 
 /**
  * Service for User entity.
- */
+*/
 @Service
 @Suppress("Many fields ain the constructor")
 class UserService(
@@ -146,12 +142,12 @@ class UserService(
             return fbCached
         }
 
-        val userScopes: Map<FacebookScopes, String> = try {
-            facebookUtil.getScope(jwtRequest.facebookToken)
-        } catch (e: RestClientException) {
-            logger.warn("Failed to obtain user scope", e)
-            throw SecurityException(SecurityException.SecurityExceptionProfile.BAD_FACEBOOK_TOKEN)
-        }
+        val userScopes: Map<FacebookScopes, String> =
+            runCatching {
+                facebookUtil.getScope(jwtRequest.facebookToken)
+            }.getOrElse {
+                throw SecurityException(SecurityException.SecurityExceptionProfile.BAD_FACEBOOK_TOKEN)
+            }
 
         val email = userScopes[FacebookScopes.EMAIL]
         val name = userScopes[FacebookScopes.NAME]
@@ -168,17 +164,12 @@ class UserService(
     }
 
     private fun authenticate(username: String?) {
-        try {
+        runCatching {
             authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(username, username)
             )
-        } catch (e: BadCredentialsException) {
-            logger.warn("Failed to authenticate user {}", username, e)
+        }.getOrElse {
             throw SecurityException(SecurityException.SecurityExceptionProfile.BAD_CREDENTIALS)
         }
-    }
-
-    companion object {
-        private val logger: Logger = LogManager.getLogger(UserService::class.java)
     }
 }

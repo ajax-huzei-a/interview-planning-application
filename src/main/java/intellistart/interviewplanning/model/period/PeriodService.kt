@@ -3,9 +3,6 @@ package intellistart.interviewplanning.model.period
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
 import intellistart.interviewplanning.model.period.validation.PeriodValidator
-import intellistart.interviewplanning.model.user.UserService
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import org.springframework.stereotype.Service
 import java.time.LocalTime
 
@@ -27,13 +24,12 @@ class PeriodService(
      * wrong business logic
      */
     fun obtainPeriod(fromString: String, toString: String): Period {
-        val from: LocalTime
-        val to: LocalTime
-        try {
+        var from: LocalTime = LocalTime.MIN
+        var to: LocalTime = LocalTime.MIN
+        runCatching {
             from = timeService.convert(fromString)
             to = timeService.convert(toString)
-        } catch (iae: IllegalArgumentException) {
-            logger.warn("Failed to convert {} and {} to LocalDate", fromString, toString, iae)
+        }.getOrElse {
             throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
         }
         return obtainPeriod(from, to)
@@ -84,8 +80,4 @@ class PeriodService(
      */
     private fun isTimeInPeriod(time: LocalTime, period: Period): Boolean =
         !time.isBefore(period.from) && time.isBefore(period.to)
-
-    companion object {
-        private val logger: Logger = LogManager.getLogger(UserService::class.java)
-    }
 }

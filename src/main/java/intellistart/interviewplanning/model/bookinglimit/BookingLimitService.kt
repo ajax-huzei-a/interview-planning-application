@@ -32,8 +32,8 @@ class BookingLimitService(
             throw UserException(UserException.UserExceptionProfile.NOT_INTERVIEWER)
         }
 
-        val bookingLimit = bookingLimitRepository.findById(BookingLimitKey(user.id, week.id))
-        return bookingLimit.getOrDefault(createInfiniteBookingLimit(user, week))
+        return bookingLimitRepository.findById(BookingLimitKey(user.id, week.id))
+            .getOrDefault(createInfiniteBookingLimit(user, week))
     }
 
     private fun createInfiniteBookingLimit(user: User, week: Week): BookingLimit =
