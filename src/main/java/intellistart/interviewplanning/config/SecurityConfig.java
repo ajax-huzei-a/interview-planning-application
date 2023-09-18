@@ -72,7 +72,7 @@ public class SecurityConfig {
         .authorizeRequests().antMatchers("/authenticate", "/oauth2/facebook/v15.0",
             "/weeks/current", "/weeks/next").permitAll()
         .antMatchers("/candidates/**").hasRole("CANDIDATE")
-        .antMatchers("/interviewers/**").hasAnyRole("INTERVIEWER", "COORDINATOR")
+        .antMatchers("/interviewers/**").hasRole("INTERVIEWER")
         .antMatchers("/bookings", "/bookings/**", "/users", "/users/**",
             "/weeks/{weekNum}/dashboard").hasRole("COORDINATOR")
         .anyRequest().authenticated().and()
