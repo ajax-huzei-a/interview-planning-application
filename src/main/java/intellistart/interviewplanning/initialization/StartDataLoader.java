@@ -36,11 +36,11 @@ public class StartDataLoader implements ApplicationRunner {
     User firstCoordinator = new User(1L, email, Role.COORDINATOR);
     firstCoordinator = userRepository.save(firstCoordinator);
 
-    //    User interviewer = new User(null, "guzey2001@gmail.com", Role.INTERVIEWER);
-    //    interviewer = userRepository.save(interviewer);
+    //User interviewer = new User(2L, "guzey2001@gmail.com", Role.INTERVIEWER);
+    //interviewer = userRepository.save(interviewer);
 
     System.out.println("Added first user: " + firstCoordinator);
 
-    //    System.out.println("Added interviewer user: " + interviewer);
+    //System.out.println("Added interviewer user: " + interviewer);
   }
 }

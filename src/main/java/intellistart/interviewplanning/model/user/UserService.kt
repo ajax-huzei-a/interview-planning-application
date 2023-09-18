@@ -39,14 +39,6 @@ class UserService(
     private var jwtValidity: Long = 0L
 
     /**
-     * Method for gaining Optional User by id.
-     *
-     * @return Optional User by id.
-     */
-    fun getUserById(id: Long): User = userRepository.findById(id)
-        .orElseThrow { UserException(UserExceptionProfile.INVALID_INTERVIEWER) }
-
-    /**
      * Returned the current user by given email.
      *
      * @param email - email on which the database will be searched.
