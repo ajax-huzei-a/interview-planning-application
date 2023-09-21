@@ -4,7 +4,6 @@ import intellistart.interviewplanning.bean.post.processor.candidate.slot.validat
 import intellistart.interviewplanning.bean.post.processor.candidate.slot.validation.ValidationMethod
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
-import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import org.springframework.stereotype.Service
 
@@ -12,10 +11,7 @@ import org.springframework.stereotype.Service
  * Service for CandidateSlot entity.
  */
 @Service
-class CandidateSlotService{
-
-    @Autowired
-    private lateinit var candidateSlotRepository: CandidateSlotRepository
+class CandidateSlotService(private val candidateSlotRepository: CandidateSlotRepository) {
 
     /**
      * Create a CandidateSlot object in the database.
