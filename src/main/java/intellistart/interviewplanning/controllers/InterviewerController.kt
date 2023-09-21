@@ -63,7 +63,7 @@ class InterviewerController(
         @RequestBody interviewerSlotDto: InterviewerSlotDtoRequest,
         authentication: Authentication
     ): ResponseEntity<InterviewerSlotDtoResponse> {
-        val interviewerSlot = getInterviewerSlotsFromDto(interviewerSlotDto, authentication)
+        val interviewerSlot = getInterviewerSlotFromDto(interviewerSlotDto, authentication)
         interviewerSlotValidator
             .validateCreating(interviewerSlot)
         val createdInterviewerSlot = interviewerSlotService.create(interviewerSlot)
@@ -93,7 +93,7 @@ class InterviewerController(
         @PathVariable("slotId") slotId: Long,
         authentication: Authentication
     ): ResponseEntity<InterviewerSlotDtoResponse> {
-        val interviewerSlot = getInterviewerSlotsFromDto(interviewerSlotDtoRequest, authentication)
+        val interviewerSlot = getInterviewerSlotFromDto(interviewerSlotDtoRequest, authentication)
         interviewerSlotValidator
             .validateUpdating(
                 interviewerSlot,
@@ -197,7 +197,7 @@ class InterviewerController(
         return ResponseEntity.ok(slots.toDtoList())
     }
 
-    private fun getInterviewerSlotsFromDto(
+    private fun getInterviewerSlotFromDto(
         interviewerSlotDto: InterviewerSlotDtoRequest,
         authentication: Authentication,
     ): InterviewerSlot {

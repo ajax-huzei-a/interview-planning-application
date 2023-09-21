@@ -3,12 +3,12 @@ package intellistart.interviewplanning.model.week
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import intellistart.interviewplanning.model.interviewerslot.InterviewerSlot
-import javax.persistence.Entity
-import javax.persistence.Table
-import javax.persistence.Id
 import javax.persistence.Column
-import javax.persistence.OneToMany
+import javax.persistence.Entity
 import javax.persistence.FetchType
+import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.Table
 
 /**
  * Entity for week.
@@ -23,7 +23,7 @@ data class Week(
 
     @OneToMany(mappedBy = "week", fetch = FetchType.EAGER)
     @JsonIgnore
-    var interviewerSlots: MutableSet<InterviewerSlot> = HashSet()
+    var interviewerSlots: MutableSet<InterviewerSlot> = HashSet(),
 ) {
     override fun hashCode(): Int {
         return id.hashCode()
@@ -39,5 +39,12 @@ data class Week(
         if (interviewerSlots != other.interviewerSlots) return false
 
         return true
+    }
+
+    override fun toString(): String {
+        return ("Week{"
+                + "id=" + id
+                + ", interviewerSlots=" + interviewerSlots
+                + '}')
     }
 }

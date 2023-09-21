@@ -7,7 +7,6 @@ import intellistart.interviewplanning.controllers.dto.toDtoList
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.model.candidateslot.CandidateSlot
 import intellistart.interviewplanning.model.candidateslot.CandidateSlotService
-import intellistart.interviewplanning.model.candidateslot.validation.CandidateSlotValidator
 import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.security.JwtUserDetails
 import org.springframework.http.ResponseEntity
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin
 class CandidateController(
     private val candidateSlotService: CandidateSlotService,
-    private val candidateSlotValidator: CandidateSlotValidator,
     private val periodService: PeriodService
 ) {
     /**
@@ -46,7 +44,6 @@ class CandidateController(
         authentication: Authentication
     ): ResponseEntity<CandidateSlotDto> {
         val candidateSlot = getCandidateSlotFromDto(request, authentication)
-        candidateSlotValidator.validateCreating(candidateSlot)
         val createdCandidateSlot = candidateSlotService.create(candidateSlot)
         return ResponseEntity.ok(createdCandidateSlot.toDto())
     }
@@ -72,7 +69,6 @@ class CandidateController(
     ): ResponseEntity<CandidateSlotDto> {
         val candidateSlot = getCandidateSlotFromDto(request, authentication)
         candidateSlot.id = id
-        candidateSlotValidator.validateUpdating(candidateSlot)
         val updatedCandidateSlot = candidateSlotService.update(candidateSlot)
         return ResponseEntity.ok(updatedCandidateSlot.toDto())
     }

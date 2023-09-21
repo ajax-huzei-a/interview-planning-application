@@ -3,14 +3,14 @@ package intellistart.interviewplanning.model.booking
 import intellistart.interviewplanning.model.candidateslot.CandidateSlot
 import intellistart.interviewplanning.model.interviewerslot.InterviewerSlot
 import intellistart.interviewplanning.model.period.Period
+import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.Table
-import javax.persistence.Id
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
-import javax.persistence.Column
-import javax.persistence.ManyToOne
+import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
+import javax.persistence.Table
 
 /**
  * Booking entity.
@@ -58,5 +58,16 @@ class Booking(
         if (period != other.period) return false
 
         return true
+    }
+
+    override fun toString(): String {
+        return ("Booking{"
+                + "id=" + id
+                + ", period=" + period
+                + ", subject='" + subject + '\''
+                + ", description='" + description + '\''
+                + ", interviewerSlot=" + interviewerSlot.id
+                + ", candidateSlot=" + candidateSlot.id
+                + '}')
     }
 }

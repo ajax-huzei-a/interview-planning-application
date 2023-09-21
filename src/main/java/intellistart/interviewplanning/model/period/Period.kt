@@ -5,13 +5,13 @@ import intellistart.interviewplanning.model.booking.Booking
 import intellistart.interviewplanning.model.candidateslot.CandidateSlot
 import intellistart.interviewplanning.model.interviewerslot.InterviewerSlot
 import java.time.LocalTime
+import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.Table
-import javax.persistence.Id
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
-import javax.persistence.Column
+import javax.persistence.Id
 import javax.persistence.OneToMany
+import javax.persistence.Table
 
 /**
  * Entity for period of time.
@@ -40,7 +40,7 @@ data class Period(
 
     @OneToMany(mappedBy = "period")
     @JsonIgnore
-    var bookings: MutableSet<Booking> = HashSet()
+    var bookings: MutableSet<Booking> = HashSet(),
 ) {
     override fun hashCode(): Int {
         return id.hashCode()
@@ -60,5 +60,13 @@ data class Period(
         if (bookings != other.bookings) return false
 
         return true
+    }
+
+    override fun toString(): String {
+        return ("Period{"
+                + "id=" + id
+                + ", from=" + from
+                + ", to=" + to
+                + '}')
     }
 }

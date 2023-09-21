@@ -1,7 +1,10 @@
 package intellistart.interviewplanning.model.candidateslot
 
+import intellistart.interviewplanning.bean.post.processor.candidate.slot.validation.ValidatingCandidateSlot
+import intellistart.interviewplanning.bean.post.processor.candidate.slot.validation.ValidationMethod
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
+import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import org.springframework.stereotype.Service
 
@@ -9,7 +12,10 @@ import org.springframework.stereotype.Service
  * Service for CandidateSlot entity.
  */
 @Service
-class CandidateSlotService(private val candidateSlotRepository: CandidateSlotRepository) {
+class CandidateSlotService{
+
+    @Autowired
+    private lateinit var candidateSlotRepository: CandidateSlotRepository
 
     /**
      * Create a CandidateSlot object in the database.
@@ -18,6 +24,7 @@ class CandidateSlotService(private val candidateSlotRepository: CandidateSlotRep
      *
      * @return CandidateSlot - An object that was successfully saved in the database.
      */
+    @ValidatingCandidateSlot(ValidationMethod.CREATE)
     fun create(candidateSlot: CandidateSlot): CandidateSlot = candidateSlotRepository.save(candidateSlot)
 
     /**
@@ -27,7 +34,8 @@ class CandidateSlotService(private val candidateSlotRepository: CandidateSlotRep
      *
      * @return CandidateSlot - An object that was successfully updated in the database.
      */
-    fun update(candidateSlot: CandidateSlot): CandidateSlot = create(candidateSlot)
+    @ValidatingCandidateSlot(ValidationMethod.UPDATE)
+    fun update(candidateSlot: CandidateSlot): CandidateSlot = candidateSlotRepository.save(candidateSlot)
 
     /**
      * Return slots of the current Candidate by email.

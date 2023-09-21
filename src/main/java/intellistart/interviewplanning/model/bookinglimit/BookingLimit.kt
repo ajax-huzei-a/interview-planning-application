@@ -2,13 +2,13 @@ package intellistart.interviewplanning.model.bookinglimit
 
 import intellistart.interviewplanning.model.user.User
 import intellistart.interviewplanning.model.week.Week
-import javax.persistence.Entity
-import javax.persistence.Table
-import javax.persistence.EmbeddedId
-import javax.persistence.MapsId
 import javax.persistence.Column
-import javax.persistence.ManyToOne
+import javax.persistence.EmbeddedId
+import javax.persistence.Entity
 import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
+import javax.persistence.MapsId
+import javax.persistence.Table
 
 /**
  * Entity for storing limit of booking per week for users with Interviewer role.
@@ -31,7 +31,7 @@ data class BookingLimit(
     @ManyToOne
     @MapsId("weekId")
     @JoinColumn(name = "week_id")
-    var week: Week = Week()
+    var week: Week = Week(),
 ) {
     override fun hashCode(): Int {
         return id.hashCode()
@@ -49,5 +49,12 @@ data class BookingLimit(
         if (week != other.week) return false
 
         return true
+    }
+
+    override fun toString(): String {
+        return ("BookingLimit{"
+                + "id=" + id
+                + ", bookingLimit=" + bookingLimit
+                + '}')
     }
 }
