@@ -39,7 +39,6 @@ class BookingLimitService(
     private fun createInfiniteBookingLimit(user: User, week: Week): BookingLimit =
         BookingLimit(BookingLimitKey(user.id, week.id), INFINITE_BOOKING_LIMITS_NUMBER, user, week)
 
-
     /**
      * Create BookingLimit for the next week.
      *

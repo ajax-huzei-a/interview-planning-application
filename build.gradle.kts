@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm") version "1.9.0"
     id("org.springframework.boot") version "2.7.3"
     id("io.spring.dependency-management") version "1.1.3"
-    id ("org.jetbrains.kotlin.plugin.spring") version "1.9.0"
+    id("org.jetbrains.kotlin.plugin.spring") version "1.9.0"
     id("io.gitlab.arturbosch.detekt") version("1.23.1")
 }
 
@@ -29,7 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.projectlombok:lombok:1.18.20")
     annotationProcessor("org.projectlombok:lombok:1.18.20")
-    runtimeOnly("com.h2database:h2")
+    runtimeOnly("com.h2database:h2") // will be used for integration tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
@@ -55,10 +55,10 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.withType<JavaCompile>() {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.withType<Javadoc>() {
+tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }

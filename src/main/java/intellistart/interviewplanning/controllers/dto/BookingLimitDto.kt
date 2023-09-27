@@ -2,7 +2,6 @@ package intellistart.interviewplanning.controllers.dto
 
 import intellistart.interviewplanning.model.bookinglimit.BookingLimit
 
-
 /**
  * DTO for BookingLimit.
  */

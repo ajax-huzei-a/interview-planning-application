@@ -20,7 +20,7 @@ import redis.clients.jedis.JedisPooled
  * Service for User entity.
 */
 @Service
-@Suppress("Many fields ain the constructor")
+@Suppress("LongParameterList")
 class UserService(
     private val userRepository: UserRepository,
     private val interviewerSlotService: InterviewerSlotService,
@@ -56,10 +56,12 @@ class UserService(
             throw UserException(UserExceptionProfile.USER_ALREADY_HAS_ROLE)
         }
 
-        return userRepository.save(User().apply {
-            this.email = email
-            this.role = roleOfUser
-        })
+        return userRepository.save(
+            User().apply {
+                this.email = email
+                this.role = roleOfUser
+            }
+        )
     }
 
     /**

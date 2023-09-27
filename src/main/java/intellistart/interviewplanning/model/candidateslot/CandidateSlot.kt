@@ -3,22 +3,22 @@ package intellistart.interviewplanning.model.candidateslot
 import intellistart.interviewplanning.model.booking.Booking
 import intellistart.interviewplanning.model.period.Period
 import java.time.LocalDate
+import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.Table
-import javax.persistence.Id
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
-import javax.persistence.Column
-import javax.persistence.ManyToOne
+import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
+import javax.persistence.Table
 
 /**
  * CandidateSlot entity.
  */
 @Entity
 @Table(name = "candidate_slots")
-data class CandidateSlot (
+data class CandidateSlot(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

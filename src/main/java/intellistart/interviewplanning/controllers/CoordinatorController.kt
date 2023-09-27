@@ -1,10 +1,10 @@
 package intellistart.interviewplanning.controllers
 
-import intellistart.interviewplanning.controllers.dto.DashboardMapDto
 import intellistart.interviewplanning.controllers.dto.BookingDto
-import intellistart.interviewplanning.controllers.dto.toDto
+import intellistart.interviewplanning.controllers.dto.DashboardMapDto
 import intellistart.interviewplanning.controllers.dto.EmailDto
 import intellistart.interviewplanning.controllers.dto.UsersDto
+import intellistart.interviewplanning.controllers.dto.toDto
 import intellistart.interviewplanning.controllers.dto.toUsersDto
 import intellistart.interviewplanning.exceptions.BookingException
 import intellistart.interviewplanning.exceptions.BookingLimitException
@@ -24,20 +24,20 @@ import intellistart.interviewplanning.model.week.WeekService
 import intellistart.interviewplanning.security.JwtUserDetails
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RestController
 
 /**
  * Controller for processing requests from users with Coordinator role.
  */
 @RestController
 @CrossOrigin
-@Suppress("Many fields and functions in the class")
+@Suppress("LongParameterList", "TooManyFunctions")
 class CoordinatorController(
     private val bookingService: BookingService,
     private val bookingValidator: BookingValidator,
@@ -87,7 +87,6 @@ class CoordinatorController(
     @GetMapping("/users/coordinators")
     fun getAllCoordinators(): ResponseEntity<UsersDto> =
         ResponseEntity.ok(userService.obtainUsersByRole(Role.COORDINATOR).toUsersDto())
-
 
     /**
      * DELETE request for deleting an interviewer.
@@ -184,7 +183,6 @@ class CoordinatorController(
 
         return ResponseEntity.ok(savedBooking.toDto())
     }
-
 
     /**
      * DELETE request for deleting a booking by id.

@@ -1,20 +1,20 @@
 package intellistart.interviewplanning.controllers
 
-import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoRequest
-import intellistart.interviewplanning.controllers.dto.toDtoResponse
-import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoResponse
 import intellistart.interviewplanning.controllers.dto.BookingLimitDto
-import intellistart.interviewplanning.controllers.dto.toDto
+import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoRequest
+import intellistart.interviewplanning.controllers.dto.InterviewerSlotDtoResponse
 import intellistart.interviewplanning.controllers.dto.InterviewerSlotsDto
+import intellistart.interviewplanning.controllers.dto.toDto
 import intellistart.interviewplanning.controllers.dto.toDtoList
+import intellistart.interviewplanning.controllers.dto.toDtoResponse
 import intellistart.interviewplanning.exceptions.BookingLimitException
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.UserException
 import intellistart.interviewplanning.model.bookinglimit.BookingLimitService
 import intellistart.interviewplanning.model.dayofweek.DayOfWeek
 import intellistart.interviewplanning.model.interviewerslot.InterviewerSlot
-import intellistart.interviewplanning.model.interviewerslot.validation.InterviewerSlotValidator
 import intellistart.interviewplanning.model.interviewerslot.InterviewerSlotService
+import intellistart.interviewplanning.model.interviewerslot.validation.InterviewerSlotValidator
 import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.model.user.UserService
 import intellistart.interviewplanning.model.week.WeekService
@@ -22,12 +22,12 @@ import intellistart.interviewplanning.security.JwtUserDetails
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 
 /**
  * Controller for processing requests from users with Interview role.
