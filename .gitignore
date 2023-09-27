@@ -1,6 +1,6 @@
 HELP.md
 target/
-!.gradle/wrapper/gradle-wrapper.jar
+.gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
