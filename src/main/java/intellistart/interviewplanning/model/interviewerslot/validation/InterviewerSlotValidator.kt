@@ -21,7 +21,6 @@ class InterviewerSlotValidator(
 ) {
 
     fun validateCreating(interviewerSlot: InterviewerSlot) {
-
         validateIfCorrectDay(interviewerSlot.dayOfWeek.toString())
 
         validateIfCanEditThisWeek(interviewerSlot.week)
@@ -39,7 +38,6 @@ class InterviewerSlotValidator(
         interviewerSlot: InterviewerSlot,
         slotId: Long
     ) {
-
         interviewerSlot.id = slotId
 
         validateIfCorrectDay(interviewerSlot.dayOfWeek.toString())
@@ -80,7 +78,7 @@ class InterviewerSlotValidator(
             dayOfWeek == DayOfWeek.SUN.name ||
             dayOfWeek == DayOfWeek.SAT.name ||
             !DayOfWeek.entries.any { it.name == dayOfWeek }
-            ) {
+        ) {
             throw SlotException(SlotException.SlotExceptionProfile.INVALID_DAY_OF_WEEK)
         }
     }

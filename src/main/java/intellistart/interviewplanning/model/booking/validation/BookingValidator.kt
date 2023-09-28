@@ -1,10 +1,10 @@
 package intellistart.interviewplanning.model.booking.validation
 
-import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.BookingException
-import intellistart.interviewplanning.exceptions.BookingLimitException
 import intellistart.interviewplanning.exceptions.BookingException.BookingExceptionProfile
+import intellistart.interviewplanning.exceptions.BookingLimitException
 import intellistart.interviewplanning.exceptions.BookingLimitException.BookingLimitExceptionProfile
+import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
 import intellistart.interviewplanning.model.booking.Booking
 import intellistart.interviewplanning.model.bookinglimit.BookingLimitService
@@ -49,7 +49,6 @@ class BookingValidator(
      *                                CandidateSlot
      */
     fun validateUpdating(oldBooking: Booking, newBooking: Booking) {
-
         checkIfBookingPeriodIsNotGreaterThanNinetyMinutes(newBooking.period)
 
         checkIfSubjectAndDescriptionLengthIsWithinLimits(newBooking.subject, newBooking.description)
@@ -78,7 +77,8 @@ class BookingValidator(
 
     private fun checkIfTheBookingOverlapsWithSlotsOfInterviewerAndCandidate(booking: Booking) {
         val dateOfInterviewer: LocalDate = weekService.convertToLocalDate(
-            booking.interviewerSlot.week.id, booking.interviewerSlot.dayOfWeek
+            booking.interviewerSlot.week.id,
+            booking.interviewerSlot.dayOfWeek
         )
         val dateOfCandidate: LocalDate = booking.candidateSlot.date
 
@@ -91,7 +91,7 @@ class BookingValidator(
             !dateOfInterviewer.isEqual(dateOfCandidate) ||
             !periodService.isFirstInsideSecond(bookingPeriod, periodOfInterviewer) ||
             !periodService.isFirstInsideSecond(bookingPeriod, periodOfCandidate)
-            ) {
+        ) {
             throw BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING)
         }
     }
@@ -101,11 +101,15 @@ class BookingValidator(
         updatedBookingId: Long
     ) {
         validatePeriodNotOverlappingWithOtherBookingPeriods(
-            updatedBookingId, booking.period, booking.interviewerSlot.bookings
+            updatedBookingId,
+            booking.period,
+            booking.interviewerSlot.bookings
         )
 
         validatePeriodNotOverlappingWithOtherBookingPeriods(
-            updatedBookingId, booking.period, booking.candidateSlot.bookings
+            updatedBookingId,
+            booking.period,
+            booking.candidateSlot.bookings
         )
     }
 

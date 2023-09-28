@@ -1,15 +1,12 @@
 # syntax=docker/dockerfile:1
 
-FROM eclipse-temurin:11
-WORKDIR /app
+FROM amazoncorretto:11-alpine3.18
 
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
+ENV APP_DIR=/app
 
-COPY checkstyle.xml .
+RUN mkdir $APP_DIR
+WORKDIR $APP_DIR
 
-RUN ./mvnw dependency:go-offline
+COPY build/libs/interview-planning-*.jar $APP_DIR/interview-planning.jar
 
-COPY src ./src
-
-CMD ["./mvnw", "spring-boot:run"]
+CMD ["java", "-jar", "interview-planning.jar"]

@@ -22,7 +22,7 @@ class WeekService(private val weekRepository: WeekRepository) {
             (START_YEAR until date.year).sumOf {
                 date.withYear(it).range(WeekFields.ISO.weekOfYear()).maximum.toInt()
             }.toLong()
-        } else 0
+        } else { 0 }
 
         val weeksOfCurrentYear = date.get(WeekFields.ISO.weekOfYear())
         if (checkBeginOfYear(date.year)) {

@@ -43,7 +43,6 @@ class PeriodValidator(
     private fun validateRoundingMinutes(boundary: LocalTime): Boolean =
         boundary.minute == THIRTY_MINUTES || boundary.minute == 0
 
-
     private fun checkDuration(lowerBoundary: LocalTime, upperBoundary: LocalTime) {
         if (timeService.calculateDurationMinutes(lowerBoundary, upperBoundary) < MIN_DURATION) {
             throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)

@@ -5,10 +5,11 @@ services:
     build: .
     ports:
       - ${APPLICATION_PORT}:${APPLICATION_PORT}
-    volumes:
-      - ./:/app
     env_file:
       - api.env
+    depends_on:
+      - postgresql
+      - redis
 
 
   postgresql:

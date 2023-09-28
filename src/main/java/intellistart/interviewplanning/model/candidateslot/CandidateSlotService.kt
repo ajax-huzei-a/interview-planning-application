@@ -2,8 +2,8 @@ package intellistart.interviewplanning.model.candidateslot
 
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
-import java.time.LocalDate
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 /**
  * Service for CandidateSlot entity.
