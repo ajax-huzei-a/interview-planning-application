@@ -10,9 +10,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class SlotException extends Exception {
 
-  /**
-   * Enum that describes type of exception.
-   */
   @AllArgsConstructor
   public enum SlotExceptionProfile {
 

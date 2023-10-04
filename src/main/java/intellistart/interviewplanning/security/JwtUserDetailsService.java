@@ -15,9 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-/**
- * Custom UserDetailsService that implement work with JWT.
- */
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
@@ -29,13 +26,6 @@ public class JwtUserDetailsService implements UserDetailsService {
     return new BCryptPasswordEncoder();
   }
 
-  /**
-   * Wrapper method of loadUserByUsername for loading user by email and name.
-   *
-   * @param email email of certain user
-   * @param name name of certain user
-   * @return standard loaded UserDetails object
-   */
   public UserDetails loadUserByEmailAndName(String email, String name) {
 
     JwtUserDetails jwtUserDetails = (JwtUserDetails) loadUserByUsername(email);
@@ -51,8 +41,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     Set<GrantedAuthority> authorities = new HashSet<>();
 
-    if (user != null && user.getRole() != null) {
-      authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString()));
+    if (user != null) {
+      authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
     } else {
       authorities.add(new SimpleGrantedAuthority("ROLE_CANDIDATE"));
     }

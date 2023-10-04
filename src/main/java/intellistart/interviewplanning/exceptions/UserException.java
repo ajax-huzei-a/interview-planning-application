@@ -4,14 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/**
- * Exception class for all user logic exceptions.
- */
 @Getter
 public class UserException extends Exception {
-  /**
-   * Enum that describes type of exception.
-   */
+
   @AllArgsConstructor
   public enum UserExceptionProfile {
 

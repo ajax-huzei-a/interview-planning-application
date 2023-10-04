@@ -4,34 +4,25 @@ import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
 import intellistart.interviewplanning.model.period.TimeService
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.time.LocalTime
 
-/**
- * Business logic validator class.
- */
 @Service
 class PeriodValidator(
     private val timeService: TimeService,
 ) {
 
-    /**
-     * Validate lower and upper boundaries of future period.
-     *
-     *
-     *  * minimal duration validation
-     *  * extreme values validation
-     *  * rounding of minutes validation.
-     *
-     *
-     * @param from LocalTime, lower time boundary
-     * @param to LocalTime, upper time boundary
-     *
-     * @throws SlotException  when validation is incorrect
-     */
-    fun validate(from: LocalTime, to: LocalTime) {
+    fun validate(from: LocalTime, to: LocalTime, date: LocalDate) {
+        checkIfDateInTheFuture(date)
         checkExtremeValues(from, to)
         checkDuration(from, to)
         checkRoundingMinutes(from, to)
+    }
+
+    private fun checkIfDateInTheFuture(date: LocalDate) {
+        if (date.isBefore(LocalDate.now())) {
+            throw SlotException(SlotExceptionProfile.SLOT_IS_IN_THE_PAST)
+        }
     }
 
     private fun checkRoundingMinutes(from: LocalTime, to: LocalTime) {

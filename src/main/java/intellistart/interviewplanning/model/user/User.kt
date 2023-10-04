@@ -1,34 +1,15 @@
 package intellistart.interviewplanning.model.user
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.Table
+import intellistart.interviewplanning.model.slot.Slot
 
-/**
- * User entity.
- */
-@Entity
-@Table(name = "users")
-@JsonPropertyOrder("email", "role", "id")
-data class User(
+sealed class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    var id: Long = 0,
+    var id: Long = 0
 
-    @Column(unique = true)
-    var email: String = "",
+    var email: String = ""
 
-    @Enumerated(EnumType.STRING)
-    var role: Role = Role.INTERVIEWER
-) {
+    var role: Role = Role.CANDIDATE
+
     override fun hashCode(): Int {
         return id.hashCode()
     }
@@ -45,4 +26,14 @@ data class User(
 
         return true
     }
+}
+
+class Coordinator : User()
+
+class Interviewer : User() {
+    var interviewerSlots: MutableSet<Slot> = HashSet()
+}
+
+class Candidate : User() {
+    var candidateSlots: MutableSet<Slot> = HashSet()
 }

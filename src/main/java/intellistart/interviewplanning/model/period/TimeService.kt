@@ -5,17 +5,9 @@ import java.time.Duration
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-/**
- * Utils class to perform time operations.
- */
 @Component
 class TimeService {
 
-    /**
-     * Convert String to LocalTime by pattern HH:mm.
-     *
-     * @throws IllegalArgumentException if String doesn't satisfy the pattern
-     */
     fun convert(source: String?): LocalTime =
         runCatching {
             LocalTime.parse(source, formatter)
@@ -23,13 +15,7 @@ class TimeService {
             throw IllegalArgumentException("Illegal data")
         }
 
-    /**
-     * Calculate duration from "from" to "to" in minutes.
-     *
-     * @param from - LocalTime
-     * @param to - LocalTime
-     */
-    fun calculateDurationMinutes(from: LocalTime?, to: LocalTime?): Int {
+    fun calculateDurationMinutes(from: LocalTime, to: LocalTime): Int {
         val duration = Duration.between(from, to)
 
         val minutes = duration.toMinutesPart()

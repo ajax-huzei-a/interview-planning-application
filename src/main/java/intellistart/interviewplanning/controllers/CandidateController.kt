@@ -1,14 +1,12 @@
 package intellistart.interviewplanning.controllers
 
-import intellistart.interviewplanning.controllers.dto.CandidateSlotDto
-import intellistart.interviewplanning.controllers.dto.CandidateSlotsDto
+import intellistart.interviewplanning.controllers.dto.SlotDto
+import intellistart.interviewplanning.controllers.dto.SlotsDto
 import intellistart.interviewplanning.controllers.dto.toDto
 import intellistart.interviewplanning.controllers.dto.toDtoList
-import intellistart.interviewplanning.exceptions.SlotException
-import intellistart.interviewplanning.model.candidateslot.CandidateSlot
-import intellistart.interviewplanning.model.candidateslot.CandidateSlotService
-import intellistart.interviewplanning.model.candidateslot.validation.CandidateSlotValidator
 import intellistart.interviewplanning.model.period.PeriodService
+import intellistart.interviewplanning.model.slot.Slot
+import intellistart.interviewplanning.model.slot.SlotService
 import intellistart.interviewplanning.security.JwtUserDetails
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -19,97 +17,51 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
-/**
- * Controller for processing requests from Candidate.
- */
 @RestController
 @CrossOrigin
 class CandidateController(
-    private val candidateSlotService: CandidateSlotService,
-    private val candidateSlotValidator: CandidateSlotValidator,
+    private val slotService: SlotService,
     private val periodService: PeriodService
 ) {
-    /**
-     * POST request for adding a new CandidateSlot.
-     * First we do the conversion, then we pass it to the validation,
-     * and then we send it to the service for saving.
-     *
-     * @param request - Request body of POST mapping.
-     *
-     * @return ResponseEntity - Response of the saved object converted to a DTO.
-     *
-     * @throws SlotException - when parameters are incorrect or slot is overlapping.
-     */
-    @PostMapping("/candidates/current/slots")
+
+    @PostMapping("/candidate/slot/create")
     fun createCandidateSlot(
-        @RequestBody request: CandidateSlotDto,
+        @RequestBody request: SlotDto,
         authentication: Authentication
-    ): ResponseEntity<CandidateSlotDto> {
-        val candidateSlot = getCandidateSlotFromDto(request, authentication)
-        candidateSlotValidator.validateCreating(candidateSlot)
-        val createdCandidateSlot = candidateSlotService.create(candidateSlot)
+    ): ResponseEntity<SlotDto> {
+        val candidateSlot = getCandidateSlotFromDto(request)
+        val createdCandidateSlot = slotService.create(candidateSlot, authentication)
         return ResponseEntity.ok(createdCandidateSlot.toDto())
     }
 
-    /**
-     * POST request for editing the CandidateSlot.
-     * First we do the conversion, then we pass it to the validation,
-     * and then we send it to the service for updating.
-     *
-     * @param request - Request body of POST mapping.
-     * @param id - Parameter from the request mapping. This is the slot id for update.
-     *
-     * @return ResponseEntity - Response of the updated object converted to a DTO.
-     *
-     * @throws SlotException - when parameters are incorrect or updated slot is booked
-     * or slot is overlapping.
-     */
-    @PostMapping("/candidates/current/slots/{slotId}")
+    @PostMapping("/candidate/slot/update/{slotId}")
     fun updateCandidateSlot(
-        @RequestBody request: CandidateSlotDto,
+        @RequestBody request: SlotDto,
         @PathVariable("slotId") id: Long,
         authentication: Authentication
-    ): ResponseEntity<CandidateSlotDto> {
-        val candidateSlot = getCandidateSlotFromDto(request, authentication)
+    ): ResponseEntity<SlotDto> {
+        val candidateSlot = getCandidateSlotFromDto(request)
         candidateSlot.id = id
-        candidateSlotValidator.validateUpdating(candidateSlot)
-        val updatedCandidateSlot = candidateSlotService.update(candidateSlot)
+        val updatedCandidateSlot = slotService.update(candidateSlot, authentication)
         return ResponseEntity.ok(updatedCandidateSlot.toDto())
     }
 
-    /**
-     * GET request for getting all slots of current Candidate.
-     *
-     * @return ResponseEntity - Response of the list of slots converted to a DTO.
-     */
-    @GetMapping("/candidates/current/slots")
+    @GetMapping("/candidate/slots")
     fun getAllSlotsOfCandidate(
         authentication: Authentication
-    ): ResponseEntity<CandidateSlotsDto> {
+    ): ResponseEntity<SlotsDto> {
         val jwtUserDetails = authentication.principal as JwtUserDetails
-        val candidateSlots = candidateSlotService
+        val candidateSlots = slotService
             .getAllSlotsByEmail(jwtUserDetails.email)
         return ResponseEntity.ok(candidateSlots.toDtoList())
     }
 
-    /**
-     * Converts the candidate slot from the DTO.
-     *
-     * @param candidateSlotDto - DTO of Candidate slot.
-     *
-     * @return CandidateSlot object by given DTO.
-     */
     private fun getCandidateSlotFromDto(
-        candidateSlotDto: CandidateSlotDto,
-        authentication: Authentication
-    ): CandidateSlot {
-        val jwtUserDetails = authentication.principal as JwtUserDetails
-        return CandidateSlot().apply {
-            date = candidateSlotDto.date
+        candidateSlotDto: SlotDto
+    ): Slot {
+        return Slot().apply {
             period = periodService
-                .obtainPeriod(candidateSlotDto.from, candidateSlotDto.to)
-            email = jwtUserDetails.email
-            name = jwtUserDetails.name
+                .obtainPeriod(candidateSlotDto.from, candidateSlotDto.to, candidateSlotDto.date)
         }
     }
 }
