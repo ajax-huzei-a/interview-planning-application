@@ -1,18 +1,21 @@
 package intellistart.interviewplanning.model.booking
 
 import intellistart.interviewplanning.model.period.Period
+import org.bson.types.ObjectId
+import org.springframework.data.mongodb.core.mapping.Document
 
+@Document
 data class Booking(
 
-    var id: Long = 0,
+    var id: ObjectId = ObjectId(),
 
     var subject: String = "",
 
     var description: String = "",
 
-    var interviewerSlotId: Long = 0,
+    var interviewerSlotId: ObjectId = ObjectId(),
 
-    var candidateSlotId: Long = 0,
+    var candidateSlotId: ObjectId = ObjectId(),
 
     var period: Period = Period()
 

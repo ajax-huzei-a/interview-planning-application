@@ -1,6 +1,6 @@
 package intellistart.interviewplanning.initialization;
 
-import intellistart.interviewplanning.model.user.Role;
+import intellistart.interviewplanning.model.user.Coordinator;
 import intellistart.interviewplanning.model.user.User;
 import intellistart.interviewplanning.model.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +32,13 @@ public class StartDataLoader implements ApplicationRunner {
   @Override
   public void run(ApplicationArguments args) {
 
+//
+//    User firstCoordinator = new Coordinator();
+//    firstCoordinator.setEmail(email);
+//    firstCoordinator = userRepository.save(firstCoordinator);
+//
+//
+//    System.out.println("Added first user: " + firstCoordinator);
 
-    User firstCoordinator = new User(1L, email, Role.COORDINATOR);
-    firstCoordinator = userRepository.save(firstCoordinator);
-
-    //User interviewer = new User(2L, "guzey2001@gmail.com", Role.INTERVIEWER);
-    //interviewer = userRepository.save(interviewer);
-
-    System.out.println("Added first user: " + firstCoordinator);
-
-    //System.out.println("Added interviewer user: " + interviewer);
   }
 }

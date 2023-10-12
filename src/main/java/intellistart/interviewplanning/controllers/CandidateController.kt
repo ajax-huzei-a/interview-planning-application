@@ -7,7 +7,9 @@ import intellistart.interviewplanning.controllers.dto.toDtoList
 import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.model.slot.Slot
 import intellistart.interviewplanning.model.slot.SlotService
+import intellistart.interviewplanning.model.slot.validation.SlotValidator
 import intellistart.interviewplanning.security.JwtUserDetails
+import org.bson.types.ObjectId
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin
 class CandidateController(
     private val slotService: SlotService,
+    private val slotValidator: SlotValidator,
     private val periodService: PeriodService
 ) {
 
@@ -30,6 +33,7 @@ class CandidateController(
         authentication: Authentication
     ): ResponseEntity<SlotDto> {
         val candidateSlot = getCandidateSlotFromDto(request)
+        slotValidator.validateCreating(candidateSlot, authentication)
         val createdCandidateSlot = slotService.create(candidateSlot, authentication)
         return ResponseEntity.ok(createdCandidateSlot.toDto())
     }
@@ -37,11 +41,12 @@ class CandidateController(
     @PostMapping("/candidate/slot/update/{slotId}")
     fun updateCandidateSlot(
         @RequestBody request: SlotDto,
-        @PathVariable("slotId") id: Long,
+        @PathVariable("slotId") id: String,
         authentication: Authentication
     ): ResponseEntity<SlotDto> {
         val candidateSlot = getCandidateSlotFromDto(request)
-        candidateSlot.id = id
+        candidateSlot.id = ObjectId(id)
+        slotValidator.validateUpdating(candidateSlot, authentication)
         val updatedCandidateSlot = slotService.update(candidateSlot, authentication)
         return ResponseEntity.ok(updatedCandidateSlot.toDto())
     }

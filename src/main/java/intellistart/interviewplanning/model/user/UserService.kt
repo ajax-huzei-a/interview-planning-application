@@ -9,6 +9,7 @@ import intellistart.interviewplanning.security.JwtUserDetailsService
 import intellistart.interviewplanning.utils.FacebookUtil
 import intellistart.interviewplanning.utils.FacebookUtil.FacebookScopes
 import intellistart.interviewplanning.utils.JwtUtil
+import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -44,28 +45,25 @@ class UserService(
                 Role.COORDINATOR -> userRepository.save(
                     Coordinator().apply {
                         this.email = email
-                        this.role = roleOfUser
                     }
                 )
                 Role.INTERVIEWER -> userRepository.save(
                     Interviewer().apply {
                         this.email = email
-                        this.role = roleOfUser
                     }
                 )
                 Role.CANDIDATE -> userRepository.save(
                     Candidate().apply {
                         this.email = email
-                        this.role = roleOfUser
                     }
                 )
             }
         }
     }
 
-    fun obtainUsersByRole(role: Role): List<User> = userRepository.findByRole(role)
+    fun getUsersByRole(role: Role): List<User> = userRepository.findByRole(role)
 
-    fun deleteInterviewer(id: Long): User {
+    fun deleteInterviewer(id: ObjectId): User {
         val user = userRepository.findById(id)
             ?: throw UserException(UserExceptionProfile.USER_NOT_FOUND)
 
@@ -79,7 +77,7 @@ class UserService(
     }
 
     @Suppress("ThrowsCount")
-    fun deleteCoordinator(id: Long, currentEmailCoordinator: String): User {
+    fun deleteCoordinator(id: ObjectId, currentEmailCoordinator: String): User {
         val user = userRepository.findById(id)
             ?: throw UserException(UserExceptionProfile.USER_NOT_FOUND)
 

@@ -9,6 +9,7 @@ import intellistart.interviewplanning.model.period.Period
 import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.model.period.TimeService
 import intellistart.interviewplanning.model.slot.SlotService
+import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 
 @Component
@@ -79,7 +80,7 @@ class BookingValidator(
     }
 
     private fun validatePeriodNotOverlappingWithOtherBookingPeriods(
-        updatingBookingId: Long,
+        updatingBookingId: ObjectId,
         period: Period,
         bookings: Collection<Booking>
     ) {

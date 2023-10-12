@@ -7,11 +7,13 @@ import intellistart.interviewplanning.controllers.dto.toDto
 import intellistart.interviewplanning.controllers.dto.toUsersDto
 import intellistart.interviewplanning.model.booking.Booking
 import intellistart.interviewplanning.model.booking.BookingService
+import intellistart.interviewplanning.model.booking.validation.BookingValidator
 import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.model.user.Role
 import intellistart.interviewplanning.model.user.User
 import intellistart.interviewplanning.model.user.UserService
 import intellistart.interviewplanning.security.JwtUserDetails
+import org.bson.types.ObjectId
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 class CoordinatorController(
     private val bookingService: BookingService,
     private val periodService: PeriodService,
+    private val bookingValidator: BookingValidator,
     private val userService: UserService
 ) {
 
@@ -41,24 +44,24 @@ class CoordinatorController(
 
     @GetMapping("/users/interviewers")
     fun getAllInterviewers(): ResponseEntity<UsersDto> =
-        ResponseEntity.ok(userService.obtainUsersByRole(Role.INTERVIEWER).toUsersDto())
+        ResponseEntity.ok(userService.getUsersByRole(Role.INTERVIEWER).toUsersDto())
 
     @GetMapping("/users/coordinators")
     fun getAllCoordinators(): ResponseEntity<UsersDto> =
-        ResponseEntity.ok(userService.obtainUsersByRole(Role.COORDINATOR).toUsersDto())
+        ResponseEntity.ok(userService.getUsersByRole(Role.COORDINATOR).toUsersDto())
 
     @DeleteMapping("/users/delete/interviewer/{id}")
-    fun deleteInterviewerById(@PathVariable("id") id: Long): ResponseEntity<User> =
-        ResponseEntity.ok(userService.deleteInterviewer(id))
+    fun deleteInterviewerById(@PathVariable("id") id: String): ResponseEntity<User> =
+        ResponseEntity.ok(userService.deleteInterviewer(ObjectId(id)))
 
     @DeleteMapping("/users/delete/coordinator/{id}")
     fun deleteCoordinatorById(
-        @PathVariable("id") id: Long,
+        @PathVariable("id") id: String,
         authentication: Authentication
     ): ResponseEntity<User> {
         val jwtUserDetails = authentication.principal as JwtUserDetails
         val currentEmailCoordinator = jwtUserDetails.email
-        return ResponseEntity.ok(userService.deleteCoordinator(id, currentEmailCoordinator))
+        return ResponseEntity.ok(userService.deleteCoordinator(ObjectId(id), currentEmailCoordinator))
     }
 
     @GetMapping("/dashboard")
@@ -67,10 +70,11 @@ class CoordinatorController(
     @PostMapping("/booking/update/{id}")
     fun updateBooking(
         @RequestBody bookingDto: BookingDto,
-        @PathVariable id: Long
+        @PathVariable id: String
     ): ResponseEntity<BookingDto> {
         val newDataBooking = getFromDto(bookingDto)
-        newDataBooking.id = id
+        newDataBooking.id = ObjectId(id)
+        bookingValidator.validateUpdating(newDataBooking)
         val savedBooking = bookingService.update(newDataBooking)
         return ResponseEntity.ok(savedBooking.toDto())
     }
@@ -78,13 +82,14 @@ class CoordinatorController(
     @PostMapping("/booking/create")
     fun createBooking(@RequestBody bookingDto: BookingDto): ResponseEntity<BookingDto> {
         val newBooking = getFromDto(bookingDto)
+        bookingValidator.validateCreating(newBooking)
         val savedBooking = bookingService.create(newBooking)
         return ResponseEntity.ok(savedBooking.toDto())
     }
 
     @DeleteMapping("/booking/delete/{id}")
-    fun deleteBooking(@PathVariable("id") bookingId: Long): ResponseEntity<BookingDto> {
-        val bookingToDelete = bookingService.getById(bookingId)
+    fun deleteBooking(@PathVariable("id") bookingId: String): ResponseEntity<BookingDto> {
+        val bookingToDelete = bookingService.getById(ObjectId(bookingId))
         bookingService.delete(bookingToDelete)
         return ResponseEntity.ok(bookingToDelete.toDto())
     }
@@ -93,8 +98,8 @@ class CoordinatorController(
         return Booking().apply {
             subject = bookingDto.subject
             description = bookingDto.description
-            interviewerSlotId = bookingDto.interviewerSlotId
-            candidateSlotId = bookingDto.candidateSlotId
+            interviewerSlotId = ObjectId(bookingDto.interviewerSlotId)
+            candidateSlotId = ObjectId(bookingDto.candidateSlotId)
             period = periodService
                 .obtainPeriod(bookingDto.from, bookingDto.to, bookingDto.date)
         }

@@ -6,11 +6,14 @@ import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.model.slot.Slot
 import intellistart.interviewplanning.model.slot.SlotService
 import intellistart.interviewplanning.security.JwtUserDetails
+import org.bson.types.ObjectId
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
+@Lazy
 class SlotValidator(
     private val slotService: SlotService,
     private val periodService: PeriodService
@@ -50,9 +53,10 @@ class SlotValidator(
                 }
             }
         }
+        println("---------------------END---------------------")
     }
 
-    private fun validateSlotIsBookingAndTheSlotExists(id: Long) {
+    private fun validateSlotIsBookingAndTheSlotExists(id: ObjectId) {
         val candidateSlot = slotService.getById(id)
 
         if (candidateSlot.bookings.isNotEmpty()) {

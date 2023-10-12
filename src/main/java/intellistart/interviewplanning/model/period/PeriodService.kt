@@ -26,7 +26,7 @@ class PeriodService(
     private fun obtainPeriod(from: LocalTime, to: LocalTime, date: LocalDate): Period {
         periodValidator.validate(from, to, date)
 
-        return Period(0L, date, from, to)
+        return Period(date, from, to)
     }
 
     fun areOverlapping(period1: Period, period2: Period): Boolean {

@@ -1,14 +1,18 @@
 package intellistart.interviewplanning.model.user
 
 import intellistart.interviewplanning.model.slot.Slot
+import intellistart.interviewplanning.model.user.User.Companion.COLLECTION_NAME
+import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
-sealed class User {
+@Document(value = COLLECTION_NAME)
+sealed class User(var role: Role) {
 
-    var id: Long = 0
+    @Id
+    var id: ObjectId = ObjectId()
 
     var email: String = ""
-
-    var role: Role = Role.CANDIDATE
 
     override fun hashCode(): Int {
         return id.hashCode()
@@ -26,14 +30,21 @@ sealed class User {
 
         return true
     }
+
+    companion object {
+        const val COLLECTION_NAME = "users"
+    }
 }
 
-class Coordinator : User()
+@Document(value = COLLECTION_NAME)
+class Coordinator : User(Role.COORDINATOR)
 
-class Interviewer : User() {
-    var interviewerSlots: MutableSet<Slot> = HashSet()
+@Document(value = COLLECTION_NAME)
+class Interviewer : User(Role.INTERVIEWER) {
+    var slots: List<Slot> = listOf()
 }
 
-class Candidate : User() {
-    var candidateSlots: MutableSet<Slot> = HashSet()
+@Document(value = COLLECTION_NAME)
+class Candidate : User(Role.CANDIDATE) {
+    var slots: List<Slot> = listOf()
 }

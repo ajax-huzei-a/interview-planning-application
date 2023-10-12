@@ -6,6 +6,8 @@ import java.time.LocalDate
 
 data class SlotDto(
 
+    var id: String = "",
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     var date: LocalDate = LocalDate.now(),
 
@@ -15,6 +17,7 @@ data class SlotDto(
 )
 
 fun Slot.toDto(): SlotDto = SlotDto(
+    id = id.toHexString(),
     date = period.date,
     from = period.from.toString(),
     to = period.to.toString()

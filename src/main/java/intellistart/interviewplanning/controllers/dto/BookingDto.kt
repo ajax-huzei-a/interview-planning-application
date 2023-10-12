@@ -6,9 +6,11 @@ import java.time.LocalDate
 
 data class BookingDto(
 
-    var interviewerSlotId: Long = 0,
+    var id: String = "",
 
-    var candidateSlotId: Long = 0,
+    var interviewerSlotId: String = "",
+
+    var candidateSlotId: String = "",
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     var date: LocalDate = LocalDate.now(),
@@ -23,8 +25,9 @@ data class BookingDto(
 )
 
 fun Booking.toDto(): BookingDto = BookingDto(
-    interviewerSlotId = interviewerSlotId,
-    candidateSlotId = candidateSlotId,
+    id = id.toHexString(),
+    interviewerSlotId = interviewerSlotId.toHexString(),
+    candidateSlotId = candidateSlotId.toHexString(),
     date = period.date,
     from = period.from.toString(),
     to = period.to.toString(),

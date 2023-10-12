@@ -8,19 +8,20 @@ services:
     env_file:
       - api.env
     depends_on:
-      - postgresql
+      - mongodb
       - redis
 
 
-  postgresql:
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    image: postgres:15.0
+      - ${MONGODB_PORT}:${MONGODB_PORT}
     volumes:
-      - postgresql-data:/var/lib/postgres
-    env_file:
-      - api.env
-    command: -p ${POSTGRES_PORT}
+      - mongo-data:/data/db
 
   redis:
     ports:
@@ -30,7 +31,6 @@ services:
       - cache:/data
 
 
-
 volumes:
-  postgresql-data:
+  mongo-data:
   cache:

@@ -15,15 +15,12 @@ spring:
             clientSecret: qwerty
             redirectUri: uriuri
 
-  datasource:
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
-  jpa:
-    show-sql: true
-    generate-ddl: true
-    hibernate:
-      ddl-auto: create-drop
+  data:
+    mongodb:
+      uri: mongodb://${MONGODB_HOSTNAME}:${MONGODB_PORT}/${MONGODB_DATABASE}
+      username: ${MONGODB_USER}
+      password: ${MONGODB_PASSWORD}
 
 redis:
-  host: localhost
-  port: 1111
+  host: ${REDIS_HOSTNAME}
+  port: ${REDIS_PORT}
