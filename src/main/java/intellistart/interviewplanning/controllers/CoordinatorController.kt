@@ -72,8 +72,7 @@ class CoordinatorController(
         @RequestBody bookingDto: BookingDto,
         @PathVariable id: String
     ): ResponseEntity<BookingDto> {
-        val newDataBooking = getFromDto(bookingDto)
-        newDataBooking.id = ObjectId(id)
+        val newDataBooking = getFromDto(bookingDto).copy(id = ObjectId(id))
         bookingValidator.validateUpdating(newDataBooking)
         val savedBooking = bookingService.update(newDataBooking)
         return ResponseEntity.ok(savedBooking.toDto())
@@ -95,13 +94,14 @@ class CoordinatorController(
     }
 
     private fun getFromDto(bookingDto: BookingDto): Booking {
-        return Booking().apply {
-            subject = bookingDto.subject
-            description = bookingDto.description
-            interviewerSlotId = ObjectId(bookingDto.interviewerSlotId)
-            candidateSlotId = ObjectId(bookingDto.candidateSlotId)
-            period = periodService
+        return Booking(
+            ObjectId(),
+            bookingDto.subject,
+            bookingDto.description,
+            ObjectId(bookingDto.interviewerSlotId),
+            ObjectId(bookingDto.candidateSlotId),
+            periodService
                 .obtainPeriod(bookingDto.from, bookingDto.to, bookingDto.date)
-        }
+        )
     }
 }

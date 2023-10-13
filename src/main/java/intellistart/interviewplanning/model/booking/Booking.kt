@@ -7,36 +7,16 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document
 data class Booking(
 
-    var id: ObjectId = ObjectId(),
+    val id: ObjectId = ObjectId(),
 
-    var subject: String = "",
+    val subject: String = "",
 
-    var description: String = "",
+    val description: String = "",
 
-    var interviewerSlotId: ObjectId = ObjectId(),
+    val interviewerSlotId: ObjectId = ObjectId(),
 
-    var candidateSlotId: ObjectId = ObjectId(),
+    val candidateSlotId: ObjectId = ObjectId(),
 
-    var period: Period = Period()
+    val period: Period = Period()
 
-) {
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Booking
-
-        if (id != other.id) return false
-        if (subject != other.subject) return false
-        if (description != other.description) return false
-        if (interviewerSlotId != other.interviewerSlotId) return false
-        if (candidateSlotId != other.candidateSlotId) return false
-        if (period != other.period) return false
-
-        return true
-    }
-}
+)
