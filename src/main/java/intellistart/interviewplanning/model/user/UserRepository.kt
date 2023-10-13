@@ -55,7 +55,5 @@ class UserRepository(private val mongoTemplate: MongoTemplate) {
         }
     }
 
-    fun getDashboard(): List<User> {
-        return mongoTemplate.find(Query(), User::class.java)
-    }
+    fun getDashboard(): List<User> = mongoTemplate.find(Query(), User::class.java)
 }

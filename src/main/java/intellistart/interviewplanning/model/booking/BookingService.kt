@@ -13,13 +13,9 @@ class BookingService(
     fun getById(id: ObjectId): Booking = bookingRepository.findById(id)
         ?: throw BookingException(BookingExceptionProfile.BOOKING_NOT_FOUND)
 
-    fun create(booking: Booking): Booking {
-        return bookingRepository.save(booking)
-    }
+    fun create(booking: Booking): Booking = bookingRepository.save(booking)
 
-    fun update(booking: Booking): Booking {
-        return bookingRepository.update(booking)
-    }
+    fun update(booking: Booking): Booking = bookingRepository.update(booking)
 
     fun delete(booking: Booking) = bookingRepository.delete(booking)
 }
