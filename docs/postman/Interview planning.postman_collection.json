@@ -10,24 +10,13 @@
 			"name": "Authentication",
 			"item": [
 				{
-					"name": "Get FB token",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": ""
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Authenticate",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"facebookToken\": \"{{facebook_token}}\"\r\n}",
+							"raw": "{\r\n    \"facebookToken\": \"EAADarNhUd7oBOzajkonO3WZASPTI9RvYS82Chmwl0ZAlrvuKGizSZB6ChjWuHpr4I6oufnLGam6YZBuzca21Oeu6iZASxJiS6eKZCMVZA7Csd47l8gzDOioVjmeWYJDC3ZBSBRKyp5Wf0gZC4QiawxSBZCJEzwvBV4imO4XNBX4fU3elMvZAcb2MgAOBjPMVoTgbqsXkKegF3LZAupLFdqZBDBgZDZD\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -78,55 +67,6 @@
 			]
 		},
 		{
-			"name": "Week",
-			"item": [
-				{
-					"name": "Current week",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:8080/weeks/current",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"weeks",
-								"current"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Next week",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:8080/weeks/next",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"weeks",
-								"next"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Candidate use case",
 			"item": [
 				{
@@ -149,7 +89,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"date\": \"2022-12-16\",\n    \"from\": \"09:00\",\n    \"to\": \"17:00\"\n}",
+									"raw": "{\n    \"date\": \"2023-10-11\",\n    \"from\": \"08:00\",\n    \"to\": \"18:00\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -157,15 +97,15 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:8080/candidates/current/slots",
+									"raw": "localhost:8080/candidate/slot/create",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"candidates",
-										"current",
-										"slots"
+										"candidate",
+										"slot",
+										"create"
 									]
 								}
 							},
@@ -188,7 +128,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"date\": \"2022-12-16\",\n    \"from\": \"09:30\",\n    \"to\": \"18:00\"\n}",
+									"raw": "{\n    \"date\": \"2024-12-16\",\n    \"from\": \"09:30\",\n    \"to\": \"18:00\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -196,16 +136,16 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:8080/candidates/current/slots/2",
+									"raw": "localhost:8080/candidate/slot/update/{id}",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"candidates",
-										"current",
-										"slots",
-										"2"
+										"candidate",
+										"slot",
+										"update",
+										"{id}"
 									]
 								}
 							},
@@ -227,14 +167,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "localhost:8080/candidates/current/slots",
+									"raw": "localhost:8080/candidate/slots",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"candidates",
-										"current",
+										"candidate",
 										"slots"
 									]
 								}
@@ -248,143 +187,6 @@
 		{
 			"name": "Interviewer use case",
 			"item": [
-				{
-					"name": "Booking Limit",
-					"item": [
-						{
-							"name": "Create Booking Limit",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{interviewer_token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n\"bookingLimit\": 12\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "localhost:8080/interviewers/2/booking-limits",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"interviewers",
-										"2",
-										"booking-limits"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Booking Limit For Next Week",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{interviewer_token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "localhost:8080/interviewers/2/booking-limits/next-week",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"interviewers",
-										"2",
-										"booking-limits",
-										"next-week"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Booking Limit For Current Week",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{interviewer_token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "localhost:8080/interviewers/2/booking-limits/current-week",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"interviewers",
-										"2",
-										"booking-limits",
-										"current-week"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Infinite Booking Limit",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{interviewer_token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "localhost:8080/interviewers/3/booking-limits/next-week",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"interviewers",
-										"3",
-										"booking-limits",
-										"next-week"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
 				{
 					"name": "Interviewer Slot",
 					"item": [
@@ -405,7 +207,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"week\":48,\r\n    \"dayOfWeek\":\"TUE\",\r\n    \"from\":\"16:00\",\r\n    \"to\":\"19:00\"\r\n}",
+									"raw": "{\r\n    \"week\":91,\r\n    \"dayOfWeek\":\"WED\",\r\n    \"from\":\"16:30\",\r\n    \"to\":\"19:00\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -413,75 +215,15 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:8080/interviewers/1/slots",
+									"raw": "localhost:8080/interviewer/slot/create",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"interviewers",
-										"1",
-										"slots"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Slots Current Week",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{interviewer_token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "localhost:8080/interviewers/current/slots",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"interviewers",
-										"current",
-										"slots"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Slots Next Week",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{interviewer_token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "localhost:8080/interviewers/next/slots",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"interviewers",
-										"next",
-										"slots"
+										"interviewer",
+										"slot",
+										"create"
 									]
 								}
 							},
@@ -512,16 +254,45 @@
 									}
 								},
 								"url": {
-									"raw": "localhost:8080/interviewers/1/slots/2",
+									"raw": "localhost:8080/interviewer/slot/update/{slotId}",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"interviewers",
-										"1",
-										"slots",
-										"2"
+										"interviewer",
+										"slot",
+										"update",
+										"{slotId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Slots Of Interviewer",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{interviewer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/interviewer/slots",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"interviewer",
+										"slots"
 									]
 								}
 							},
@@ -565,7 +336,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://localhost:8080/users/interviewers",
+											"raw": "http://localhost:8080/users/grant/interviewer",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -573,7 +344,8 @@
 											"port": "8080",
 											"path": [
 												"users",
-												"interviewers"
+												"grant",
+												"interviewer"
 											]
 										}
 									},
@@ -625,7 +397,7 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "http://localhost:8080/users/interviewers/3",
+											"raw": "http://localhost:8080/users/delete/interviewer/{id}",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -633,8 +405,9 @@
 											"port": "8080",
 											"path": [
 												"users",
-												"interviewers",
-												"3"
+												"delete",
+												"interviewer",
+												"{id}"
 											]
 										}
 									},
@@ -670,7 +443,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://localhost:8080/users/coordinators",
+											"raw": "http://localhost:8080/users/grant/coordinator",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -678,7 +451,8 @@
 											"port": "8080",
 											"path": [
 												"users",
-												"coordinators"
+												"grant",
+												"coordinator"
 											]
 										}
 									},
@@ -730,7 +504,7 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "http://localhost:8080/users/coordinators/5",
+											"raw": "http://localhost:8080/users/delete/coordinator/{id}",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -738,8 +512,9 @@
 											"port": "8080",
 											"path": [
 												"users",
-												"coordinators",
-												"5"
+												"delete",
+												"coordinator",
+												"{id}"
 											]
 										}
 									},
@@ -769,7 +544,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"interviewerSlotId\": 1,\r\n    \"candidateSlotId\": 1,\r\n    \"from\": \"15:30\",\r\n    \"to\": \"17:00\",\r\n    \"subject\": \"Java Middle Interview\",\r\n    \"description\": \"interviewer: Crazy Parrot, candidate: Madonna\"\r\n}",
+									"raw": "{\r\n    \"interviewerSlotId\": \"65280e021a9fd76ee8d00734\",\r\n    \"candidateSlotId\": \"65280e381a9fd76ee8d00737\",\r\n    \"from\": \"08:00\",\r\n    \"to\": \"10:00\",\r\n    \"subject\": \"PPP Middle Interview\",\r\n    \"description\": \"interviewer\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -777,14 +552,15 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/bookings",
+									"raw": "http://localhost:8080/booking/create",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"bookings"
+										"booking",
+										"create"
 									]
 								}
 							},
@@ -807,7 +583,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"interviewerSlotId\": 1,\r\n    \"candidateSlotId\": 1,\r\n    \"from\": \"12:00\",\r\n    \"to\": \"13:30\",\r\n    \"subject\": \"Ruby Middle Interview\",\r\n    \"description\": \"interviewer: Crazy Parrot, candidate: Madonna\"\r\n}",
+									"raw": "{\r\n    \"interviewerSlotId\": \"65280df51a9fd76ee8d00730\",\r\n    \"candidateSlotId\": \"65280e431a9fd76ee8d0073b\",\r\n    \"from\": \"09:30\",\r\n    \"to\": \"11:00\",\r\n    \"subject\": \"Ruby Middle Interview\",\r\n    \"description\": \"interviewer: Crazy Parrot, candidate: Madonna\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -815,15 +591,16 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/bookings/2",
+									"raw": "http://localhost:8080/booking/update/{id}",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"bookings",
-										"2"
+										"booking",
+										"update",
+										"{id}"
 									]
 								}
 							},
@@ -845,15 +622,16 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/bookings/1",
+									"raw": "http://localhost:8080/booking/delete/{id}",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"bookings",
-										"1"
+										"booking",
+										"delete",
+										"{id}"
 									]
 								}
 							},
@@ -880,15 +658,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/weeks/50/dashboard",
+									"raw": "http://localhost:8080/dashboard",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"weeks",
-										"50",
 										"dashboard"
 									]
 								}
