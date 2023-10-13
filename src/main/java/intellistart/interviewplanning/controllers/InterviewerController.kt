@@ -45,8 +45,7 @@ class InterviewerController(
         @PathVariable("slotId") slotId: String,
         authentication: Authentication
     ): ResponseEntity<SlotDto> {
-        val interviewerSlot = getInterviewerSlotFromDto(slotDto)
-        interviewerSlot.id = ObjectId(slotId)
+        val interviewerSlot = getInterviewerSlotFromDto(slotDto).copy(id = ObjectId(slotId))
         slotValidator.validateUpdating(interviewerSlot, authentication)
         val updatedInterviewerSlot = slotService.update(interviewerSlot, authentication)
         return ResponseEntity(updatedInterviewerSlot.toDto(), HttpStatus.OK)
@@ -64,9 +63,9 @@ class InterviewerController(
     private fun getInterviewerSlotFromDto(
         slotDto: SlotDto
     ): Slot {
-        return Slot().apply {
+        return Slot(
             period = periodService
                 .obtainPeriod(slotDto.from, slotDto.to, slotDto.date)
-        }
+        )
     }
 }

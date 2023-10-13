@@ -44,8 +44,7 @@ class CandidateController(
         @PathVariable("slotId") id: String,
         authentication: Authentication
     ): ResponseEntity<SlotDto> {
-        val candidateSlot = getCandidateSlotFromDto(request)
-        candidateSlot.id = ObjectId(id)
+        val candidateSlot = getCandidateSlotFromDto(request).copy(id = ObjectId(id))
         slotValidator.validateUpdating(candidateSlot, authentication)
         val updatedCandidateSlot = slotService.update(candidateSlot, authentication)
         return ResponseEntity.ok(updatedCandidateSlot.toDto())
@@ -64,9 +63,9 @@ class CandidateController(
     private fun getCandidateSlotFromDto(
         candidateSlotDto: SlotDto
     ): Slot {
-        return Slot().apply {
+        return Slot(
             period = periodService
                 .obtainPeriod(candidateSlotDto.from, candidateSlotDto.to, candidateSlotDto.date)
-        }
+        )
     }
 }

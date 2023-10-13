@@ -10,27 +10,10 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class Slot(
 
     @Id
-    var id: ObjectId = ObjectId(),
+    val id: ObjectId = ObjectId(),
 
-    var period: Period = Period(),
+    val period: Period = Period(),
 
-    var bookings: List<Booking> = listOf()
+    val bookings: List<Booking> = listOf()
 
-) {
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Slot
-
-        if (id != other.id) return false
-        if (period != other.period) return false
-        if (bookings != other.bookings) return false
-
-        return true
-    }
-}
+)
