@@ -24,22 +24,22 @@ class BookingValidator(
     }
 
     fun validateUpdating(newBooking: Booking) {
-        checkIfBookingPeriodIsNotGreaterThanNinetyMinutes(newBooking.period)
+        checkBookingPeriodForNinetyMinutes(newBooking.period)
 
-        checkIfSubjectAndDescriptionLengthIsWithinLimits(newBooking.subject, newBooking.description)
+        checkSubjectAndDescriptionLength(newBooking.subject, newBooking.description)
 
-        checkIfTheBookingOverlapsWithSlotsOfInterviewerAndCandidate(newBooking)
+        checkBookingForOverlapsWithSlots(newBooking)
 
-        checkIfTheBookingOverlapsWithOtherBookingsOfTheInterviewerAndCandidate(newBooking)
+        checkBookingForOverlapsWithOtherBookings(newBooking)
     }
 
-    private fun checkIfBookingPeriodIsNotGreaterThanNinetyMinutes(period: Period) {
+    private fun checkBookingPeriodForNinetyMinutes(period: Period) {
         if (timeService.calculateDurationMinutes(period.from, period.to) < BOOKING_PERIOD_DURATION_MINUTES) {
             throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
         }
     }
 
-    private fun checkIfSubjectAndDescriptionLengthIsWithinLimits(subject: String, description: String) {
+    private fun checkSubjectAndDescriptionLength(subject: String, description: String) {
         if (subject.length > SUBJECT_MAX_SIZE) {
             throw BookingException(BookingExceptionProfile.INVALID_SUBJECT)
         }
@@ -48,7 +48,7 @@ class BookingValidator(
         }
     }
 
-    private fun checkIfTheBookingOverlapsWithSlotsOfInterviewerAndCandidate(booking: Booking) {
+    private fun checkBookingForOverlapsWithSlots(booking: Booking) {
         val periodOfInterviewer: Period = slotService.getById(booking.interviewerSlotId).period
         val periodOfCandidate: Period = slotService.getById(booking.candidateSlotId).period
 
@@ -63,7 +63,7 @@ class BookingValidator(
         }
     }
 
-    private fun checkIfTheBookingOverlapsWithOtherBookingsOfTheInterviewerAndCandidate(
+    private fun checkBookingForOverlapsWithOtherBookings(
         booking: Booking
     ) {
         validatePeriodNotOverlappingWithOtherBookingPeriods(
