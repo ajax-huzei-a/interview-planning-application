@@ -53,7 +53,6 @@ class SlotValidator(
                 }
             }
         }
-        println("---------------------END---------------------")
     }
 
     private fun validateSlotIsBookingAndTheSlotExists(id: ObjectId) {

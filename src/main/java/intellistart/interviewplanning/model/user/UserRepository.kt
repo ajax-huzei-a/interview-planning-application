@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class UserRepository(private val mongoTemplate: MongoTemplate) {
+
     fun findByEmail(email: String): User? {
         val query = Query().addCriteria(Criteria.where("email").`is`(email))
         return mongoTemplate.findOne(query, User::class.java)

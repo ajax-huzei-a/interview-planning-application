@@ -8,21 +8,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Class for initializing first coordinator in the system.
- */
 @Component
 public class StartDataLoader implements ApplicationRunner {
 
   private final UserRepository userRepository;
 
+  private static final Logger logger = LoggerFactory.getLogger(StartDataLoader.class);
+
   @Value("${first-coordinator-email}")
   private String email;
 
-  /**
-   * Initial data load.
-   */
   @Autowired
   public StartDataLoader(
       UserRepository userRepository) {
@@ -31,14 +29,11 @@ public class StartDataLoader implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
+    User firstCoordinator = new Coordinator();
+    firstCoordinator.setEmail(email);
+    firstCoordinator = userRepository.save(firstCoordinator);
 
-//
-//    User firstCoordinator = new Coordinator();
-//    firstCoordinator.setEmail(email);
-//    firstCoordinator = userRepository.save(firstCoordinator);
-//
-//
-//    System.out.println("Added first user: " + firstCoordinator);
 
+    logger.info("Added first user: {}", firstCoordinator.getEmail());
   }
 }
