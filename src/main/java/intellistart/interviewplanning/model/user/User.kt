@@ -14,23 +14,6 @@ sealed class User(var role: Role) {
 
     var email: String = ""
 
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as User
-
-        if (id != other.id) return false
-        if (email != other.email) return false
-        if (role != other.role) return false
-
-        return true
-    }
-
     companion object {
         const val COLLECTION_NAME = "users"
     }
