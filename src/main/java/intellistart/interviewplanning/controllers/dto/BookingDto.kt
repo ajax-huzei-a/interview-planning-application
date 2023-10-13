@@ -6,22 +6,22 @@ import java.time.LocalDate
 
 data class BookingDto(
 
-    var id: String = "",
+    val id: String = "",
 
-    var interviewerSlotId: String = "",
+    val interviewerSlotId: String = "",
 
-    var candidateSlotId: String = "",
+    val candidateSlotId: String = "",
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    var date: LocalDate = LocalDate.now(),
+    val date: LocalDate = LocalDate.now(),
 
-    var from: String = "",
+    val from: String = "",
 
-    var to: String = "",
+    val to: String = "",
 
-    var subject: String = "",
+    val subject: String = "",
 
-    var description: String = ""
+    val description: String = ""
 )
 
 fun Booking.toDto(): BookingDto = BookingDto(
