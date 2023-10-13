@@ -15,6 +15,7 @@ import java.time.LocalDate
 
 @Repository
 class SlotRepository(private val mongoTemplate: MongoTemplate) {
+
     fun findByEmail(email: String): List<Slot> {
         val aggregation = Aggregation.newAggregation(
             Aggregation.match(Criteria.where("email").`is`(email)),
