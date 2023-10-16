@@ -39,13 +39,13 @@ class SlotValidator(
     private fun validateOverlapping(slot: Slot, authentication: Authentication) {
         val jwtUserDetails = authentication.principal as JwtUserDetails
 
-        val candidateSlotList = slotService.getSlotsByEmailAndDate(
+        val slotList = slotService.getSlotsByEmailAndDate(
             jwtUserDetails.email,
             slot.period.date
         )
 
-        if (candidateSlotList.isNotEmpty()) {
-            for (item in candidateSlotList) {
+        if (slotList.isNotEmpty()) {
+            for (item in slotList) {
                 if (slot.id != item.id &&
                     periodService.areOverlapping(slot.period, item.period)
                 ) {
@@ -56,9 +56,9 @@ class SlotValidator(
     }
 
     private fun validateSlotIsBookingAndTheSlotExists(id: ObjectId) {
-        val candidateSlot = slotService.getById(id)
+        val slot = slotService.getById(id)
 
-        if (candidateSlot.bookings.isNotEmpty()) {
+        if (slot.bookings.isNotEmpty()) {
             throw SlotException(SlotExceptionProfile.SLOT_IS_BOOKED)
         }
     }

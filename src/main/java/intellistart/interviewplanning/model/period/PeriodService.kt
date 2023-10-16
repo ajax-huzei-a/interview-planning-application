@@ -40,5 +40,5 @@ class PeriodService(
         !first.from.isBefore(second.from) && !first.to.isAfter(second.to)
 
     private fun isTimeInPeriod(time: LocalTime, period: Period): Boolean =
-        !time.isBefore(period.from) && time.isBefore(period.to)
+        time.isAfter(period.from) && time.isBefore(period.to)
 }

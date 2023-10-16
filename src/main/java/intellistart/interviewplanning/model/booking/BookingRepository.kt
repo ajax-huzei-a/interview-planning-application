@@ -23,7 +23,7 @@ class BookingRepository(private val mongoTemplate: MongoTemplate) {
         )
 
         val results = mongoTemplate.aggregate(aggregation, User.COLLECTION_NAME, Booking::class.java)
-        return results.mappedResults.find { it.id == id }
+        return results.firstOrNull()
     }
 
     fun delete(booking: Booking) {

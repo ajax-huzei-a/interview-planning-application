@@ -36,23 +36,15 @@ class UserRepository(private val mongoTemplate: MongoTemplate) {
 
     fun updateRoleOfUser(email: String, roleOfUser: Role): User {
         delete(findByEmail(email)!!)
-        return when (roleOfUser) {
-            Role.COORDINATOR -> save(
-                Coordinator().apply {
-                    this.email = email
-                }
-            )
-            Role.INTERVIEWER -> save(
-                Interviewer().apply {
-                    this.email = email
-                }
-            )
-            Role.CANDIDATE -> save(
-                Candidate().apply {
-                    this.email = email
-                }
-            )
+
+        val user: User = when (roleOfUser) {
+            Role.COORDINATOR -> Coordinator()
+            Role.INTERVIEWER -> Interviewer()
+            Role.CANDIDATE -> Candidate()
         }
+        user.email = email
+
+        return save(user)
     }
 
     fun getDashboard(): List<User> = mongoTemplate.find(Query(), User::class.java)

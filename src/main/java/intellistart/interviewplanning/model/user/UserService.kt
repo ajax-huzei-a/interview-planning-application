@@ -41,23 +41,13 @@ class UserService(
         return if (existingUser != null) {
             userRepository.updateRoleOfUser(email, roleOfUser)
         } else {
-            when (roleOfUser) {
-                Role.COORDINATOR -> userRepository.save(
-                    Coordinator().apply {
-                        this.email = email
-                    }
-                )
-                Role.INTERVIEWER -> userRepository.save(
-                    Interviewer().apply {
-                        this.email = email
-                    }
-                )
-                Role.CANDIDATE -> userRepository.save(
-                    Candidate().apply {
-                        this.email = email
-                    }
-                )
-            }
+            userRepository.save(
+                when (roleOfUser) {
+                    Role.COORDINATOR -> Coordinator().apply { this.email = email }
+                    Role.INTERVIEWER -> Interviewer().apply { this.email = email }
+                    Role.CANDIDATE -> Candidate().apply { this.email = email }
+                }
+            )
         }
     }
 
