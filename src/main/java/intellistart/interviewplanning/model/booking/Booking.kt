@@ -7,16 +7,16 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document
 data class Booking(
 
-    val id: ObjectId = ObjectId(),
+    val id: ObjectId,
 
-    val subject: String = "",
+    val subject: String,
 
-    val description: String = "",
+    val description: String,
 
-    val interviewerSlotId: ObjectId = ObjectId(),
+    val interviewerSlotId: ObjectId,
 
-    val candidateSlotId: ObjectId = ObjectId(),
+    val candidateSlotId: ObjectId,
 
-    val period: Period = Period()
+    val period: Period
 
 )

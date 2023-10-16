@@ -10,10 +10,10 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class Slot(
 
     @Id
-    val id: ObjectId = ObjectId(),
+    val id: ObjectId,
 
-    val period: Period = Period(),
+    val period: Period,
 
-    val bookings: List<Booking> = listOf()
+    val bookings: List<Booking>
 
 )

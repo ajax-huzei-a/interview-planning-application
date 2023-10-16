@@ -72,7 +72,7 @@ class CoordinatorController(
         @RequestBody bookingDto: BookingDto,
         @PathVariable id: String
     ): ResponseEntity<BookingDto> {
-        val newDataBooking = getFromDto(bookingDto).copy(id = ObjectId(id))//todo check if exists
+        val newDataBooking = getFromDto(bookingDto).copy(id = ObjectId(id))
         bookingValidator.validateUpdating(newDataBooking)
         val savedBooking = bookingService.update(newDataBooking)
         return ResponseEntity.ok(savedBooking.toDto())

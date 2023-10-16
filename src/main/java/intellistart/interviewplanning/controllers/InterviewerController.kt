@@ -64,8 +64,10 @@ class InterviewerController(
         slotDto: SlotDto
     ): Slot {
         return Slot(
+            id = ObjectId(),
             period = periodService
-                .obtainPeriod(slotDto.from, slotDto.to, slotDto.date)
+                .obtainPeriod(slotDto.from, slotDto.to, slotDto.date),
+            bookings = listOf()
         )
     }
 }

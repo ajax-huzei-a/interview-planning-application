@@ -9,12 +9,12 @@ import java.time.LocalTime
 data class Period(
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val date: LocalDate = LocalDate.now(),
+    val date: LocalDate,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-    val from: LocalTime = LocalTime.now(),
+    val from: LocalTime,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-    val to: LocalTime = LocalTime.now()
+    val to: LocalTime
 
 )

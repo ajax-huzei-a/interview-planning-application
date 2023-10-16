@@ -64,8 +64,10 @@ class CandidateController(
         candidateSlotDto: SlotDto
     ): Slot {
         return Slot(
+            id = ObjectId(),
             period = periodService
-                .obtainPeriod(candidateSlotDto.from, candidateSlotDto.to, candidateSlotDto.date)
+                .obtainPeriod(candidateSlotDto.from, candidateSlotDto.to, candidateSlotDto.date),
+            bookings = listOf()
         )
     }
 }

@@ -6,14 +6,14 @@ import java.time.LocalDate
 
 data class SlotDto(
 
-    val id: String = "",
+    val id: String,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val date: LocalDate = LocalDate.now(),
+    val date: LocalDate,
 
-    val from: String = "",
+    val from: String,
 
-    val to: String = ""
+    val to: String
 )
 
 fun Slot.toDto(): SlotDto = SlotDto(
