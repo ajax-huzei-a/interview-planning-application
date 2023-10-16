@@ -2,9 +2,9 @@ package intellistart.interviewplanning.controllers.dto
 
 data class FacebookOauthInfoDto(
 
-    val clientId: String,
+    val clientId: String = "",
 
-    val redirectUri: String,
+    val redirectUri: String = "",
 
-    val tokenRequestUrl: String
+    val tokenRequestUrl: String = ""
 )

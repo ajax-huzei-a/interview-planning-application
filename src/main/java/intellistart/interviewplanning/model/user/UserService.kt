@@ -43,10 +43,10 @@ class UserService(
         } else {
             userRepository.save(
                 when (roleOfUser) {
-                    Role.COORDINATOR -> Coordinator().apply { this.email = email }
-                    Role.INTERVIEWER -> Interviewer().apply { this.email = email }
-                    Role.CANDIDATE -> Candidate().apply { this.email = email }
-                }
+                    Role.COORDINATOR -> Coordinator()
+                    Role.INTERVIEWER -> Interviewer()
+                    Role.CANDIDATE -> Candidate()
+                }.apply { this.email = email }
             )
         }
     }

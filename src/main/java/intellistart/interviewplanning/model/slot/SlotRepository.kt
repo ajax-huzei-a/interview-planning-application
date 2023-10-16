@@ -1,7 +1,5 @@
 package intellistart.interviewplanning.model.slot
 
-import intellistart.interviewplanning.model.user.Candidate
-import intellistart.interviewplanning.model.user.Interviewer
 import intellistart.interviewplanning.model.user.User
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.FindAndModifyOptions
@@ -28,12 +26,15 @@ class SlotRepository(private val mongoTemplate: MongoTemplate) {
     }
 
     fun findById(id: ObjectId): Slot? {
-        val query = Query(Criteria.where("slots._id").`is`(id))
-        return when (val user = mongoTemplate.findOne(query, User::class.java)) {
-            is Candidate -> user.slots.find { it.id == id }
-            is Interviewer -> user.slots.find { it.id == id }
-            else -> null
-        }
+        val aggregation = Aggregation.newAggregation(
+            Aggregation.unwind("slots"),
+            Aggregation.replaceRoot("slots"),
+            Aggregation.match(Criteria.where("_id").`is`(id))
+        )
+
+        val result = mongoTemplate.aggregate(aggregation, User.COLLECTION_NAME, Slot::class.java)
+
+        return result.uniqueMappedResult
     }
 
     fun findByEmailAndDate(email: String, date: LocalDate): List<Slot> {
