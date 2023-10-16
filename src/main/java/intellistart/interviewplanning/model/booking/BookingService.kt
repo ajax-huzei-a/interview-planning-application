@@ -15,7 +15,10 @@ class BookingService(
 
     fun create(booking: Booking): Booking = bookingRepository.save(booking)
 
-    fun update(booking: Booking): Booking = bookingRepository.update(booking)
+    fun update(booking: Booking): Booking {
+        getById(booking.id)
+        return bookingRepository.update(booking)
+    }
 
     fun delete(booking: Booking) = bookingRepository.delete(booking)
 }
