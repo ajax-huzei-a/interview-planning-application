@@ -24,7 +24,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("io.jsonwebtoken:jjwt:0.9.1")
     implementation("org.springframework.data:spring-data-redis:3.0.0")
-    implementation("redis.clients:jedis:4.3.1")
+    implementation("redis.clients:jedis:4.4.3")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.projectlombok:lombok:1.18.20")
