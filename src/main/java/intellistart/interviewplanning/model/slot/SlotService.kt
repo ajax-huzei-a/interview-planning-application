@@ -29,5 +29,5 @@ class SlotService(
     fun getAllSlotsByEmail(email: String): List<Slot> = slotRepository.findByEmail(email)
 
     fun getById(id: ObjectId): Slot = slotRepository.findById(id)
-        ?: (throw SlotException(SlotExceptionProfile.CANDIDATE_SLOT_NOT_FOUND))
+        ?: (throw SlotException(SlotExceptionProfile.SLOT_NOT_FOUND))
 }

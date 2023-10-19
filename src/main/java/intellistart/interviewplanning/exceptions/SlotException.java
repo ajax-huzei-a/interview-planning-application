@@ -22,8 +22,8 @@ public class SlotException extends Exception {
     INVALID_DAY_OF_WEEK("invalid_day_of_week",
         "Cannot arrange booking on this day.", HttpStatus.BAD_REQUEST),
 
-    CANDIDATE_SLOT_NOT_FOUND("candidate_slot_not_found",
-        "Candidate slot by given id was not found.", HttpStatus.NOT_FOUND),
+    SLOT_NOT_FOUND("slot_not_found",
+        "Slot by given id was not found.", HttpStatus.NOT_FOUND),
 
     INTERVIEWER_SLOT_NOT_FOUND("interviewer_slot_not_found",
         "Interviewer slot by given id was not found.", HttpStatus.NOT_FOUND),
