@@ -1,4 +1,4 @@
-package intellistart.interviewplanning.controllers
+package intellistart.interviewplanning.controllers.rest
 
 import intellistart.interviewplanning.controllers.dto.BookingDto
 import intellistart.interviewplanning.controllers.dto.EmailDto
