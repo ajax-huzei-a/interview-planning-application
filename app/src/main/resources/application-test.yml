@@ -4,7 +4,7 @@ server:
 jwt:
   secret: oneweek
   validity: 86400
-  caching: 1
+  caching: 350
 
 first-coordinator-email: guzey2001@gmail.com
 
