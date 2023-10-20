@@ -18,24 +18,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * Security configuration.
- */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
   private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
   private final UserDetailsService jwtUserDetailsService;
+
   private final JwtRequestFilter jwtRequestFilter;
+
   private final FilterChainExceptionHandler filterChainExceptionHandler;
+
   private final PasswordEncoder passwordEncoder;
 
-  /**
-   * Constructor.
-   */
   @Autowired
   public SecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
       JwtAccessDeniedHandler jwtAccessDeniedHandler, UserDetailsService jwtUserDetailsService,
@@ -49,9 +48,6 @@ public class SecurityConfig {
     this.passwordEncoder = passwordEncoder;
   }
 
-  /**
-   * Defining the custom UserDetailsService and password encoder.
-   */
   @Bean
   public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
     AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(
@@ -61,20 +57,15 @@ public class SecurityConfig {
     return authenticationManagerBuilder.build();
   }
 
-  /**
-   * Configuring requests security.
-   */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
     http.csrf().disable()
             .cors().and()
-        .authorizeRequests().antMatchers("/authenticate", "/oauth2/facebook/v15.0",
-            "/weeks/current", "/weeks/next").permitAll()
-        .antMatchers("/candidates/**").hasRole("CANDIDATE")
-        .antMatchers("/interviewers/**").hasRole("INTERVIEWER")
-        .antMatchers("/bookings", "/bookings/**", "/users", "/users/**",
-            "/weeks/{weekNum}/dashboard").hasRole("COORDINATOR")
+        .authorizeRequests().antMatchers("/authenticate", "/oauth2/facebook/v15.0").permitAll()
+        .antMatchers("/candidate/**").hasRole("CANDIDATE")
+        .antMatchers("/interviewer/**").hasRole("INTERVIEWER")
+        .antMatchers("/booking", "/booking/**", "/users", "/users/**",
+            "/dashboard").hasRole("COORDINATOR")
         .anyRequest().authenticated().and()
 
         // Add custom handling for unauthenticated and access denied errors
@@ -91,5 +82,4 @@ public class SecurityConfig {
 
     return http.build();
   }
-
 }

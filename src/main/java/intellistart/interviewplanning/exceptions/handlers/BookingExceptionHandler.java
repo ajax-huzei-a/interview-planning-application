@@ -9,15 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-/**
- * Handler for booking's exceptions.
- */
 @ControllerAdvice
 public class BookingExceptionHandler extends ResponseEntityExceptionHandler {
 
-  /**
-   * Method for handling BookingException.
-   */
   @ExceptionHandler(value = BookingException.class)
   public ResponseEntity<Object> handleBookingException(BookingException exception,
       WebRequest webRequest) {

@@ -2,71 +2,44 @@ package intellistart.interviewplanning.model.booking.validation
 
 import intellistart.interviewplanning.exceptions.BookingException
 import intellistart.interviewplanning.exceptions.BookingException.BookingExceptionProfile
-import intellistart.interviewplanning.exceptions.BookingLimitException
-import intellistart.interviewplanning.exceptions.BookingLimitException.BookingLimitExceptionProfile
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
 import intellistart.interviewplanning.model.booking.Booking
-import intellistart.interviewplanning.model.bookinglimit.BookingLimitService
-import intellistart.interviewplanning.model.interviewerslot.InterviewerSlotService
 import intellistart.interviewplanning.model.period.Period
 import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.model.period.TimeService
-import intellistart.interviewplanning.model.week.WeekService
+import intellistart.interviewplanning.model.slot.SlotService
+import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 
-/**
- * Business logic Booking validator.
- */
 @Component
 class BookingValidator(
     private val periodService: PeriodService,
     private val timeService: TimeService,
-    private val weekService: WeekService,
-    private val bookingLimitService: BookingLimitService,
-    private val interviewerSlotService: InterviewerSlotService
+    private val slotService: SlotService
 ) {
 
-    /**
-     * Alias for [validateUpdating].
-     */
     fun validateCreating(newBooking: Booking) {
-        validateUpdating(newBooking, newBooking)
+        validateUpdating(newBooking)
     }
 
-    /**
-     * Perform business logic validation for updating Booking.
-     *
-     * @param oldBooking Booking with old parameters
-     * @param newBooking Booking with new parameters
-     *
-     * @throws SlotException          if duration of new Period is invalid
-     * @throws BookingLimitException  if interviewer's booking limit is exceeded
-     * @throws BookingException       if periods of InterviewSlot, CandidateSlot do not
-     *                                intersect with new Period or new Period is overlapping
-     *                                with existing Periods of InterviewerSlot and
-     *                                CandidateSlot
-     */
-    fun validateUpdating(oldBooking: Booking, newBooking: Booking) {
-        checkIfBookingPeriodIsNotGreaterThanNinetyMinutes(newBooking.period)
+    fun validateUpdating(newBooking: Booking) {
+        checkBookingPeriodForNinetyMinutes(newBooking.period)
 
-        checkIfSubjectAndDescriptionLengthIsWithinLimits(newBooking.subject, newBooking.description)
+        checkSubjectAndDescriptionLength(newBooking.subject, newBooking.description)
 
-        checkIfTheBookingOverlapsWithSlotsOfInterviewerAndCandidate(newBooking)
+        checkBookingForOverlapsWithSlots(newBooking)
 
-        checkIfTheBookingOverlapsWithOtherBookingsOfTheInterviewerAndCandidate(newBooking, oldBooking.id)
-
-        checkIfBookingLimitIsExceeded(newBooking)
+        checkBookingForOverlapsWithOtherBookings(newBooking)
     }
 
-    private fun checkIfBookingPeriodIsNotGreaterThanNinetyMinutes(period: Period) {
+    private fun checkBookingPeriodForNinetyMinutes(period: Period) {
         if (timeService.calculateDurationMinutes(period.from, period.to) < BOOKING_PERIOD_DURATION_MINUTES) {
             throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
         }
     }
 
-    private fun checkIfSubjectAndDescriptionLengthIsWithinLimits(subject: String, description: String) {
+    private fun checkSubjectAndDescriptionLength(subject: String, description: String) {
         if (subject.length > SUBJECT_MAX_SIZE) {
             throw BookingException(BookingExceptionProfile.INVALID_SUBJECT)
         }
@@ -75,20 +48,14 @@ class BookingValidator(
         }
     }
 
-    private fun checkIfTheBookingOverlapsWithSlotsOfInterviewerAndCandidate(booking: Booking) {
-        val dateOfInterviewer: LocalDate = weekService.convertToLocalDate(
-            booking.interviewerSlot.week.id,
-            booking.interviewerSlot.dayOfWeek
-        )
-        val dateOfCandidate: LocalDate = booking.candidateSlot.date
-
-        val periodOfInterviewer: Period = booking.interviewerSlot.period
-        val periodOfCandidate: Period = booking.interviewerSlot.period
+    private fun checkBookingForOverlapsWithSlots(booking: Booking) {
+        val periodOfInterviewer: Period = slotService.getById(booking.interviewerSlotId).period
+        val periodOfCandidate: Period = slotService.getById(booking.candidateSlotId).period
 
         val bookingPeriod: Period = booking.period
 
         if (
-            !dateOfInterviewer.isEqual(dateOfCandidate) ||
+            !periodOfInterviewer.date.isEqual(periodOfCandidate.date) ||
             !periodService.isFirstInsideSecond(bookingPeriod, periodOfInterviewer) ||
             !periodService.isFirstInsideSecond(bookingPeriod, periodOfCandidate)
         ) {
@@ -96,25 +63,24 @@ class BookingValidator(
         }
     }
 
-    private fun checkIfTheBookingOverlapsWithOtherBookingsOfTheInterviewerAndCandidate(
-        booking: Booking,
-        updatedBookingId: Long
+    private fun checkBookingForOverlapsWithOtherBookings(
+        booking: Booking
     ) {
         validatePeriodNotOverlappingWithOtherBookingPeriods(
-            updatedBookingId,
+            booking.id,
             booking.period,
-            booking.interviewerSlot.bookings
+            slotService.getById(booking.interviewerSlotId).bookings
         )
 
         validatePeriodNotOverlappingWithOtherBookingPeriods(
-            updatedBookingId,
+            booking.id,
             booking.period,
-            booking.candidateSlot.bookings
+            slotService.getById(booking.candidateSlotId).bookings
         )
     }
 
     private fun validatePeriodNotOverlappingWithOtherBookingPeriods(
-        updatingBookingId: Long,
+        updatingBookingId: ObjectId,
         period: Period,
         bookings: Collection<Booking>
     ) {
@@ -122,25 +88,6 @@ class BookingValidator(
             if (booking.id != updatingBookingId && periodService.areOverlapping(booking.period, period)) {
                 throw BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING)
             }
-        }
-    }
-
-    private fun checkIfBookingLimitIsExceeded(
-        booking: Booking
-    ) {
-        val interviewerSlotsNewInterviewer = interviewerSlotService
-            .getInterviewerSlotsByUserAndWeek(
-                booking.interviewerSlot.user,
-                booking.interviewerSlot.week
-            )
-
-        val bookingsNumber: Int = interviewerSlotsNewInterviewer.sumOf { it.bookings.size }
-
-        val bookingLimit = bookingLimitService
-            .getBookingLimitByInterviewer(booking.interviewerSlot.user, booking.interviewerSlot.week).bookingLimit
-
-        if (bookingsNumber >= bookingLimit) {
-            throw BookingLimitException(BookingLimitExceptionProfile.BOOKING_LIMIT_IS_EXCEEDED)
         }
     }
 

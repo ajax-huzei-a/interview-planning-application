@@ -5,9 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * DTO object for all exceptions.
- */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -15,5 +12,6 @@ import lombok.Setter;
 public class ExceptionResponse {
 
   private String errorCode;
+
   private String errorMessage;
 }

@@ -1,6 +1,6 @@
 package intellistart.interviewplanning.initialization;
 
-import intellistart.interviewplanning.model.user.Role;
+import intellistart.interviewplanning.model.user.Coordinator;
 import intellistart.interviewplanning.model.user.User;
 import intellistart.interviewplanning.model.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,21 +8,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Class for initializing first coordinator in the system.
- */
 @Component
 public class StartDataLoader implements ApplicationRunner {
 
   private final UserRepository userRepository;
 
+  private static final Logger logger = LoggerFactory.getLogger(StartDataLoader.class);
+
   @Value("${first-coordinator-email}")
   private String email;
 
-  /**
-   * Initial data load.
-   */
   @Autowired
   public StartDataLoader(
       UserRepository userRepository) {
@@ -31,16 +29,11 @@ public class StartDataLoader implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-
-
-    User firstCoordinator = new User(1L, email, Role.COORDINATOR);
+    User firstCoordinator = new Coordinator();
+    firstCoordinator.setEmail(email);
     firstCoordinator = userRepository.save(firstCoordinator);
 
-    //User interviewer = new User(2L, "guzey2001@gmail.com", Role.INTERVIEWER);
-    //interviewer = userRepository.save(interviewer);
 
-    System.out.println("Added first user: " + firstCoordinator);
-
-    //System.out.println("Added interviewer user: " + interviewer);
+    logger.info("Added first user: {}", firstCoordinator.getEmail());
   }
 }

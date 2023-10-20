@@ -4,9 +4,6 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-/**
- * Custom UserDetails implementation for saving email and name field.
- */
 public class JwtUserDetails implements UserDetails {
 
   private String email;
@@ -23,9 +20,6 @@ public class JwtUserDetails implements UserDetails {
     this(email, name, password, authorities, true, true, true, true);
   }
 
-  /**
-   * Standard constructor with all parameters.
-   */
   public JwtUserDetails(String email, String name, String password,
       Collection<? extends GrantedAuthority> authorities, Boolean enabled,
       Boolean accountNonExpired,

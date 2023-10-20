@@ -1,48 +1,33 @@
 package intellistart.interviewplanning.model.user
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.Table
+import intellistart.interviewplanning.model.slot.Slot
+import intellistart.interviewplanning.model.user.User.Companion.COLLECTION_NAME
+import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
-/**
- * User entity.
- */
-@Entity
-@Table(name = "users")
-@JsonPropertyOrder("email", "role", "id")
-data class User(
+@Document(value = COLLECTION_NAME)
+sealed class User(var role: Role) {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    var id: Long = 0,
+    var id: ObjectId = ObjectId()
 
-    @Column(unique = true)
-    var email: String = "",
+    var email: String = ""
 
-    @Enumerated(EnumType.STRING)
-    var role: Role = Role.INTERVIEWER
-) {
-    override fun hashCode(): Int {
-        return id.hashCode()
+    companion object {
+        const val COLLECTION_NAME = "users"
     }
+}
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+@Document(value = COLLECTION_NAME)
+class Coordinator : User(Role.COORDINATOR)
 
-        other as User
+@Document(value = COLLECTION_NAME)
+class Interviewer : User(Role.INTERVIEWER) {
+    var slots: List<Slot> = listOf()
+}
 
-        if (id != other.id) return false
-        if (email != other.email) return false
-        if (role != other.role) return false
-
-        return true
-    }
+@Document(value = COLLECTION_NAME)
+class Candidate : User(Role.CANDIDATE) {
+    var slots: List<Slot> = listOf()
 }

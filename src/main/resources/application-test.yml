@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+jwt:
+  secret: oneweek
+  validity: 86400
+  caching: 1
+
+first-coordinator-email: guzey2001@gmail.com
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          facebook:
+            clientId: 240435898644410
+            clientSecret: c47082928d4e274077cd1e2a56e1d7be
+            redirectUri: https://localhost:8080/
+
+  data:
+    mongodb:
+      uri: mongodb://username:password@localhost:27017/booking_db?authSource=admin
+
+redis:
+  host: localhost
+  port: 6379

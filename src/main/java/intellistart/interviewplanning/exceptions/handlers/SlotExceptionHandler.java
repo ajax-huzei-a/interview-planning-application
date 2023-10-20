@@ -9,15 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-/**
- * Handler for slot's exceptions.
- */
 @ControllerAdvice
 public class SlotExceptionHandler extends ResponseEntityExceptionHandler {
 
-  /**
-   * Method for handling SecurityException.
-   */
   @ExceptionHandler(value = SlotException.class)
   public ResponseEntity<Object> handleSlotException(SlotException exception,
       WebRequest webRequest) {

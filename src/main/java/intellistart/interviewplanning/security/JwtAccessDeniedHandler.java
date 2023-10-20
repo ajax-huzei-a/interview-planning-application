@@ -13,10 +13,6 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-/**
- * Custom denied access handler that resolving errors through
- * delegating handling to controller level exception handler.
- */
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 

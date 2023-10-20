@@ -3,14 +3,8 @@ package intellistart.interviewplanning.exceptions;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-/**
- * Exception class for all bookings exceptions.
- */
 public class BookingException extends Exception {
 
-  /**
-   * Enum that describes type of exception.
-   */
   @AllArgsConstructor
   public enum BookingExceptionProfile {
 

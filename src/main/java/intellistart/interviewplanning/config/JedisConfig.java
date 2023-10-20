@@ -5,9 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisPooled;
 
-/**
- * Configuration Jedis connection to Redis.
- */
 @Configuration
 public class JedisConfig {
 

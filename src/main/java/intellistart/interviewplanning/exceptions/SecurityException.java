@@ -4,16 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/**
- * Exception class for representing all possible authentication
- * and authorization (security) exceptions.
- */
 @Getter
 public class SecurityException extends RuntimeException {
 
-  /**
-   * Enum that describes type of exception.
-   */
   @AllArgsConstructor
   public enum SecurityExceptionProfile {
 
