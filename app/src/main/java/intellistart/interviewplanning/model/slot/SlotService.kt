@@ -2,9 +2,7 @@ package intellistart.interviewplanning.model.slot
 
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
-import intellistart.interviewplanning.security.JwtUserDetails
 import org.bson.types.ObjectId
-import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -13,15 +11,9 @@ class SlotService(
     private val slotRepository: SlotRepository
 ) {
 
-    fun create(slot: Slot, authentication: Authentication): Slot {
-        val jwtUserDetails = authentication.principal as JwtUserDetails
-        return slotRepository.save(slot, jwtUserDetails.email)
-    }
+    fun create(slot: Slot, email: String): Slot = slotRepository.save(slot, email)
 
-    fun update(slot: Slot, authentication: Authentication): Slot {
-        val jwtUserDetails = authentication.principal as JwtUserDetails
-        return slotRepository.update(slot, jwtUserDetails.email)
-    }
+    fun update(slot: Slot, email: String): Slot = slotRepository.update(slot, email)
 
     fun getSlotsByEmailAndDate(email: String, date: LocalDate): List<Slot> =
         slotRepository.findByEmailAndDate(email, date)

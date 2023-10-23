@@ -5,10 +5,8 @@ import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProf
 import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.model.slot.Slot
 import intellistart.interviewplanning.model.slot.SlotService
-import intellistart.interviewplanning.security.JwtUserDetails
 import org.bson.types.ObjectId
 import org.springframework.context.annotation.Lazy
-import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -19,15 +17,15 @@ class SlotValidator(
     private val periodService: PeriodService
 ) {
 
-    fun validateCreating(slot: Slot, authentication: Authentication) {
+    fun validateCreating(slot: Slot, email: String) {
         validateSlotInFuture(slot)
-        validateOverlapping(slot, authentication)
+        validateOverlapping(slot, email)
     }
 
-    fun validateUpdating(slot: Slot, authentication: Authentication) {
+    fun validateUpdating(slot: Slot, email: String) {
         validateSlotIsBookingAndTheSlotExists(slot.id)
         validateSlotInFuture(slot)
-        validateOverlapping(slot, authentication)
+        validateOverlapping(slot, email)
     }
 
     private fun validateSlotInFuture(slot: Slot) {
@@ -36,11 +34,9 @@ class SlotValidator(
         }
     }
 
-    private fun validateOverlapping(slot: Slot, authentication: Authentication) {
-        val jwtUserDetails = authentication.principal as JwtUserDetails
-
+    private fun validateOverlapping(slot: Slot, email: String) {
         val slotList = slotService.getSlotsByEmailAndDate(
-            jwtUserDetails.email,
+            email,
             slot.period.date
         )
 

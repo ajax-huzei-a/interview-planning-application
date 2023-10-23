@@ -34,8 +34,9 @@ class InterviewerController(
         authentication: Authentication
     ): ResponseEntity<SlotDto> {
         val interviewerSlot = getInterviewerSlotFromDto(slotDto)
-        slotValidator.validateCreating(interviewerSlot, authentication)
-        val createdInterviewerSlot = slotService.create(interviewerSlot, authentication)
+        val jwtUserDetails = authentication.principal as JwtUserDetails
+        slotValidator.validateCreating(interviewerSlot, jwtUserDetails.email)
+        val createdInterviewerSlot = slotService.create(interviewerSlot, jwtUserDetails.email)
         return ResponseEntity(createdInterviewerSlot.toDto(), HttpStatus.OK)
     }
 
@@ -46,8 +47,9 @@ class InterviewerController(
         authentication: Authentication
     ): ResponseEntity<SlotDto> {
         val interviewerSlot = getInterviewerSlotFromDto(slotDto).copy(id = ObjectId(slotId))
-        slotValidator.validateUpdating(interviewerSlot, authentication)
-        val updatedInterviewerSlot = slotService.update(interviewerSlot, authentication)
+        val jwtUserDetails = authentication.principal as JwtUserDetails
+        slotValidator.validateUpdating(interviewerSlot, jwtUserDetails.email)
+        val updatedInterviewerSlot = slotService.update(interviewerSlot, jwtUserDetails.email)
         return ResponseEntity(updatedInterviewerSlot.toDto(), HttpStatus.OK)
     }
 

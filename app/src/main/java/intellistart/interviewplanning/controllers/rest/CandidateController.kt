@@ -33,8 +33,9 @@ class CandidateController(
         authentication: Authentication
     ): ResponseEntity<SlotDto> {
         val candidateSlot = getCandidateSlotFromDto(request)
-        slotValidator.validateCreating(candidateSlot, authentication)
-        val createdCandidateSlot = slotService.create(candidateSlot, authentication)
+        val jwtUserDetails = authentication.principal as JwtUserDetails
+        slotValidator.validateCreating(candidateSlot, jwtUserDetails.email)
+        val createdCandidateSlot = slotService.create(candidateSlot, jwtUserDetails.email)
         return ResponseEntity.ok(createdCandidateSlot.toDto())
     }
 
@@ -45,8 +46,9 @@ class CandidateController(
         authentication: Authentication
     ): ResponseEntity<SlotDto> {
         val candidateSlot = getCandidateSlotFromDto(request).copy(id = ObjectId(id))
-        slotValidator.validateUpdating(candidateSlot, authentication)
-        val updatedCandidateSlot = slotService.update(candidateSlot, authentication)
+        val jwtUserDetails = authentication.principal as JwtUserDetails
+        slotValidator.validateUpdating(candidateSlot, jwtUserDetails.email)
+        val updatedCandidateSlot = slotService.update(candidateSlot, jwtUserDetails.email)
         return ResponseEntity.ok(updatedCandidateSlot.toDto())
     }
 
