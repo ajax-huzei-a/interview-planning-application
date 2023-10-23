@@ -1,6 +1,7 @@
 package intellistart.interviewplanning.controllers.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import intellistart.interviewplanning.commonmodels.slot.SlotProto
 import intellistart.interviewplanning.model.slot.Slot
 import java.time.LocalDate
 
@@ -22,3 +23,10 @@ fun Slot.toDto(): SlotDto = SlotDto(
     from = period.from.toString(),
     to = period.to.toString()
 )
+
+fun Slot.toProto(): SlotProto = SlotProto.newBuilder()
+    .setId(id.toHexString())
+    .setDate(period.date.toString())
+    .setFrom(period.from.toString())
+    .setTo(period.to.toString())
+    .build()

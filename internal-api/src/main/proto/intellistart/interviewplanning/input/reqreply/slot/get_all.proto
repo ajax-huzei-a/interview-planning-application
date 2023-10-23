@@ -6,7 +6,9 @@ option java_multiple_files = true;
 
 import "intellistart/interviewplanning/commonmodels/slot/slot.proto";
 
-message GetAllSlotsRequest {}
+message GetAllSlotsRequest {
+    string email = 5;
+}
 
 message GetAllSlotsResponse {
     oneof response {
@@ -15,7 +17,7 @@ message GetAllSlotsResponse {
     }
 
     message Success {
-        commonmodels.slot.SlotList slots = 1;
+        commonmodels.slot.SlotsProto slotsProto = 1;
     }
 
     message Failure {

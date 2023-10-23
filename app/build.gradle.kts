@@ -16,6 +16,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt:0.9.1")
     implementation("org.springframework.data:spring-data-redis:3.0.0")
     implementation("redis.clients:jedis:4.4.3")
+    implementation("io.nats:jnats:2.16.14")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.projectlombok:lombok:1.18.20")
@@ -25,6 +26,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
     implementation("com.google.protobuf:protobuf-java:3.24.3")
+    implementation(project(":internal-api"))
 }
 
 tasks.withType<Test> {

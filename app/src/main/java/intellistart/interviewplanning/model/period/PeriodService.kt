@@ -15,8 +15,19 @@ class PeriodService(
 
     fun obtainPeriod(fromString: String, toString: String, date: LocalDate): Period {
         return runCatching {
-            val from = timeService.convert(fromString)
-            val to = timeService.convert(toString)
+            val from = timeService.convertToLocalTime(fromString)
+            val to = timeService.convertToLocalTime(toString)
+            obtainPeriod(from, to, date)
+        }.getOrElse {
+            throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
+        }
+    }
+
+    fun obtainPeriod(fromString: String, toString: String, dateString: String): Period {
+        return runCatching {
+            val from = timeService.convertToLocalTime(fromString)
+            val to = timeService.convertToLocalTime(toString)
+            val date = timeService.convertToLocalDate(dateString)
             obtainPeriod(from, to, date)
         }.getOrElse {
             throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)

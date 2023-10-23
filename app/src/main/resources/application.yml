@@ -25,3 +25,6 @@ spring:
 redis:
   host: ${REDIS_HOSTNAME}
   port: ${REDIS_PORT}
+
+nats:
+  url: ${NATS_URL}
