@@ -2,11 +2,9 @@ package intellistart.interviewplanning.controllers.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.google.protobuf.Duration
-import com.google.protobuf.Timestamp
-import intellistart.interviewplanning.commonmodels.slot.SlotProto
+import com.google.type.Date
 import intellistart.interviewplanning.model.slot.Slot
 import java.time.LocalDate
-import java.time.ZoneOffset
 
 data class SlotDto(
 
@@ -27,12 +25,13 @@ fun Slot.toDto(): SlotDto = SlotDto(
     to = period.to.toString()
 )
 
-fun Slot.toProto(): SlotProto = SlotProto.newBuilder()
+fun Slot.toProto() = intellistart.interviewplanning.commonmodels.slot.Slot.newBuilder()
     .setId(id.toHexString())
     .setDate(
-        Timestamp.newBuilder().setSeconds(
-            period.date.atStartOfDay(ZoneOffset.UTC).toInstant().epochSecond
-        ).setNanos(period.date.atStartOfDay(ZoneOffset.UTC).toInstant().nano)
+        Date.newBuilder()
+            .setYear(period.date.year)
+            .setMonth(period.date.monthValue)
+            .setDay(period.date.dayOfMonth)
     )
     .setFrom(Duration.newBuilder().setSeconds(period.from.toSecondOfDay().toLong()).setNanos(0))
     .setTo(Duration.newBuilder().setSeconds(period.to.toSecondOfDay().toLong()).setNanos(0))

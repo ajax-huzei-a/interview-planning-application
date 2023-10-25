@@ -42,18 +42,18 @@ class UpdateSlotNatsController(
 
     private fun buildSuccessResponse(slot: Slot): UpdateSlotResponse =
         UpdateSlotResponse.newBuilder().apply {
-            successBuilder.setSlotProto(slot.toProto())
+            successBuilder.slot = slot.toProto()
         }.build()
 
     private fun buildSlotFailureResponse(exception: SlotException): UpdateSlotResponse =
         UpdateSlotResponse.newBuilder().apply {
             failureBuilder.message = exception.message
             when (exception.name) {
-                "slot_is_booked" -> failureBuilder.slotIsBookedBuilder
-                "invalid_boundaries" -> failureBuilder.invalidBoundariesBuilder
-                "slot_not_found" -> failureBuilder.slotNotFoundBuilder
-                "slot_is_overlapping" -> failureBuilder.slotIsOverlappingBuilder
-                "slot_is_in_the_past" -> failureBuilder.slotIsInThePastBuilder
+                SLOT_IS_BOOKED -> failureBuilder.slotIsBookedBuilder
+                INVALID_BOUNDARIES -> failureBuilder.invalidBoundariesBuilder
+                SLOT_NOT_FOUND -> failureBuilder.slotNotFoundBuilder
+                SLOT_IS_OVERLAPPING -> failureBuilder.slotIsOverlappingBuilder
+                SLOT_IS_IN_THE_PAST -> failureBuilder.slotIsInThePastBuilder
             }
         }.build()
 
@@ -61,7 +61,7 @@ class UpdateSlotNatsController(
         UpdateSlotResponse.newBuilder().apply {
             failureBuilder.message = exception.message
             when (exception.name) {
-                "user_not_found" -> failureBuilder.slotNotFoundBuilder
+                USER_NOT_FOUND -> failureBuilder.slotNotFoundBuilder
             }
         }.build()
 
@@ -74,10 +74,19 @@ class UpdateSlotNatsController(
         request: UpdateSlotRequest
     ): Slot {
         return Slot(
-            id = if (request.slotProto.hasId()) { ObjectId(request.slotProto.id) } else ObjectId(),
+            id = if (request.slot.hasId()) { ObjectId(request.slot.id) } else ObjectId(),
             period = periodService
-                .obtainPeriod(request.slotProto.from, request.slotProto.to, request.slotProto.date),
+                .obtainPeriod(request.slot.from, request.slot.to, request.slot.date),
             bookings = listOf()
         )
+    }
+
+    companion object {
+        const val SLOT_IS_BOOKED = "slot_is_booked"
+        const val INVALID_BOUNDARIES = "invalid_boundaries"
+        const val SLOT_NOT_FOUND = "slot_not_found"
+        const val SLOT_IS_OVERLAPPING = "slot_is_overlapping"
+        const val SLOT_IS_IN_THE_PAST = "slot_is_in_the_past"
+        const val USER_NOT_FOUND = "user_not_found"
     }
 }

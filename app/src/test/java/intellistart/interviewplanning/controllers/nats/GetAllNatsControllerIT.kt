@@ -99,7 +99,7 @@ class GetAllNatsControllerIT {
         }.build()
 
         val expectedResponse = GetAllSlotsResponse.newBuilder().apply {
-            successBuilder.slotsProtoBuilder.addAllSlotProto(
+            successBuilder.slotsBuilder.addAllSlotProto(
                 slotService.getAllSlotsByEmail(emailTest).map { it.toProto() }
             )
         }.build()

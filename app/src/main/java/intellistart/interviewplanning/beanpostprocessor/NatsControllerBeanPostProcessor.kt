@@ -29,10 +29,9 @@ private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
 }
 
 private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
-    NatsController<RequestT, ResponseT>.createDispatcher(
-        connection: Connection
-    ): Dispatcher = connection.createDispatcher { message: Message ->
-    val parsedData = parser.parseFrom(message.data)
-    val response = handle(parsedData)
-    connection.publish(message.replyTo, response.toByteArray())
-}
+    NatsController<RequestT, ResponseT>.createDispatcher(connection: Connection): Dispatcher =
+    connection.createDispatcher { message: Message ->
+        val parsedData = parser.parseFrom(message.data)
+        val response = handle(parsedData)
+        connection.publish(message.replyTo, response.toByteArray())
+    }

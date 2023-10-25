@@ -9,7 +9,7 @@ import "intellistart/interviewplanning/commonmodels/error/error.proto";
 
 message UpdateSlotRequest {
   string slotId = 1;
-  commonmodels.slot.SlotProto slotProto = 2;
+  commonmodels.slot.Slot slot = 2;
   string email = 3;
 }
 
@@ -20,7 +20,7 @@ message UpdateSlotResponse {
   }
 
   message Success {
-    commonmodels.slot.SlotProto slotProto = 1;
+    commonmodels.slot.Slot slot = 1;
   }
 
   message Failure {

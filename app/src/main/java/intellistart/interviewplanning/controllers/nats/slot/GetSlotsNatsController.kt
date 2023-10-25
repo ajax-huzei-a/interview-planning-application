@@ -29,7 +29,7 @@ class GetSlotsNatsController(
 
     private fun buildSuccessResponse(slots: List<Slot>): GetAllSlotsResponse =
         GetAllSlotsResponse.newBuilder().apply {
-            successBuilder.slotsProtoBuilder.addAllSlotProto(slots.map { it.toProto() })
+            successBuilder.slotsBuilder.addAllSlotProto(slots.map { it.toProto() })
         }.build()
 
     private fun buildFailureResponse(exception: Throwable): GetAllSlotsResponse =

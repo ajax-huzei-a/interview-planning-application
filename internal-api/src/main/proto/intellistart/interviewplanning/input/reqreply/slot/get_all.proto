@@ -17,7 +17,7 @@ message GetAllSlotsResponse {
     }
 
     message Success {
-        commonmodels.slot.SlotsProto slotsProto = 1;
+        commonmodels.slot.Slots slots = 1;
     }
 
     message Failure {

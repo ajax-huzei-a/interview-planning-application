@@ -2,9 +2,8 @@ package intellistart.interviewplanning.controllers.nats
 
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
-import com.google.protobuf.Timestamp
 import intellistart.interviewplanning.NatsSubject
-import intellistart.interviewplanning.commonmodels.slot.SlotProto
+import intellistart.interviewplanning.commonmodels.slot.Slot
 import intellistart.interviewplanning.model.user.User
 import intellistart.interviewplanning.request.slot.create.proto.CreateSlotRequest
 import intellistart.interviewplanning.request.slot.create.proto.CreateSlotResponse
@@ -37,40 +36,47 @@ class CreateNatsControllerIT {
 
     @ParameterizedTest
     @CsvSource(
-        "5f4d92a129bda0e1921f78a0, 36000, 41400, 1981584000, test1@gmail.com",
-        "5f4d92a129bda0e1921f78a1, 39600, 45000, 1785456000, test2Gmail.com",
-        "5f4d92a129bda0e1921f78a2, 43200, 48600, 1700352000, test1@gmail.com",
-        "5f4d92a129bda0e1921f78a3, 46800, 52200, 1836432000, test2@gmail.com"
+        "5f4d92a129bda0e1921f78a0, 36000, 41400, 2084, 10, 15, test1@gmail.com",
+        "5f4d92a129bda0e1921f78a1, 39600, 45000, 2094, 10, 22, test2Gmail.com",
+        "5f4d92a129bda0e1921f78a2, 43200, 48600, 2084, 10, 5, test1@gmail.com",
+        "5f4d92a129bda0e1921f78a3, 46800, 52200, 2074, 10, 4, test2@gmail.com"
     )
+    @Suppress("LongParameterList")
     fun `should return success response for create slot`(
         idTest: String,
         fromDurationSeconds: Long,
         toDurationSeconds: Long,
-        dateTimestampSeconds: Long,
+        yearInput: Int,
+        monthInput: Int,
+        dayInput: Int,
         emailTest: String
     ) {
         // GIVEN
         val fromDuration = com.google.protobuf.Duration.newBuilder().setSeconds(fromDurationSeconds).build()
         val toDuration = com.google.protobuf.Duration.newBuilder().setSeconds(toDurationSeconds).build()
-        val dateTimestamp = Timestamp.newBuilder().setSeconds(dateTimestampSeconds).build()
+        val dateInput = com.google.type.Date.newBuilder().apply {
+            year = yearInput
+            month = monthInput
+            day = dayInput
+        }.build()
 
         val createSlotRequest = CreateSlotRequest.newBuilder().apply {
-            slotProtoBuilder.apply {
+            slotBuilder.apply {
                 id = idTest
                 from = fromDuration
                 to = toDuration
-                date = dateTimestamp
+                date = dateInput
             }.build()
             email = emailTest
         }.build()
 
         val expectedSlotResponse = CreateSlotResponse.newBuilder().apply {
-            successBuilder.setSlotProto(
-                SlotProto.newBuilder().apply {
+            successBuilder.setSlot(
+                Slot.newBuilder().apply {
                     id = idTest
                     from = fromDuration
                     to = toDuration
-                    date = dateTimestamp
+                    date = dateInput
                 }.build()
             )
         }.build()
@@ -87,27 +93,34 @@ class CreateNatsControllerIT {
 
     @ParameterizedTest
     @CsvSource(
-        "3600, 4200, 1685500800, test1@gmail.com",
-        "3960, 4474, 1690406400, test2Gmail.com",
-        "43200, 48600, 1666070483, test1@gmail.com",
-        "46800, 52740, 168752000, test2@gmail.com"
+        "3600, 4200, 2014, 10, 15, test1@gmail.com",
+        "3960, 4474, 1094, 10, 22, test2Gmail.com",
+        "43200, 48600, 2008, 10, 5, test1@gmail.com",
+        "46800, 52740, 1999, 10, 4, test2@gmail.com"
     )
+    @Suppress("LongParameterList")
     fun `should return failure response for create slot`(
         fromDurationSeconds: Long,
         toDurationSeconds: Long,
-        dateTimestampSeconds: Long,
+        yearInput: Int,
+        monthInput: Int,
+        dayInput: Int,
         emailTest: String
     ) {
         // GIVEN
         val fromDuration = com.google.protobuf.Duration.newBuilder().setSeconds(fromDurationSeconds).build()
         val toDuration = com.google.protobuf.Duration.newBuilder().setSeconds(toDurationSeconds).build()
-        val dateTimestamp = Timestamp.newBuilder().setSeconds(dateTimestampSeconds).build()
+        val dateInput = com.google.type.Date.newBuilder().apply {
+            year = yearInput
+            month = monthInput
+            day = dayInput
+        }.build()
 
         val createSlotRequest = CreateSlotRequest.newBuilder().apply {
-            slotProtoBuilder.apply {
+            slotBuilder.apply {
                 from = fromDuration
                 to = toDuration
-                date = dateTimestamp
+                date = dateInput
             }
             email = emailTest
         }.build()

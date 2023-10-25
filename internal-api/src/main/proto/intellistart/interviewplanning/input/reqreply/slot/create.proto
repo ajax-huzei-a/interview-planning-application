@@ -8,7 +8,7 @@ import "intellistart/interviewplanning/commonmodels/slot/slot.proto";
 import "intellistart/interviewplanning/commonmodels/error/error.proto";
 
 message CreateSlotRequest {
-    commonmodels.slot.SlotProto slotProto = 1;
+    commonmodels.slot.Slot slot = 1;
     string email = 2;
 }
 
@@ -19,7 +19,7 @@ message CreateSlotResponse {
     }
 
     message Success {
-      commonmodels.slot.SlotProto slotProto = 1;
+      commonmodels.slot.Slot slot = 1;
     }
 
     message Failure {
