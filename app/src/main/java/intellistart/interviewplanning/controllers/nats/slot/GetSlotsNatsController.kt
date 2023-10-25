@@ -34,7 +34,6 @@ class GetSlotsNatsController(
 
     private fun buildFailureResponse(exception: Throwable): GetAllSlotsResponse =
         GetAllSlotsResponse.newBuilder().apply {
-            failureBuilder.setErrorMessage(exception.message ?: "unrecognized error")
-            failureBuilder.setErrorCode(exception.javaClass.name ?: "error")
+            failureBuilder.message = exception.message
         }.build()
 }

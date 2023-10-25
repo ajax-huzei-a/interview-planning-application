@@ -2,7 +2,6 @@ package intellistart.interviewplanning.model.period
 
 import org.springframework.stereotype.Component
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -12,13 +11,6 @@ class TimeService {
     fun convertToLocalTime(source: String?): LocalTime =
         runCatching {
             LocalTime.parse(source, formatterTime)
-        }.getOrElse {
-            throw IllegalArgumentException("Illegal data")
-        }
-
-    fun convertToLocalDate(source: String?): LocalDate =
-        runCatching {
-            LocalDate.parse(source, formatterDate)
         }.getOrElse {
             throw IllegalArgumentException("Illegal data")
         }
@@ -34,7 +26,6 @@ class TimeService {
 
     companion object {
         private val formatterTime = DateTimeFormatter.ofPattern("HH:mm")
-        private val formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         private const val NUM_OF_MINUTES_IN_HOUR = 60
     }
 }

@@ -5,6 +5,7 @@ package intellistart.interviewplanning.request.slot.create.proto;
 option java_multiple_files = true;
 
 import "intellistart/interviewplanning/commonmodels/slot/slot.proto";
+import "intellistart/interviewplanning/commonmodels/error/error.proto";
 
 message CreateSlotRequest {
     commonmodels.slot.SlotProto slotProto = 1;
@@ -22,7 +23,15 @@ message CreateSlotResponse {
     }
 
     message Failure {
-      string errorCode = 100;
-      string errorMessage = 101;
+      string message = 100;
+
+      oneof error {
+        commonmodels.error.Error slot_is_booked = 1;
+        commonmodels.error.Error invalid_boundaries = 2;
+        commonmodels.error.Error slot_not_found = 3;
+        commonmodels.error.Error slot_is_overlapping = 4;
+        commonmodels.error.Error slot_is_in_the_past = 5;
+        commonmodels.error.Error user_not_found = 6;
+      }
     }
 }

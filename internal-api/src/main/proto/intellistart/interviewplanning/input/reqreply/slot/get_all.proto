@@ -21,7 +21,6 @@ message GetAllSlotsResponse {
     }
 
     message Failure {
-      string errorCode = 100;
-      string errorMessage = 101;
+      string message = 1;
     }
 }

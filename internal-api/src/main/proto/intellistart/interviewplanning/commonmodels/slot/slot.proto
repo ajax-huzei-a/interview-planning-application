@@ -1,14 +1,17 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
 package intellistart.interviewplanning.commonmodels.slot;
 
 option java_multiple_files = true;
 
 message SlotProto {
   optional string id = 1;
-  string date = 2;
-  string from = 3;
-  string to = 4;
+  google.protobuf.Timestamp date = 2;
+  google.protobuf.Duration from = 3;
+  google.protobuf.Duration to = 4;
 }
 
 message SlotsProto {

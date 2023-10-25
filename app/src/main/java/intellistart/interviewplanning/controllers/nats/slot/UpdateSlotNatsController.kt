@@ -4,6 +4,8 @@ import com.google.protobuf.Parser
 import intellistart.interviewplanning.NatsSubject
 import intellistart.interviewplanning.controllers.dto.toProto
 import intellistart.interviewplanning.controllers.nats.NatsController
+import intellistart.interviewplanning.exceptions.SlotException
+import intellistart.interviewplanning.exceptions.UserException
 import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.model.slot.Slot
 import intellistart.interviewplanning.model.slot.SlotService
@@ -31,7 +33,11 @@ class UpdateSlotNatsController(
         slotValidator.validateUpdating(slot, request.email)
         buildSuccessResponse(slotService.update(slot, request.email))
     }.getOrElse {
-        buildFailureResponse(it)
+        when (it) {
+            is SlotException -> buildSlotFailureResponse(it)
+            is UserException -> buildUserFailureResponse(it)
+            else -> buildUnsupportedFailureResponse(it)
+        }
     }
 
     private fun buildSuccessResponse(slot: Slot): UpdateSlotResponse =
@@ -39,10 +45,29 @@ class UpdateSlotNatsController(
             successBuilder.setSlotProto(slot.toProto())
         }.build()
 
-    private fun buildFailureResponse(exception: Throwable): UpdateSlotResponse =
+    private fun buildSlotFailureResponse(exception: SlotException): UpdateSlotResponse =
         UpdateSlotResponse.newBuilder().apply {
-            failureBuilder.setErrorMessage(exception.message ?: "unrecognized error")
-            failureBuilder.setErrorCode(exception.javaClass.name ?: "error")
+            failureBuilder.message = exception.message
+            when (exception.name) {
+                "slot_is_booked" -> failureBuilder.slotIsBookedBuilder
+                "invalid_boundaries" -> failureBuilder.invalidBoundariesBuilder
+                "slot_not_found" -> failureBuilder.slotNotFoundBuilder
+                "slot_is_overlapping" -> failureBuilder.slotIsOverlappingBuilder
+                "slot_is_in_the_past" -> failureBuilder.slotIsInThePastBuilder
+            }
+        }.build()
+
+    private fun buildUserFailureResponse(exception: UserException): UpdateSlotResponse =
+        UpdateSlotResponse.newBuilder().apply {
+            failureBuilder.message = exception.message
+            when (exception.name) {
+                "user_not_found" -> failureBuilder.slotNotFoundBuilder
+            }
+        }.build()
+
+    private fun buildUnsupportedFailureResponse(exception: Throwable): UpdateSlotResponse =
+        UpdateSlotResponse.newBuilder().apply {
+            failureBuilder.message = exception.message
         }.build()
 
     private fun getSlotFromProto(

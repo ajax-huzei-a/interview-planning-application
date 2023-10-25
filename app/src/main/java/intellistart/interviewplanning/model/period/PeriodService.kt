@@ -1,11 +1,15 @@
 package intellistart.interviewplanning.model.period
 
+import com.google.protobuf.Duration
+import com.google.protobuf.Timestamp
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
 import intellistart.interviewplanning.model.period.validation.PeriodValidator
 import org.springframework.stereotype.Service
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneOffset
 
 @Service
 class PeriodService(
@@ -17,17 +21,6 @@ class PeriodService(
         return runCatching {
             val from = timeService.convertToLocalTime(fromString)
             val to = timeService.convertToLocalTime(toString)
-            obtainPeriod(from, to, date)
-        }.getOrElse {
-            throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
-        }
-    }
-
-    fun obtainPeriod(fromString: String, toString: String, dateString: String): Period {
-        return runCatching {
-            val from = timeService.convertToLocalTime(fromString)
-            val to = timeService.convertToLocalTime(toString)
-            val date = timeService.convertToLocalDate(dateString)
             obtainPeriod(from, to, date)
         }.getOrElse {
             throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
@@ -52,4 +45,12 @@ class PeriodService(
 
     private fun isTimeInPeriod(time: LocalTime, period: Period): Boolean =
         time.isAfter(period.from) && time.isBefore(period.to)
+
+    fun obtainPeriod(from: Duration, to: Duration, date: Timestamp): Period {
+        val localDate = Instant.ofEpochSecond(date.seconds, date.nanos.toLong()).atZone(ZoneOffset.UTC).toLocalDate()
+        val localTimeFrom = LocalTime.ofSecondOfDay(from.seconds)
+        val localTimeTo = LocalTime.ofSecondOfDay(to.seconds)
+
+        return obtainPeriod(localTimeFrom, localTimeTo, localDate)
+    }
 }

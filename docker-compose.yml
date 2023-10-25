@@ -10,6 +10,7 @@ services:
     depends_on:
       - mongodb
       - redis
+      - nats
 
 
   mongodb:
@@ -29,6 +30,16 @@ services:
     image: redis:6.2-alpine
     volumes:
       - cache:/data
+
+  nats:
+    image: nats
+    ports:
+      - ${NATS_PORT}:${NATS_PORT}
+    healthcheck:
+      test: ["CMD", "nats", "ping"]
+      interval: 1s
+      timeout: 1s
+      retries: 5
 
 
 volumes:
