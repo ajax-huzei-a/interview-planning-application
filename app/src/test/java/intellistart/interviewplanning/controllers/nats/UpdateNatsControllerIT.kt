@@ -25,6 +25,8 @@ import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
+import com.google.protobuf.Duration as ProtobufDuration
+import com.google.type.Date as ProtobufDate
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -66,9 +68,9 @@ class UpdateNatsControllerIT {
         newDataOfSecondsForFrom: Long
     ) {
         // GIVEN
-        val newFromDuration = com.google.protobuf.Duration.newBuilder().setSeconds(newDataOfSecondsForFrom).build()
-        val toDuration = com.google.protobuf.Duration.newBuilder().setSeconds(toDurationSeconds).build()
-        val dateInput = com.google.type.Date.newBuilder().apply {
+        val newFromDuration = ProtobufDuration.newBuilder().setSeconds(newDataOfSecondsForFrom).build()
+        val toDuration = ProtobufDuration.newBuilder().setSeconds(toDurationSeconds).build()
+        val dateInput = ProtobufDate.newBuilder().apply {
             year = yearInput
             month = monthInput
             day = dayInput
@@ -140,9 +142,9 @@ class UpdateNatsControllerIT {
         newDataOfSecondsForFrom: Long
     ) {
         // GIVEN
-        val newFromDuration = com.google.protobuf.Duration.newBuilder().setSeconds(newDataOfSecondsForFrom).build()
-        val toDuration = com.google.protobuf.Duration.newBuilder().setSeconds(toDurationSeconds).build()
-        val dateInput = com.google.type.Date.newBuilder().apply {
+        val newFromDuration = ProtobufDuration.newBuilder().setSeconds(newDataOfSecondsForFrom).build()
+        val toDuration = ProtobufDuration.newBuilder().setSeconds(toDurationSeconds).build()
+        val dateInput = ProtobufDate.newBuilder().apply {
             year = yearInput
             month = monthInput
             day = dayInput

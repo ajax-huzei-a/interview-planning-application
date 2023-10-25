@@ -5,6 +5,7 @@ import com.google.protobuf.Duration
 import com.google.type.Date
 import intellistart.interviewplanning.model.slot.Slot
 import java.time.LocalDate
+import intellistart.interviewplanning.commonmodels.slot.Slot as ProtobufSlot
 
 data class SlotDto(
 
@@ -25,7 +26,7 @@ fun Slot.toDto(): SlotDto = SlotDto(
     to = period.to.toString()
 )
 
-fun Slot.toProto() = intellistart.interviewplanning.commonmodels.slot.Slot.newBuilder()
+fun Slot.toProto() = ProtobufSlot.newBuilder()
     .setId(id.toHexString())
     .setDate(
         Date.newBuilder()

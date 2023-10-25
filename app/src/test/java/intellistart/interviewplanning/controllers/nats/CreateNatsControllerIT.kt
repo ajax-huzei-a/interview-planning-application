@@ -18,6 +18,9 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.findAllAndRemove
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.test.context.ActiveProfiles
+import java.time.Duration
+import com.google.protobuf.Duration as ProtobufDuration
+import com.google.type.Date as ProtobufDate
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -52,9 +55,9 @@ class CreateNatsControllerIT {
         emailTest: String
     ) {
         // GIVEN
-        val fromDuration = com.google.protobuf.Duration.newBuilder().setSeconds(fromDurationSeconds).build()
-        val toDuration = com.google.protobuf.Duration.newBuilder().setSeconds(toDurationSeconds).build()
-        val dateInput = com.google.type.Date.newBuilder().apply {
+        val fromDuration = ProtobufDuration.newBuilder().setSeconds(fromDurationSeconds).build()
+        val toDuration = ProtobufDuration.newBuilder().setSeconds(toDurationSeconds).build()
+        val dateInput = ProtobufDate.newBuilder().apply {
             year = yearInput
             month = monthInput
             day = dayInput
@@ -108,9 +111,9 @@ class CreateNatsControllerIT {
         emailTest: String
     ) {
         // GIVEN
-        val fromDuration = com.google.protobuf.Duration.newBuilder().setSeconds(fromDurationSeconds).build()
-        val toDuration = com.google.protobuf.Duration.newBuilder().setSeconds(toDurationSeconds).build()
-        val dateInput = com.google.type.Date.newBuilder().apply {
+        val fromDuration = ProtobufDuration.newBuilder().setSeconds(fromDurationSeconds).build()
+        val toDuration = ProtobufDuration.newBuilder().setSeconds(toDurationSeconds).build()
+        val dateInput = ProtobufDate.newBuilder().apply {
             year = yearInput
             month = monthInput
             day = dayInput
@@ -149,7 +152,7 @@ class CreateNatsControllerIT {
         val response = connection.requestWithTimeout(
             NatsSubject.Slot.CREATE,
             payload.toByteArray(),
-            java.time.Duration.ofSeconds(10L)
+            Duration.ofSeconds(10L)
         )
         return parser.parseFrom(response.get().data)
     }
