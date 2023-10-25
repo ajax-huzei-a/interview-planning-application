@@ -16,7 +16,8 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.remove
+import org.springframework.data.mongodb.core.findAllAndRemove
+import org.springframework.data.mongodb.core.query.Query
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
@@ -31,7 +32,7 @@ class CreateNatsControllerIT {
 
     @AfterEach
     fun cleanDB() {
-        mongoTemplate.remove<User>()
+        mongoTemplate.findAllAndRemove<User>(Query())
     }
 
     @ParameterizedTest
@@ -139,17 +140,4 @@ class CreateNatsControllerIT {
         )
         return parser.parseFrom(response.get().data)
     }
-
-//    private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3> doRequest(
-//        subject: String,
-//        payload: RequestT,
-//        parser: Parser<ResponseT>,
-//    ): ResponseT {
-//        val response = connection.requestWithTimeout(
-//            subject,
-//            payload.toByteArray(),
-//            Duration.ofSeconds(10L)
-//        )
-//        return parser.parseFrom(response.get().data)
-//    }
 }

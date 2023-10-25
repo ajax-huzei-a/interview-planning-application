@@ -74,7 +74,7 @@ class UpdateSlotNatsController(
         request: UpdateSlotRequest
     ): Slot {
         return Slot(
-            id = ObjectId(),
+            id = if (request.slotProto.hasId()) { ObjectId(request.slotProto.id) } else ObjectId(),
             period = periodService
                 .obtainPeriod(request.slotProto.from, request.slotProto.to, request.slotProto.date),
             bookings = listOf()
