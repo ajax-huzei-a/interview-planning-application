@@ -31,12 +31,15 @@ class UpdateSlotNatsController(
         slotValidator.validateUpdating(slot, request.email)
         buildSuccessResponse(slotService.update(slot, request.email))
     }.getOrElse {
-        when (it) {
-            is SlotException -> buildSlotFailureResponse(it)
-            is UserException -> buildUserFailureResponse(it)
-            else -> buildUnsupportedFailureResponse(it)
-        }
+        buildFailureResponse(it)
     }
+
+    private fun buildFailureResponse(exc: Throwable): UpdateSlotResponse =
+        when (exc) {
+            is SlotException -> buildSlotFailureResponse(exc)
+            is UserException -> buildUserFailureResponse(exc)
+            else -> buildUnsupportedFailureResponse(exc)
+        }
 
     private fun buildSuccessResponse(slot: Slot): UpdateSlotResponse =
         UpdateSlotResponse.newBuilder().apply {
