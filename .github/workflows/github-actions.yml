@@ -40,5 +40,5 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
-      - name: Run application with test profile
-        run: ./gradlew bootRun --args='--spring.profiles.active=test'
+      - name: Compile and run checks
+        run: ./gradlew build
