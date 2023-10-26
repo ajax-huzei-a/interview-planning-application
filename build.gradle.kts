@@ -2,62 +2,41 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.9.0"
-    id("org.springframework.boot") version "2.7.3"
-    id("io.spring.dependency-management") version "1.1.3"
-    id("org.jetbrains.kotlin.plugin.spring") version "1.9.0"
-    id("io.gitlab.arturbosch.detekt") version("1.23.1")
+    id("com.google.protobuf") version "0.9.4" apply false
 }
 
-repositories {
-    mavenCentral()
-}
-
-val kotlinVersion = "1.9.0"
-
-group = "com.intellias.intellistart"
-version = "0.0.1-SNAPSHOT"
-
-dependencies {
-    implementation("javax.xml.bind:jaxb-api:2.3.1")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("io.jsonwebtoken:jjwt:0.9.1")
-    implementation("org.springframework.data:spring-data-redis:3.0.0")
-    implementation("redis.clients:jedis:4.4.3")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
-    implementation("org.projectlombok:lombok:1.18.20")
-    annotationProcessor("org.projectlombok:lombok:1.18.20")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
-}
-
-springBoot {
-    mainClass.set("intellistart.interviewplanning.InterviewPlanningApplication")
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "11"
+allprojects {
+    group = "com.intellias.intellistart"
+    version = "0.0.1-SNAPSHOT"
+    repositories {
+        mavenCentral()
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-}
+subprojects {
+    apply(plugin = "kotlin")
+    apply(plugin = "com.google.protobuf")
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs += "-Xjsr305=strict"
+            jvmTarget = "17"
+        }
+    }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-}
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+    }
 
-tasks.withType<Javadoc> {
-    options.encoding = "UTF-8"
+    dependencies {
+        implementation("com.google.api.grpc:proto-google-common-protos:2.26.0")
+    }
+
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+    }
+
+    tasks.withType<Javadoc> {
+        options.encoding = "UTF-8"
+    }
 }

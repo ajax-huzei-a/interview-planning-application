@@ -1,0 +1,30 @@
+server:
+  port: ${APPLICATION_PORT}
+
+jwt:
+  secret: ${JWT_SECRET}
+  validity: ${JWT_VALIDITY}
+  caching: ${JWT_CACHING}
+
+first-coordinator-email: ${FIRST_COORDINATOR_EMAIL}
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          facebook:
+            clientId: ${FACEBOOK_CLIENT_ID}
+            clientSecret: ${FACEBOOK_SECRET}
+            redirectUri: ${FACEBOOK_REDIRECT_URI}
+
+  data:
+    mongodb:
+      uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongodb:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin
+
+redis:
+  host: ${REDIS_HOSTNAME}
+  port: ${REDIS_PORT}
+
+nats:
+  url: ${NATS_URL}
