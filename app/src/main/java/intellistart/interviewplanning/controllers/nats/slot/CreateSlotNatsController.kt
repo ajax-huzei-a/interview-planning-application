@@ -12,13 +12,11 @@ import intellistart.interviewplanning.model.slot.SlotService
 import intellistart.interviewplanning.model.slot.validation.SlotValidator
 import intellistart.interviewplanning.request.slot.create.proto.CreateSlotRequest
 import intellistart.interviewplanning.request.slot.create.proto.CreateSlotResponse
-import io.nats.client.Connection
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 
 @Component
 class CreateSlotNatsController(
-    override val connection: Connection,
     private val slotService: SlotService,
     private val slotValidator: SlotValidator,
     private val periodService: PeriodService

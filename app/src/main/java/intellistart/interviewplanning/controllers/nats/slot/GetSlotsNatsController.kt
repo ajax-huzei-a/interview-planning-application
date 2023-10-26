@@ -8,12 +8,10 @@ import intellistart.interviewplanning.model.slot.Slot
 import intellistart.interviewplanning.model.slot.SlotService
 import intellistart.interviewplanning.request.slot.get_all.proto.GetAllSlotsRequest
 import intellistart.interviewplanning.request.slot.get_all.proto.GetAllSlotsResponse
-import io.nats.client.Connection
 import org.springframework.stereotype.Component
 
 @Component
 class GetSlotsNatsController(
-    override val connection: Connection,
     private val slotService: SlotService,
 ) : NatsController<GetAllSlotsRequest, GetAllSlotsResponse> {
 
