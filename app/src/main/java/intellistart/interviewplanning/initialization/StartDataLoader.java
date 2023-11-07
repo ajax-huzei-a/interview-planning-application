@@ -31,9 +31,10 @@ public class StartDataLoader implements ApplicationRunner {
   public void run(ApplicationArguments args) {
     User firstCoordinator = new Coordinator();
     firstCoordinator.setEmail(email);
-    firstCoordinator = userRepository.save(firstCoordinator);
-
-
-    logger.info("Added first user: {}", firstCoordinator.getEmail());
+    userRepository.save(firstCoordinator).subscribe(
+        user -> logger.info("Added first user: {}", user.getEmail()),
+        error -> logger.error("Error while adding first user: {}", error.getMessage()),
+        () -> logger.info("Complete adding first user")
+    );
   }
 }

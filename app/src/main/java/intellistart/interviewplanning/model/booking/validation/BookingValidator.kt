@@ -11,47 +11,48 @@ import intellistart.interviewplanning.model.period.TimeService
 import intellistart.interviewplanning.model.slot.SlotService
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class BookingValidator(
     private val periodService: PeriodService,
     private val timeService: TimeService,
-    private val slotService: SlotService
+    private val slotService: SlotService,
 ) {
 
-    fun validateCreating(newBooking: Booking) {
-        validateUpdating(newBooking)
-    }
+    fun validateCreating(newBooking: Booking): Mono<Unit> = validateUpdating(newBooking)
 
-    fun validateUpdating(newBooking: Booking) {
+    fun validateUpdating(newBooking: Booking): Mono<Unit> =
         checkBookingPeriodForNinetyMinutes(newBooking.period)
+            .then(checkSubjectAndDescriptionLength(newBooking.subject, newBooking.description))
+            .then(checkBookingForOverlapsWithSlots(newBooking))
+            .then(checkBookingForOverlapsWithOtherBookings(newBooking))
 
-        checkSubjectAndDescriptionLength(newBooking.subject, newBooking.description)
-
-        checkBookingForOverlapsWithSlots(newBooking)
-
-        checkBookingForOverlapsWithOtherBookings(newBooking)
-    }
-
-    private fun checkBookingPeriodForNinetyMinutes(period: Period) {
+    private fun checkBookingPeriodForNinetyMinutes(period: Period): Mono<Unit> =
         if (timeService.calculateDurationMinutes(period.from, period.to) < BOOKING_PERIOD_DURATION_MINUTES) {
-            throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
+            Mono.error(SlotException(SlotExceptionProfile.INVALID_BOUNDARIES))
+        } else {
+            Unit.toMono()
         }
-    }
 
-    private fun checkSubjectAndDescriptionLength(subject: String, description: String) {
+    private fun checkSubjectAndDescriptionLength(subject: String, description: String): Mono<Unit> {
         if (subject.length > SUBJECT_MAX_SIZE) {
-            throw BookingException(BookingExceptionProfile.INVALID_SUBJECT)
+            return Mono.error(BookingException(BookingExceptionProfile.INVALID_SUBJECT))
         }
-        if (description.length > DESCRIPTION_MAX_SIZE) {
-            throw BookingException(BookingExceptionProfile.INVALID_DESCRIPTION)
+        return if (description.length > DESCRIPTION_MAX_SIZE) {
+            Mono.error(BookingException(BookingExceptionProfile.INVALID_DESCRIPTION))
+        } else {
+            Unit.toMono()
         }
     }
 
-    private fun checkBookingForOverlapsWithSlots(booking: Booking) {
-        val periodOfInterviewer: Period = slotService.getById(booking.interviewerSlotId).period
-        val periodOfCandidate: Period = slotService.getById(booking.candidateSlotId).period
-
+    private fun checkBookingForOverlapsWithSlots(booking: Booking): Mono<Unit> = Mono.zip(
+        slotService.getById(booking.interviewerSlotId),
+        slotService.getById(booking.candidateSlotId)
+    ).flatMap { tuple ->
+        val periodOfInterviewer: Period = tuple.t1.period
+        val periodOfCandidate: Period = tuple.t2.period
         val bookingPeriod: Period = booking.period
 
         if (
@@ -59,36 +60,45 @@ class BookingValidator(
             !periodService.isFirstInsideSecond(bookingPeriod, periodOfInterviewer) ||
             !periodService.isFirstInsideSecond(bookingPeriod, periodOfCandidate)
         ) {
-            throw BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING)
+            Mono.error(BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING))
+        } else {
+            Unit.toMono()
         }
     }
 
     private fun checkBookingForOverlapsWithOtherBookings(
-        booking: Booking
-    ) {
-        validatePeriodNotOverlappingWithOtherBookingPeriods(
-            booking.id,
-            booking.period,
-            slotService.getById(booking.interviewerSlotId).bookings
-        )
+        booking: Booking,
+    ): Mono<Unit> = Mono.zip(
+        slotService.getById(booking.interviewerSlotId),
+        slotService.getById(booking.candidateSlotId)
+    ).flatMap { tuple ->
+        val interviewerBookings: Collection<Booking> = tuple.t1.bookings
+        val candidateBookings: Collection<Booking> = tuple.t2.bookings
 
         validatePeriodNotOverlappingWithOtherBookingPeriods(
             booking.id,
             booking.period,
-            slotService.getById(booking.candidateSlotId).bookings
+            interviewerBookings
+        ).then(
+            validatePeriodNotOverlappingWithOtherBookingPeriods(
+                booking.id,
+                booking.period,
+                candidateBookings
+            )
         )
     }
 
     private fun validatePeriodNotOverlappingWithOtherBookingPeriods(
         updatingBookingId: ObjectId,
         period: Period,
-        bookings: Collection<Booking>
-    ) {
+        bookings: Collection<Booking>,
+    ): Mono<Unit> {
         bookings.forEach { booking ->
             if (booking.id != updatingBookingId && periodService.areOverlapping(booking.period, period)) {
-                throw BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING)
+                return Mono.error(BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING))
             }
         }
+        return Unit.toMono()
     }
 
     companion object {

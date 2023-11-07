@@ -12,27 +12,31 @@ import intellistart.interviewplanning.model.slot.SlotService
 import intellistart.interviewplanning.model.slot.validation.SlotValidator
 import intellistart.interviewplanning.request.slot.create.proto.CreateSlotRequest
 import intellistart.interviewplanning.request.slot.create.proto.CreateSlotResponse
+import io.nats.client.Connection
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 
 @Component
 class CreateSlotNatsController(
     private val slotService: SlotService,
     private val slotValidator: SlotValidator,
-    private val periodService: PeriodService
+    private val periodService: PeriodService,
+    override val connection: Connection,
 ) : NatsController<CreateSlotRequest, CreateSlotResponse> {
 
     override val subject: String = CREATE
 
     override val parser: Parser<CreateSlotRequest> = CreateSlotRequest.parser()
 
-    override fun handle(request: CreateSlotRequest): CreateSlotResponse = runCatching {
-        val slot = getSlotFromProto(request)
-        slotValidator.validateCreating(slot, request.email)
-        buildSuccessResponse(slotService.create(slot, request.email))
-    }.getOrElse {
-        buildFailureResponse(it)
-    }
+    override fun handle(request: CreateSlotRequest): Mono<CreateSlotResponse> =
+        getSlotFromProto(request)
+            .flatMap { slot ->
+                slotValidator.validateCreating(slot, request.email)
+                    .then(slotService.create(slot, request.email))
+            }
+            .map { buildSuccessResponse(it) }
+            .onErrorResume { Mono.just(buildFailureResponse(it)) }
 
     private fun buildFailureResponse(exc: Throwable): CreateSlotResponse =
         when (exc) {
@@ -72,15 +76,20 @@ class CreateSlotNatsController(
         }.build()
 
     private fun getSlotFromProto(
-        request: CreateSlotRequest
-    ): Slot {
-        return Slot(
-            id = if (request.slot.hasId()) { ObjectId(request.slot.id) } else ObjectId(),
-            period = periodService
-                .obtainPeriod(request.slot.from, request.slot.to, request.slot.date),
-            bookings = listOf()
-        )
-    }
+        request: CreateSlotRequest,
+    ): Mono<Slot> =
+        periodService.obtainPeriod(request.slot.from, request.slot.to, request.slot.date)
+            .map {
+                Slot(
+                    id = if (request.slot.hasId()) {
+                        ObjectId(request.slot.id)
+                    } else {
+                        ObjectId()
+                    },
+                    period = it,
+                    bookings = listOf()
+                )
+            }
 
     companion object {
         const val SLOT_IS_BOOKED = "slot_is_booked"

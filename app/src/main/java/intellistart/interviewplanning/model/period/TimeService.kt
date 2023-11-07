@@ -1,6 +1,7 @@
 package intellistart.interviewplanning.model.period
 
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 import java.time.Duration
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -8,12 +9,11 @@ import java.time.format.DateTimeFormatter
 @Component
 class TimeService {
 
-    fun convertToLocalTime(source: String?): LocalTime =
-        runCatching {
-            LocalTime.parse(source, formatterTime)
-        }.getOrElse {
-            throw IllegalArgumentException("Illegal data")
-        }
+    fun convertToLocalTime(source: String?): Mono<LocalTime> =
+        Mono.fromSupplier { LocalTime.parse(source, formatterTime) }
+            .onErrorMap {
+                IllegalArgumentException("Illegal data")
+            }
 
     fun calculateDurationMinutes(from: LocalTime, to: LocalTime): Int {
         val duration = Duration.between(from, to)

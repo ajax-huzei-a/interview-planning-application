@@ -20,9 +20,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.findAllAndRemove
-import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.dropCollection
 import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
 import java.time.Instant
@@ -37,7 +36,7 @@ class GetAllNatsControllerIT {
     lateinit var connection: Connection
 
     @Autowired
-    lateinit var mongoTemplate: MongoTemplate
+    lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
 
     @Autowired
     lateinit var slotService: SlotService
@@ -47,7 +46,7 @@ class GetAllNatsControllerIT {
 
     @AfterEach
     fun cleanDB() {
-        mongoTemplate.findAllAndRemove<User>(Query())
+        reactiveMongoTemplate.dropCollection<User>().block()
     }
 
     @ParameterizedTest
@@ -65,7 +64,7 @@ class GetAllNatsControllerIT {
         emailTest: String
     ) {
         // GIVEN
-        userService.grantRoleByEmail(emailTest, Role.CANDIDATE)
+        userService.grantRoleByEmail(emailTest, Role.CANDIDATE).block()
 
         slotService.create(
             Slot(
@@ -78,7 +77,7 @@ class GetAllNatsControllerIT {
                 bookings = listOf()
             ),
             emailTest
-        )
+        ).block()
 
         slotService.create(
             Slot(
@@ -92,7 +91,7 @@ class GetAllNatsControllerIT {
                 bookings = listOf()
             ),
             emailTest
-        )
+        ).block()
 
         val getAllSlotRequest = GetAllSlotsRequest.newBuilder().apply {
             email = emailTest
@@ -100,7 +99,7 @@ class GetAllNatsControllerIT {
 
         val expectedResponse = GetAllSlotsResponse.newBuilder().apply {
             successBuilder.slotsBuilder.addAllSlotProto(
-                slotService.getAllSlotsByEmail(emailTest).map { it.toProto() }
+                slotService.getAllSlotsByEmail(emailTest).map { it.toProto() }.toIterable()
             )
         }.build()
 

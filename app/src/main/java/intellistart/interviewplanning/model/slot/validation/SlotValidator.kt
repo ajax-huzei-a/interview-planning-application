@@ -8,6 +8,8 @@ import intellistart.interviewplanning.model.slot.SlotService
 import org.bson.types.ObjectId
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDate
 
 @Service
@@ -17,45 +19,36 @@ class SlotValidator(
     private val periodService: PeriodService
 ) {
 
-    fun validateCreating(slot: Slot, email: String) {
+    fun validateCreating(slot: Slot, email: String): Mono<Unit> =
         validateSlotInFuture(slot)
-        validateOverlapping(slot, email)
-    }
+            .then(validateOverlapping(slot, email))
 
-    fun validateUpdating(slot: Slot, email: String) {
+    fun validateUpdating(slot: Slot, email: String) =
         validateSlotIsBookingAndTheSlotExists(slot.id)
-        validateSlotInFuture(slot)
-        validateOverlapping(slot, email)
-    }
+            .then(validateSlotInFuture(slot))
+            .then(validateOverlapping(slot, email))
 
-    private fun validateSlotInFuture(slot: Slot) {
+    private fun validateSlotInFuture(slot: Slot): Mono<Unit> =
         if (LocalDate.now() > slot.period.date) {
-            throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
+            Mono.error(SlotException(SlotExceptionProfile.INVALID_BOUNDARIES))
+        } else {
+            Unit.toMono()
         }
-    }
 
-    private fun validateOverlapping(slot: Slot, email: String) {
-        val slotList = slotService.getSlotsByEmailAndDate(
-            email,
-            slot.period.date
-        )
+    private fun validateOverlapping(slot: Slot, email: String): Mono<Unit> =
+        slotService.getSlotsByEmailAndDate(email, slot.period.date)
+            .filter {
+                slot.id != it.id && periodService.areOverlapping(slot.period, it.period)
+            }.hasElements().flatMap {
+                Unit.toMono()
+            }.switchIfEmpty(Mono.error(SlotException(SlotExceptionProfile.SLOT_IS_OVERLAPPING)))
 
-        if (slotList.isNotEmpty()) {
-            for (item in slotList) {
-                if (slot.id != item.id &&
-                    periodService.areOverlapping(slot.period, item.period)
-                ) {
-                    throw SlotException(SlotExceptionProfile.SLOT_IS_OVERLAPPING)
-                }
+    private fun validateSlotIsBookingAndTheSlotExists(id: ObjectId): Mono<Unit> =
+        slotService.getById(id).flatMap { slot ->
+            if (slot.bookings.isNotEmpty()) {
+                Mono.error(SlotException(SlotExceptionProfile.SLOT_IS_BOOKED))
+            } else {
+                Unit.toMono()
             }
         }
-    }
-
-    private fun validateSlotIsBookingAndTheSlotExists(id: ObjectId) {
-        val slot = slotService.getById(id)
-
-        if (slot.bookings.isNotEmpty()) {
-            throw SlotException(SlotExceptionProfile.SLOT_IS_BOOKED)
-        }
-    }
 }

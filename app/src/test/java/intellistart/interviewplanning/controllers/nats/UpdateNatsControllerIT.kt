@@ -18,9 +18,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.findAllAndRemove
-import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.dropCollection
 import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
 import java.time.LocalDate
@@ -36,7 +35,7 @@ class UpdateNatsControllerIT {
     lateinit var connection: Connection
 
     @Autowired
-    lateinit var mongoTemplate: MongoTemplate
+    lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
 
     @Autowired
     lateinit var slotService: SlotService
@@ -46,7 +45,7 @@ class UpdateNatsControllerIT {
 
     @AfterEach
     fun cleanDB() {
-        mongoTemplate.findAllAndRemove<User>(Query())
+        reactiveMongoTemplate.dropCollection<User>().block()
     }
 
     @ParameterizedTest
@@ -76,7 +75,7 @@ class UpdateNatsControllerIT {
             day = dayInput
         }.build()
 
-        userService.grantRoleByEmail(emailTest, Role.CANDIDATE)
+        userService.grantRoleByEmail(emailTest, Role.CANDIDATE).block()
 
         slotService.create(
             intellistart.interviewplanning.model.slot.Slot(
@@ -89,7 +88,7 @@ class UpdateNatsControllerIT {
                 bookings = listOf()
             ),
             emailTest
-        )
+        ).block()
 
         val updateSlotRequest = UpdateSlotRequest.newBuilder().apply {
             slotId = idTest
@@ -150,7 +149,7 @@ class UpdateNatsControllerIT {
             day = dayInput
         }.build()
 
-        userService.grantRoleByEmail(emailTest, Role.CANDIDATE)
+        userService.grantRoleByEmail(emailTest, Role.CANDIDATE).block()
 
         slotService.create(
             intellistart.interviewplanning.model.slot.Slot(
@@ -163,7 +162,7 @@ class UpdateNatsControllerIT {
                 bookings = listOf()
             ),
             emailTest
-        )
+        ).block()
 
         val updateSlotRequest = UpdateSlotRequest.newBuilder().apply {
             slotId = idTest

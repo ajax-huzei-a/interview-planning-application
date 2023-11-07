@@ -1,85 +1,70 @@
 package intellistart.interviewplanning.security;
 
 import intellistart.interviewplanning.exceptions.SecurityException;
-import intellistart.interviewplanning.exceptions.SecurityException.SecurityExceptionProfile;
 import intellistart.interviewplanning.utils.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
 
-@Component
-public class JwtRequestFilter extends OncePerRequestFilter {
+public class JwtRequestFilter implements WebFilter {
 
-  @Autowired
-  private JwtUserDetailsService jwtUserDetailsService;
-  @Autowired
-  private JwtUtil jwtUtil;
+    private final JwtUserDetailsService jwtUserDetailsService;
 
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain chain)
-      throws ServletException, IOException {
 
-    final String requestTokenHeader = request.getHeader("Authorization");
+    private final JwtUtil jwtUtil;
 
-    String email = null;
-    String jwtToken = null;
-    String name = null;
-    // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
-    if (requestTokenHeader != null) {
-      if (!requestTokenHeader.startsWith("Bearer ")) {
-        throw new SecurityException(SecurityExceptionProfile.BAD_TOKEN);
-      }
-
-      jwtToken = requestTokenHeader.substring(7);
-      try {
-        email = jwtUtil.getEmailFromToken(jwtToken);
-        name = jwtUtil.getNameFromToken(jwtToken);
-      } catch (IllegalArgumentException e) {
-        System.out.println("Unable to get JWT Token");
-      } catch (UnsupportedJwtException e) {
-        throw new SecurityException(SecurityExceptionProfile.UNSUPPORTED_TOKEN);
-      } catch (MalformedJwtException e) {
-        throw new SecurityException(SecurityExceptionProfile.MALFORMED_TOKEN);
-      } catch (SignatureException e) {
-        throw new SecurityException(SecurityExceptionProfile.BAD_TOKEN_SIGNATURE);
-      } catch (ExpiredJwtException e) {
-        throw new SecurityException(SecurityExceptionProfile.EXPIRED_TOKEN);
-      }
+    public JwtRequestFilter(JwtUserDetailsService jwtUserDetailsService, JwtUtil jwtUtil) {
+        this.jwtUserDetailsService = jwtUserDetailsService;
+        this.jwtUtil = jwtUtil;
     }
 
-    // Once we get the token validate it.
-    if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        String requestTokenHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
 
-      JwtUserDetails userDetails = (JwtUserDetails)
-          this.jwtUserDetailsService.loadUserByEmailAndName(email, name);
+        String email = null;
+        String jwtToken;
+        String name = null;
 
-      // If token is valid configure Spring Security to manually set authentication.
-      if (jwtUtil.validateToken(jwtToken, userDetails)) {
+        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+            jwtToken = requestTokenHeader.substring(7);
+            try {
+                email = jwtUtil.getEmailFromToken(jwtToken);
+                name = jwtUtil.getNameFromToken(jwtToken);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Unable to get JWT Token");
+            } catch (UnsupportedJwtException e) {
+                throw new SecurityException(SecurityException.SecurityExceptionProfile.UNSUPPORTED_TOKEN);
+            } catch (MalformedJwtException e) {
+                throw new SecurityException(SecurityException.SecurityExceptionProfile.MALFORMED_TOKEN);
+            } catch (SignatureException e) {
+                throw new SecurityException(SecurityException.SecurityExceptionProfile.BAD_TOKEN_SIGNATURE);
+            } catch (ExpiredJwtException e) {
+                throw new SecurityException(SecurityException.SecurityExceptionProfile.EXPIRED_TOKEN);
+            }
+        } else {
+            jwtToken = null;
+        }
 
-        var usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-            userDetails, null, userDetails.getAuthorities());
-        usernamePasswordAuthenticationToken
-            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        // After setting the Authentication in the context, we specify
-        // that the current user is authenticated. So it passes the
-        // Spring Security Configurations successfully.
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-      }
+        if (email != null) {
+            return jwtUserDetailsService.loadUserByEmailAndName(email, name)
+                    .flatMap(userDetails -> {
+                        if (jwtUtil.validateToken(jwtToken, (JwtUserDetails) userDetails)) {
+                            return chain.filter(exchange)
+                                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities())));
+                        } else {
+                            return Mono.empty();
+                        }
+                    });
+        }
+
+        return chain.filter(exchange);
     }
-    chain.doFilter(request, response);
-  }
-
 }

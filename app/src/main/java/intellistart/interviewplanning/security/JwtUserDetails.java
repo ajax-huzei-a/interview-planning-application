@@ -6,14 +6,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class JwtUserDetails implements UserDetails {
 
-  private String email;
+  private final String email;
   private String name;
-  private String password;
-  private Collection<? extends GrantedAuthority> authorities;
-  private Boolean enabled;
-  private Boolean accountNonExpired;
-  private Boolean accountNonLocked;
-  private boolean credentialsNonExpired;
+  private final String password;
+  private final Collection<? extends GrantedAuthority> authorities;
+  private final Boolean enabled;
+  private final Boolean accountNonExpired;
+  private final Boolean accountNonLocked;
+  private final boolean credentialsNonExpired;
 
   public JwtUserDetails(String email, String name, String password,
       Collection<? extends GrantedAuthority> authorities) {

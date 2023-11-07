@@ -10,12 +10,15 @@ val kotlinVersion = "1.9.0"
 
 dependencies {
     implementation("javax.xml.bind:jaxb-api:2.3.1")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
+
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.100.Final:osx-aarch_64")
+
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("io.jsonwebtoken:jjwt:0.9.1")
-    implementation("org.springframework.data:spring-data-redis:3.0.0")
-    implementation("redis.clients:jedis:4.4.3")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("io.nats:jnats:2.16.14")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
