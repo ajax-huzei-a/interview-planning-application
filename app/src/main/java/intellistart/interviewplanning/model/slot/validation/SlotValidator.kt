@@ -9,6 +9,7 @@ import org.bson.types.ObjectId
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDate
 
@@ -41,7 +42,7 @@ class SlotValidator(
                 slot.id != it.id && periodService.areOverlapping(slot.period, it.period)
             }.hasElements().flatMap {
                 Unit.toMono()
-            }.switchIfEmpty(Mono.error(SlotException(SlotExceptionProfile.SLOT_IS_OVERLAPPING)))
+            }.switchIfEmpty { SlotException(SlotExceptionProfile.SLOT_IS_OVERLAPPING).toMono() }
 
     private fun validateSlotIsBookingAndTheSlotExists(id: ObjectId): Mono<Unit> =
         slotService.getById(id).flatMap { slot ->

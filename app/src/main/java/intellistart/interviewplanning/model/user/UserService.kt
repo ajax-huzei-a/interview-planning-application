@@ -6,6 +6,8 @@ import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toMono
 
 @Service
 @Suppress("LongParameterList")
@@ -36,7 +38,7 @@ class UserService(
     fun getUsersByRole(role: Role): Flux<User> = userRepository.findByRole(role)
 
     fun deleteInterviewer(id: ObjectId): Mono<User> = userRepository.findById(id)
-        .switchIfEmpty(Mono.error(UserException(UserExceptionProfile.USER_NOT_FOUND)))
+        .switchIfEmpty { UserException(UserExceptionProfile.USER_NOT_FOUND).toMono() }
         .flatMap { user ->
             if (user.role != Role.INTERVIEWER) {
                 Mono.error(UserException(UserExceptionProfile.NOT_INTERVIEWER))
@@ -47,10 +49,10 @@ class UserService(
 
     @Suppress("ThrowsCount")
     fun deleteCoordinator(id: ObjectId, currentEmailCoordinator: String): Mono<User> = userRepository.findById(id)
-        .switchIfEmpty(Mono.error(UserException(UserExceptionProfile.USER_NOT_FOUND)))
+        .switchIfEmpty { UserException(UserExceptionProfile.USER_NOT_FOUND).toMono() }
         .flatMap { user ->
             userRepository.findByEmail(currentEmailCoordinator)
-                .switchIfEmpty(Mono.error(UserException(UserExceptionProfile.USER_NOT_FOUND)))
+                .switchIfEmpty { UserException(UserExceptionProfile.USER_NOT_FOUND).toMono() }
                 .flatMap { currentUser ->
                     if (user.role != Role.COORDINATOR) {
                         Mono.error(UserException(UserExceptionProfile.NOT_COORDINATOR))

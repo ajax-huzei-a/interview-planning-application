@@ -6,6 +6,8 @@ import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDate
 
 @Service
@@ -23,5 +25,5 @@ class SlotService(
     fun getAllSlotsByEmail(email: String): Flux<Slot> = slotRepository.findByEmail(email)
 
     fun getById(id: ObjectId): Mono<Slot> = slotRepository.findById(id)
-        .switchIfEmpty(Mono.error(SlotException(SlotExceptionProfile.SLOT_NOT_FOUND)))
+        .switchIfEmpty { SlotException(SlotExceptionProfile.SLOT_NOT_FOUND).toMono() }
 }

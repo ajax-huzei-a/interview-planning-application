@@ -5,6 +5,8 @@ import intellistart.interviewplanning.exceptions.BookingException.BookingExcepti
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toMono
 
 @Service
 class BookingService(
@@ -12,13 +14,13 @@ class BookingService(
 ) {
 
     fun getById(id: ObjectId): Mono<Booking> = bookingRepository.findById(id)
-        .switchIfEmpty(Mono.error(BookingException(BookingExceptionProfile.BOOKING_NOT_FOUND)))
+        .switchIfEmpty { BookingException(BookingExceptionProfile.BOOKING_NOT_FOUND).toMono() }
 
     fun create(booking: Booking): Mono<Booking> = bookingRepository.save(booking)
 
     fun update(booking: Booking): Mono<Booking> =
         getById(booking.id)
-            .switchIfEmpty(Mono.error(BookingException(BookingExceptionProfile.BOOKING_NOT_FOUND)))
+            .switchIfEmpty { BookingException(BookingExceptionProfile.BOOKING_NOT_FOUND).toMono() }
             .flatMap { _ ->
                 bookingRepository.update(booking)
             }
