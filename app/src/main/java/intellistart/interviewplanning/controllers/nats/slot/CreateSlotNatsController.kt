@@ -31,11 +31,12 @@ class CreateSlotNatsController(
 
     override fun handle(request: CreateSlotRequest): Mono<CreateSlotResponse> =
         Mono.defer {
-            val slot = getSlotFromProto(request)
-            slotValidator.validateCreating(slot, request.email)
-                .then(slotService.create(slot, request.email))
-                .map { buildSuccessResponse(it) }
-                .onErrorResume { Mono.just(buildFailureResponse(it)) }
+            runCatching {
+                val slot = getSlotFromProto(request)
+                slotValidator.validateCreating(slot, request.email)
+                    .then(slotService.create(slot, request.email))
+                    .map { buildSuccessResponse(it) }
+            }.getOrElse { Mono.just(buildFailureResponse(it)) }
         }
 
     private fun buildFailureResponse(exc: Throwable): CreateSlotResponse =

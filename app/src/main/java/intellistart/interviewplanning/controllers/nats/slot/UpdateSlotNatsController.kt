@@ -31,11 +31,12 @@ class UpdateSlotNatsController(
 
     override fun handle(request: UpdateSlotRequest): Mono<UpdateSlotResponse> =
         Mono.defer {
-            val slot = getSlotFromProto(request).copy(id = ObjectId(request.slotId))
-            slotValidator.validateUpdating(slot, request.email)
-                .then(slotService.update(slot, request.email))
-                .map { buildSuccessResponse(it) }
-                .onErrorResume { Mono.just(buildFailureResponse(it)) }
+            runCatching {
+                val slot = getSlotFromProto(request).copy(id = ObjectId(request.slotId))
+                slotValidator.validateUpdating(slot, request.email)
+                    .then(slotService.update(slot, request.email))
+                    .map { buildSuccessResponse(it) }
+            }.getOrElse { Mono.just(buildFailureResponse(it)) }
         }
 
     private fun buildFailureResponse(exc: Throwable): UpdateSlotResponse =
