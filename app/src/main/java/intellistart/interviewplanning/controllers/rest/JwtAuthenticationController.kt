@@ -40,13 +40,11 @@ class JwtAuthenticationController(
         val jwtUserDetails = authentication.principal as JwtUserDetails
         return userService.getUserByEmail(jwtUserDetails.email)
             .switchIfEmpty {
-                Mono.defer {
-                    userService.save(
-                        Candidate().apply {
-                            this.email = jwtUserDetails.email
-                        }
-                    )
-                }
+                userService.save(
+                    Candidate().apply {
+                        this.email = jwtUserDetails.email
+                    }
+                )
             }
     }
 
