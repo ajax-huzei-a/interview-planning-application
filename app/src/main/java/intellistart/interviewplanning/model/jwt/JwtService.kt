@@ -44,7 +44,9 @@ class JwtService(
                                 it as JwtUserDetails
                             }
 
-                        val jwt = jwtUtil.generateToken(userDetails.subscribeOn(Schedulers.boundedElastic()).block())
+                        val userD = userDetails.subscribeOn(Schedulers.boundedElastic()).block()
+
+                        val jwt = jwtUtil.generateToken(userD)
 
                         cacheService.setInCache(jwtRequest.facebookToken, jwt)
                             .map { jwt }

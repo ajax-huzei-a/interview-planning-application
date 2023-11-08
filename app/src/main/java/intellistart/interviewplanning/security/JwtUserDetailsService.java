@@ -33,16 +33,17 @@ public class JwtUserDetailsService implements ReactiveUserDetailsService {
     }
 
     @Override
-    public Mono<UserDetails> findByUsername(String email) {
-        return userRepository.findByEmail(email)
+    public Mono<UserDetails> findByUsername(String username) {
+        return userRepository.findByEmail(username)
                 .map(user -> {
                     Set<GrantedAuthority> authorities = new HashSet<>();
-                    if (user != null) {
-                        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
-                    } else {
-                        authorities.add(new SimpleGrantedAuthority("ROLE_CANDIDATE"));
-                    }
-                    return new JwtUserDetails(email, null, passwordEncoder.encode(email), authorities);
-                });
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+                    return (UserDetails) new JwtUserDetails(username, null, passwordEncoder.encode(username), authorities);
+                })
+                .switchIfEmpty(Mono.fromSupplier(() -> {
+                    Set<GrantedAuthority> authorities = new HashSet<>();
+                    authorities.add(new SimpleGrantedAuthority("ROLE_CANDIDATE"));
+                    return (UserDetails) new JwtUserDetails(username, null, passwordEncoder.encode(username), authorities);
+                }));
     }
 }

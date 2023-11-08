@@ -6,7 +6,7 @@ jwt:
   validity: 86400
   caching: 350
 
-first-coordinator-email: guzey2001@gmail.com
+first-coordinator-email: guuzey2001@gmail.com
 
 spring:
   security:
