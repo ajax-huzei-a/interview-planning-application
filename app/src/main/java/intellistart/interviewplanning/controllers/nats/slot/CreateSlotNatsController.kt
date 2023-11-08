@@ -30,13 +30,13 @@ class CreateSlotNatsController(
     override val parser: Parser<CreateSlotRequest> = CreateSlotRequest.parser()
 
     override fun handle(request: CreateSlotRequest): Mono<CreateSlotResponse> =
-        getSlotFromProto(request)
-            .flatMap { slot ->
-                slotValidator.validateCreating(slot, request.email)
-                    .then(slotService.create(slot, request.email))
-            }
-            .map { buildSuccessResponse(it) }
-            .onErrorResume { Mono.just(buildFailureResponse(it)) }
+        Mono.defer {
+            val slot = getSlotFromProto(request)
+            slotValidator.validateCreating(slot, request.email)
+                .then(slotService.create(slot, request.email))
+                .map { buildSuccessResponse(it) }
+                .onErrorResume { Mono.just(buildFailureResponse(it)) }
+        }
 
     private fun buildFailureResponse(exc: Throwable): CreateSlotResponse =
         when (exc) {
@@ -76,20 +76,15 @@ class CreateSlotNatsController(
         }.build()
 
     private fun getSlotFromProto(
-        request: CreateSlotRequest,
-    ): Mono<Slot> =
-        periodService.obtainPeriod(request.slot.from, request.slot.to, request.slot.date)
-            .map {
-                Slot(
-                    id = if (request.slot.hasId()) {
-                        ObjectId(request.slot.id)
-                    } else {
-                        ObjectId()
-                    },
-                    period = it,
-                    bookings = listOf()
-                )
-            }
+        request: CreateSlotRequest
+    ): Slot {
+        return Slot(
+            id = if (request.slot.hasId()) { ObjectId(request.slot.id) } else ObjectId(),
+            period = periodService
+                .obtainPeriod(request.slot.from, request.slot.to, request.slot.date),
+            bookings = listOf()
+        )
+    }
 
     companion object {
         const val SLOT_IS_BOOKED = "slot_is_booked"

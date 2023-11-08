@@ -8,11 +8,9 @@ import java.time.Duration
 
 @Service
 class CacheService(
-    private val reactiveRedisTemplate: ReactiveRedisTemplate<String, String>
+    private val reactiveRedisTemplate: ReactiveRedisTemplate<String, String>,
+    @Value("\${jwt.caching}") private val jwtValidity: Long
 ) {
-
-    @Value("\${jwt.caching}")
-    private var jwtValidity: Long = 0L
 
     fun getFromCache(key: String): Mono<String> {
         return reactiveRedisTemplate.opsForValue().get(key)

@@ -30,15 +30,13 @@ class CandidateController(
     fun createCandidateSlot(
         @RequestBody request: SlotDto,
         authentication: Authentication,
-    ): Mono<SlotDto> {
+    ): Mono<SlotDto> = Mono.defer {
         val jwtUserDetails = authentication.principal as JwtUserDetails
-        return getCandidateSlotFromDto(request)
-            .flatMap { candidateSlot ->
-                slotValidator.validateCreating(candidateSlot, jwtUserDetails.email)
-                    .then(slotService.create(candidateSlot, jwtUserDetails.email))
-            }
-            .map { createdCandidateSlot ->
-                createdCandidateSlot.toDto()
+        val candidateSlot = getCandidateSlotFromDto(request)
+        slotValidator.validateCreating(candidateSlot, jwtUserDetails.email)
+            .then(slotService.create(candidateSlot, jwtUserDetails.email))
+            .map {
+                it.toDto()
             }
     }
 
@@ -47,19 +45,13 @@ class CandidateController(
         @RequestBody request: SlotDto,
         @PathVariable("slotId") id: String,
         authentication: Authentication,
-    ): Mono<SlotDto> {
+    ): Mono<SlotDto> = Mono.defer {
         val jwtUserDetails = authentication.principal as JwtUserDetails
-
-        return getCandidateSlotFromDto(request)
-            .map { candidateSlot ->
-                candidateSlot.copy(id = ObjectId(id))
-            }
-            .flatMap { updatedSlot ->
-                slotValidator.validateUpdating(updatedSlot, jwtUserDetails.email)
-                    .then(slotService.update(updatedSlot, jwtUserDetails.email))
-            }
-            .map { updatedCandidateSlot ->
-                updatedCandidateSlot.toDto()
+        val candidateSlot = getCandidateSlotFromDto(request).copy(id = ObjectId(id))
+        slotValidator.validateUpdating(candidateSlot, jwtUserDetails.email)
+            .then(slotService.update(candidateSlot, jwtUserDetails.email))
+            .map {
+                it.toDto()
             }
     }
 
@@ -75,13 +67,13 @@ class CandidateController(
     }
 
     private fun getCandidateSlotFromDto(
-        slotDto: SlotDto,
-    ): Mono<Slot> = periodService.obtainPeriod(slotDto.from, slotDto.to, slotDto.date)
-        .map { period ->
-            Slot(
-                id = ObjectId(),
-                period = period,
-                bookings = emptyList()
-            )
-        }
+        candidateSlotDto: SlotDto
+    ): Slot {
+        return Slot(
+            id = ObjectId(),
+            period = periodService
+                .obtainPeriod(candidateSlotDto.from, candidateSlotDto.to, candidateSlotDto.date),
+            bookings = listOf()
+        )
+    }
 }

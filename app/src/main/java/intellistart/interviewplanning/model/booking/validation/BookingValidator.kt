@@ -13,6 +13,8 @@ import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.core.util.function.component1
+import reactor.kotlin.core.util.function.component2
 
 @Component
 class BookingValidator(
@@ -24,26 +26,27 @@ class BookingValidator(
     fun validateCreating(newBooking: Booking): Mono<Unit> = validateUpdating(newBooking)
 
     fun validateUpdating(newBooking: Booking): Mono<Unit> =
-        checkBookingPeriodForNinetyMinutes(newBooking.period)
-            .then(checkSubjectAndDescriptionLength(newBooking.subject, newBooking.description))
-            .then(checkBookingForOverlapsWithSlots(newBooking))
-            .then(checkBookingForOverlapsWithOtherBookings(newBooking))
+        Mono.`when`(
+            Mono.fromCallable {
+                checkSubjectAndDescriptionLength(newBooking.subject, newBooking.description)
+                checkBookingPeriodForNinetyMinutes(newBooking.period)
+            },
+            checkBookingForOverlapsWithSlots(newBooking),
+            checkBookingForOverlapsWithOtherBookings(newBooking),
+        ).thenReturn(Unit)
 
-    private fun checkBookingPeriodForNinetyMinutes(period: Period): Mono<Unit> =
+    private fun checkBookingPeriodForNinetyMinutes(period: Period) {
         if (timeService.calculateDurationMinutes(period.from, period.to) < BOOKING_PERIOD_DURATION_MINUTES) {
-            Mono.error(SlotException(SlotExceptionProfile.INVALID_BOUNDARIES))
-        } else {
-            Unit.toMono()
+            throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
         }
+    }
 
-    private fun checkSubjectAndDescriptionLength(subject: String, description: String): Mono<Unit> {
+    private fun checkSubjectAndDescriptionLength(subject: String, description: String) {
         if (subject.length > SUBJECT_MAX_SIZE) {
-            return Mono.error(BookingException(BookingExceptionProfile.INVALID_SUBJECT))
+            throw BookingException(BookingExceptionProfile.INVALID_SUBJECT)
         }
-        return if (description.length > DESCRIPTION_MAX_SIZE) {
-            Mono.error(BookingException(BookingExceptionProfile.INVALID_DESCRIPTION))
-        } else {
-            Unit.toMono()
+        if (description.length > DESCRIPTION_MAX_SIZE) {
+            throw BookingException(BookingExceptionProfile.INVALID_DESCRIPTION)
         }
     }
 
@@ -71,34 +74,34 @@ class BookingValidator(
     ): Mono<Unit> = Mono.zip(
         slotService.getById(booking.interviewerSlotId),
         slotService.getById(booking.candidateSlotId)
-    ).flatMap { tuple ->
-        val interviewerBookings: Collection<Booking> = tuple.t1.bookings
-        val candidateBookings: Collection<Booking> = tuple.t2.bookings
+    ).handle { (interviewerSlot, candidateSlot), sink ->
+        val interviewerBookings: Collection<Booking> = interviewerSlot.bookings
+        val candidateBookings: Collection<Booking> = candidateSlot.bookings
 
         validatePeriodNotOverlappingWithOtherBookingPeriods(
             booking.id,
             booking.period,
             interviewerBookings
-        ).then(
-            validatePeriodNotOverlappingWithOtherBookingPeriods(
-                booking.id,
-                booking.period,
-                candidateBookings
-            )
         )
+
+        validatePeriodNotOverlappingWithOtherBookingPeriods(
+            booking.id,
+            booking.period,
+            candidateBookings
+        )
+        sink.complete()
     }
 
     private fun validatePeriodNotOverlappingWithOtherBookingPeriods(
         updatingBookingId: ObjectId,
         period: Period,
         bookings: Collection<Booking>,
-    ): Mono<Unit> {
+    ) {
         bookings.forEach { booking ->
             if (booking.id != updatingBookingId && periodService.areOverlapping(booking.period, period)) {
-                return Mono.error(BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING))
+                throw BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING)
             }
         }
-        return Unit.toMono()
     }
 
     companion object {

@@ -26,29 +26,33 @@ class JwtService(
     fun getJwtToken(jwtRequest: JwtRequest): Mono<String> {
         return cacheService.getFromCache(jwtRequest.facebookToken)
             .switchIfEmpty {
-                val userScopes = Mono.fromCallable {
-                    facebookUtil.getScope(jwtRequest.facebookToken)
-                }.onErrorMap {
-                    SecurityException(SecurityException.SecurityExceptionProfile.BAD_FACEBOOK_TOKEN)
-                }
-
-                userScopes.flatMap { scopes ->
-                    val email = scopes[FacebookUtil.FacebookScopes.EMAIL]
-                    val name = scopes[FacebookUtil.FacebookScopes.NAME]
-
-                    authenticate(email)
-                        .flatMap {
-                            userDetailsService.loadUserByEmailAndName(email, name)
-                        }
-                        .map { userDetails ->
-                            jwtUtil.generateToken(userDetails as JwtUserDetails)
-                        }
-                        .flatMap { jwt ->
-                            cacheService.setInCache(jwtRequest.facebookToken, jwt)
-                                .thenReturn(jwt)
-                        }
-                }
+                generateAndCacheJwt(jwtRequest)
             }
+    }
+
+    private fun generateAndCacheJwt(jwtRequest: JwtRequest): Mono<String> {
+        val userScopes = Mono.fromCallable {
+            facebookUtil.getScope(jwtRequest.facebookToken)
+        }.onErrorMap {
+            SecurityException(SecurityException.SecurityExceptionProfile.BAD_FACEBOOK_TOKEN)
+        }
+
+        return userScopes.flatMap { scopes ->
+            val email = scopes[FacebookUtil.FacebookScopes.EMAIL]
+            val name = scopes[FacebookUtil.FacebookScopes.NAME]
+
+            authenticate(email)
+                .flatMap {
+                    userDetailsService.loadUserByEmailAndName(email, name)
+                }
+                .map { userDetails ->
+                    jwtUtil.generateToken(userDetails as JwtUserDetails)
+                }
+                .flatMap { jwt ->
+                    cacheService.setInCache(jwtRequest.facebookToken, jwt)
+                        .thenReturn(jwt)
+                }
+        }
     }
 
     private fun authenticate(username: String?): Mono<Authentication> {

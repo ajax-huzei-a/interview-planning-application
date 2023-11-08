@@ -30,17 +30,13 @@ class UpdateSlotNatsController(
     override val parser: Parser<UpdateSlotRequest> = UpdateSlotRequest.parser()
 
     override fun handle(request: UpdateSlotRequest): Mono<UpdateSlotResponse> =
-        getSlotFromProto(request)
-            .map {
-                it.copy(id = ObjectId(request.slotId))
-            }.flatMap { slot ->
-                slotValidator.validateUpdating(slot, request.email)
-                    .then(slotService.update(slot, request.email))
-            }.map {
-                buildSuccessResponse(it)
-            }.onErrorResume {
-                Mono.just(buildFailureResponse(it))
-            }
+        Mono.defer {
+            val slot = getSlotFromProto(request).copy(id = ObjectId(request.slotId))
+            slotValidator.validateUpdating(slot, request.email)
+                .then(slotService.update(slot, request.email))
+                .map { buildSuccessResponse(it) }
+                .onErrorResume { Mono.just(buildFailureResponse(it)) }
+        }
 
     private fun buildFailureResponse(exc: Throwable): UpdateSlotResponse =
         when (exc) {
@@ -81,15 +77,14 @@ class UpdateSlotNatsController(
 
     private fun getSlotFromProto(
         request: UpdateSlotRequest
-    ): Mono<Slot> = periodService
-        .obtainPeriod(request.slot.from, request.slot.to, request.slot.date)
-        .map {
-            Slot(
-                id = if (request.slot.hasId()) { ObjectId(request.slot.id) } else ObjectId(),
-                period = it,
-                bookings = listOf()
-            )
-        }
+    ): Slot {
+        return Slot(
+            id = if (request.slot.hasId()) { ObjectId(request.slot.id) } else ObjectId(),
+            period = periodService
+                .obtainPeriod(request.slot.from, request.slot.to, request.slot.date),
+            bookings = listOf()
+        )
+    }
 
     companion object {
         const val SLOT_IS_BOOKED = "slot_is_booked"

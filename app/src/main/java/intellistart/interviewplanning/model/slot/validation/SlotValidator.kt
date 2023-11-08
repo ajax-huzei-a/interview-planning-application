@@ -21,20 +21,27 @@ class SlotValidator(
 ) {
 
     fun validateCreating(slot: Slot, email: String): Mono<Unit> =
-        validateSlotInFuture(slot)
-            .then(validateOverlapping(slot, email))
+        Mono.`when`(
+            Mono.fromCallable {
+                validateSlotInFuture(slot)
+            },
+            validateOverlapping(slot, email)
+        ).thenReturn(Unit)
 
-    fun validateUpdating(slot: Slot, email: String) =
-        validateSlotIsBookingAndTheSlotExists(slot.id)
-            .then(validateSlotInFuture(slot))
-            .then(validateOverlapping(slot, email))
+    fun validateUpdating(slot: Slot, email: String): Mono<Unit> =
+        Mono.`when`(
+            Mono.fromCallable {
+                validateSlotInFuture(slot)
+            },
+            validateSlotIsBookingAndTheSlotExists(slot.id),
+            validateOverlapping(slot, email)
+        ).thenReturn(Unit)
 
-    private fun validateSlotInFuture(slot: Slot): Mono<Unit> =
+    private fun validateSlotInFuture(slot: Slot) {
         if (LocalDate.now() > slot.period.date) {
-            Mono.error(SlotException(SlotExceptionProfile.INVALID_BOUNDARIES))
-        } else {
-            Unit.toMono()
+            throw SlotException(SlotExceptionProfile.INVALID_BOUNDARIES)
         }
+    }
 
     private fun validateOverlapping(slot: Slot, email: String): Mono<Unit> =
         slotService.getSlotsByEmailAndDate(email, slot.period.date)

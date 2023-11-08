@@ -30,15 +30,13 @@ class InterviewerController(
     fun createInterviewerSlot(
         @RequestBody slotDto: SlotDto,
         authentication: Authentication
-    ): Mono<SlotDto> {
+    ): Mono<SlotDto> = Mono.defer {
         val jwtUserDetails = authentication.principal as JwtUserDetails
-        return getInterviewerSlotFromDto(slotDto)
-            .flatMap { interviewerSlot ->
-                slotValidator.validateCreating(interviewerSlot, jwtUserDetails.email)
-                    .then(slotService.create(interviewerSlot, jwtUserDetails.email))
-            }
-            .map { createdInterviewerSlot ->
-                createdInterviewerSlot.toDto()
+        val interviewerSlot = getInterviewerSlotFromDto(slotDto)
+        slotValidator.validateCreating(interviewerSlot, jwtUserDetails.email)
+            .then(slotService.create(interviewerSlot, jwtUserDetails.email))
+            .map {
+                it.toDto()
             }
     }
 
@@ -47,19 +45,13 @@ class InterviewerController(
         @RequestBody slotDto: SlotDto,
         @PathVariable("slotId") slotId: String,
         authentication: Authentication
-    ): Mono<SlotDto> {
+    ): Mono<SlotDto> = Mono.defer {
         val jwtUserDetails = authentication.principal as JwtUserDetails
-
-        return getInterviewerSlotFromDto(slotDto)
-            .map { interviewerSlot ->
-                interviewerSlot.copy(id = ObjectId(slotId))
-            }
-            .flatMap { updatedSlot ->
-                slotValidator.validateUpdating(updatedSlot, jwtUserDetails.email)
-                    .then(slotService.update(updatedSlot, jwtUserDetails.email))
-            }
-            .map { updatedInterviewerSlot ->
-                updatedInterviewerSlot.toDto()
+        val interviewerSlot = getInterviewerSlotFromDto(slotDto).copy(id = ObjectId(slotId))
+        slotValidator.validateUpdating(interviewerSlot, jwtUserDetails.email)
+            .then(slotService.update(interviewerSlot, jwtUserDetails.email))
+            .map {
+                it.toDto()
             }
     }
 
@@ -74,13 +66,14 @@ class InterviewerController(
             .defaultIfEmpty(SlotDto())
     }
 
-    private fun getInterviewerSlotFromDto(slotDto: SlotDto): Mono<Slot> =
-        periodService.obtainPeriod(slotDto.from, slotDto.to, slotDto.date)
-            .map { period ->
-                Slot(
-                    id = ObjectId(),
-                    period = period,
-                    bookings = emptyList()
-                )
-            }
+    private fun getInterviewerSlotFromDto(
+        slotDto: SlotDto
+    ): Slot {
+        return Slot(
+            id = ObjectId(),
+            period = periodService
+                .obtainPeriod(slotDto.from, slotDto.to, slotDto.date),
+            bookings = listOf()
+        )
+    }
 }

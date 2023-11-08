@@ -70,24 +70,20 @@ class CoordinatorController(
     fun updateBooking(
         @RequestBody bookingDto: BookingDto,
         @PathVariable id: String
-    ): Mono<BookingDto> {
-        val newDataBookingMono = getFromDto(bookingDto)
-            .map { it.copy(id = ObjectId(id)) }
-
-        return newDataBookingMono
-            .flatMap { newDataBooking ->
-                bookingValidator.validateUpdating(newDataBooking)
-                    .then(bookingService.update(newDataBooking))
-                    .map { savedBooking -> savedBooking.toDto() }
-            }
+    ): Mono<BookingDto> = Mono.defer {
+        val booking = getFromDto(bookingDto).copy(id = ObjectId(id))
+        bookingValidator.validateUpdating(booking)
+            .then(bookingService.update(booking))
+            .map { it.toDto() }
     }
 
     @PostMapping("/booking/create")
-    fun createBooking(@RequestBody bookingDto: BookingDto): Mono<BookingDto> = getFromDto(bookingDto)
-        .flatMap { booking ->
+    fun createBooking(@RequestBody bookingDto: BookingDto): Mono<BookingDto> =
+        Mono.defer {
+            val booking = getFromDto(bookingDto)
             bookingValidator.validateCreating(booking)
                 .then(bookingService.create(booking))
-                .map { savedBooking -> savedBooking.toDto() }
+                .map { it.toDto() }
         }
 
     @DeleteMapping("/booking/delete/{id}")
@@ -99,16 +95,15 @@ class CoordinatorController(
             }
     }
 
-    private fun getFromDto(bookingDto: BookingDto): Mono<Booking> =
-        periodService.obtainPeriod(bookingDto.from, bookingDto.to, bookingDto.date)
-            .map { period ->
-                Booking(
-                    id = ObjectId(),
-                    subject = bookingDto.subject,
-                    description = bookingDto.description,
-                    interviewerSlotId = ObjectId(bookingDto.interviewerSlotId),
-                    candidateSlotId = ObjectId(bookingDto.candidateSlotId),
-                    period = period
-                )
-            }
+    private fun getFromDto(bookingDto: BookingDto): Booking {
+        return Booking(
+            ObjectId(),
+            bookingDto.subject,
+            bookingDto.description,
+            ObjectId(bookingDto.interviewerSlotId),
+            ObjectId(bookingDto.candidateSlotId),
+            periodService
+                .obtainPeriod(bookingDto.from, bookingDto.to, bookingDto.date)
+        )
+    }
 }
