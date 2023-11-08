@@ -9,9 +9,9 @@ import intellistart.interviewplanning.utils.FacebookUtil
 import intellistart.interviewplanning.utils.JwtUtil
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
@@ -37,29 +37,25 @@ class JwtService(
                     val name = scopes[FacebookUtil.FacebookScopes.NAME]
 
                     authenticate(email)
-
-                    val userDetails = userDetailsService.loadUserByEmailAndName(email, name)
-                        .map {
-                            it as JwtUserDetails
+                        .flatMap {
+                            userDetailsService.loadUserByEmailAndName(email, name)
                         }
-
-                    val userD = userDetails.subscribeOn(Schedulers.boundedElastic()).block()
-
-                    val jwt = jwtUtil.generateToken(userD)
-
-                    cacheService.setInCache(jwtRequest.facebookToken, jwt)
-                        .map { jwt }
+                        .map { userDetails ->
+                            jwtUtil.generateToken(userDetails as JwtUserDetails)
+                        }
+                        .flatMap { jwt ->
+                            cacheService.setInCache(jwtRequest.facebookToken, jwt)
+                                .thenReturn(jwt)
+                        }
                 }
             }
     }
 
-    private fun authenticate(username: String?) {
-        runCatching {
-            authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(username, username)
-            )
-        }.getOrElse {
-            throw SecurityException(SecurityException.SecurityExceptionProfile.BAD_CREDENTIALS)
-        }
+    private fun authenticate(username: String?): Mono<Authentication> {
+        return Mono.just(UsernamePasswordAuthenticationToken(username, username))
+            .flatMap(authenticationManager::authenticate)
+            .onErrorMap {
+                throw SecurityException(SecurityException.SecurityExceptionProfile.BAD_CREDENTIALS)
+            }
     }
 }
