@@ -26,31 +26,29 @@ class JwtService(
     fun getJwtToken(jwtRequest: JwtRequest): Mono<String> {
         return cacheService.getFromCache(jwtRequest.facebookToken)
             .switchIfEmpty {
-                Mono.defer {
-                    val userScopes = Mono.fromCallable {
-                        facebookUtil.getScope(jwtRequest.facebookToken)
-                    }.onErrorMap {
-                        SecurityException(SecurityException.SecurityExceptionProfile.BAD_FACEBOOK_TOKEN)
-                    }
+                val userScopes = Mono.fromCallable {
+                    facebookUtil.getScope(jwtRequest.facebookToken)
+                }.onErrorMap {
+                    SecurityException(SecurityException.SecurityExceptionProfile.BAD_FACEBOOK_TOKEN)
+                }
 
-                    userScopes.flatMap { scopes ->
-                        val email = scopes[FacebookUtil.FacebookScopes.EMAIL]
-                        val name = scopes[FacebookUtil.FacebookScopes.NAME]
+                userScopes.flatMap { scopes ->
+                    val email = scopes[FacebookUtil.FacebookScopes.EMAIL]
+                    val name = scopes[FacebookUtil.FacebookScopes.NAME]
 
-                        authenticate(email)
+                    authenticate(email)
 
-                        val userDetails = userDetailsService.loadUserByEmailAndName(email, name)
-                            .map {
-                                it as JwtUserDetails
-                            }
+                    val userDetails = userDetailsService.loadUserByEmailAndName(email, name)
+                        .map {
+                            it as JwtUserDetails
+                        }
 
-                        val userD = userDetails.subscribeOn(Schedulers.boundedElastic()).block()
+                    val userD = userDetails.subscribeOn(Schedulers.boundedElastic()).block()
 
-                        val jwt = jwtUtil.generateToken(userD)
+                    val jwt = jwtUtil.generateToken(userD)
 
-                        cacheService.setInCache(jwtRequest.facebookToken, jwt)
-                            .map { jwt }
-                    }
+                    cacheService.setInCache(jwtRequest.facebookToken, jwt)
+                        .map { jwt }
                 }
             }
     }
