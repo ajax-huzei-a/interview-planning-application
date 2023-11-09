@@ -16,6 +16,7 @@ import io.nats.client.Connection
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class CreateSlotNatsController(
@@ -30,12 +31,11 @@ class CreateSlotNatsController(
     override val parser: Parser<CreateSlotRequest> = CreateSlotRequest.parser()
 
     override fun handle(request: CreateSlotRequest): Mono<CreateSlotResponse> =
-        Mono.defer {
-            val slot = getSlotFromProto(request)
-            slotValidator.validateCreating(slot, request.email)
-                .then(slotService.create(slot, request.email))
-                .map { buildSuccessResponse(it) }
-        }.onErrorResume { Mono.just(buildFailureResponse(it)) }
+        Mono.fromSupplier { getSlotFromProto(request) }
+            .flatMap { slotValidator.validateCreating(it, request.email).thenReturn(it) }
+            .flatMap { slotService.create(it, request.email) }
+            .map { buildSuccessResponse(it) }
+            .onErrorResume { buildFailureResponse(it).toMono() }
 
     private fun buildFailureResponse(exc: Throwable): CreateSlotResponse =
         when (exc) {

@@ -16,6 +16,7 @@ import io.nats.client.Connection
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class UpdateSlotNatsController(
@@ -30,12 +31,11 @@ class UpdateSlotNatsController(
     override val parser: Parser<UpdateSlotRequest> = UpdateSlotRequest.parser()
 
     override fun handle(request: UpdateSlotRequest): Mono<UpdateSlotResponse> =
-        Mono.defer {
-            val slot = getSlotFromProto(request).copy(id = ObjectId(request.slotId))
-            slotValidator.validateUpdating(slot, request.email)
-                .then(slotService.update(slot, request.email))
-                .map { buildSuccessResponse(it) }
-        }.onErrorResume { Mono.just(buildFailureResponse(it)) }
+        Mono.fromSupplier { getSlotFromProto(request).copy(id = ObjectId(request.slotId)) }
+            .flatMap { slotValidator.validateUpdating(it, request.email).thenReturn(it) }
+            .flatMap { slotService.update(it, request.email) }
+            .map { buildSuccessResponse(it) }
+            .onErrorResume { buildFailureResponse(it).toMono() }
 
     private fun buildFailureResponse(exc: Throwable): UpdateSlotResponse =
         when (exc) {
