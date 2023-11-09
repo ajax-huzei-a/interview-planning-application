@@ -65,7 +65,7 @@ class CandidateController(
 
         return slotService.getAllSlotsByEmail(jwtUserDetails.email)
             .map { it.toDto() }
-            .switchIfEmptyDeferred { (SlotDto()).toMono() }
+            .switchIfEmptyDeferred { SlotDto().toMono() }
     }
 
     private fun getCandidateSlotFromDto(
