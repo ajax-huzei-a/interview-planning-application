@@ -2,23 +2,19 @@ package intellistart.interviewplanning.exceptions.handlers;
 
 import intellistart.interviewplanning.exceptions.SecurityException;
 import intellistart.interviewplanning.exceptions.handlers.dto.ExceptionResponse;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import reactor.core.publisher.Mono;
 
 @ControllerAdvice
-public class SecurityExceptionHandler extends ResponseEntityExceptionHandler {
+public class SecurityExceptionHandler {
 
   @ExceptionHandler(value = SecurityException.class)
-  public ResponseEntity<Object> handleSecurityException(SecurityException exception,
-      WebRequest webRequest) {
+  public Mono<ResponseEntity<Object>> handleSecurityException(SecurityException exception) {
 
     var exceptionBody = new ExceptionResponse(exception.getName(), exception.getMessage());
 
-    return handleExceptionInternal(exception, exceptionBody, new HttpHeaders(),
-        exception.getResponseStatus(), webRequest);
+    return Mono.just(ResponseEntity.status(exception.getResponseStatus()).body(exceptionBody));
   }
 }

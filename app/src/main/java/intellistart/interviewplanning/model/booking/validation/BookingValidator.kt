@@ -11,27 +11,27 @@ import intellistart.interviewplanning.model.period.TimeService
 import intellistart.interviewplanning.model.slot.SlotService
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class BookingValidator(
     private val periodService: PeriodService,
     private val timeService: TimeService,
-    private val slotService: SlotService
+    private val slotService: SlotService,
 ) {
 
-    fun validateCreating(newBooking: Booking) {
-        validateUpdating(newBooking)
-    }
+    fun validateCreating(newBooking: Booking): Mono<Unit> = validateUpdating(newBooking)
 
-    fun validateUpdating(newBooking: Booking) {
-        checkBookingPeriodForNinetyMinutes(newBooking.period)
-
-        checkSubjectAndDescriptionLength(newBooking.subject, newBooking.description)
-
-        checkBookingForOverlapsWithSlots(newBooking)
-
-        checkBookingForOverlapsWithOtherBookings(newBooking)
-    }
+    fun validateUpdating(newBooking: Booking): Mono<Unit> =
+        Mono.`when`(
+            Mono.fromCallable {
+                checkSubjectAndDescriptionLength(newBooking.subject, newBooking.description)
+                checkBookingPeriodForNinetyMinutes(newBooking.period)
+            },
+            checkBookingForOverlapsWithSlots(newBooking),
+            checkBookingForOverlapsWithOtherBookings(newBooking),
+        ).thenReturn(Unit)
 
     private fun checkBookingPeriodForNinetyMinutes(period: Period) {
         if (timeService.calculateDurationMinutes(period.from, period.to) < BOOKING_PERIOD_DURATION_MINUTES) {
@@ -48,10 +48,12 @@ class BookingValidator(
         }
     }
 
-    private fun checkBookingForOverlapsWithSlots(booking: Booking) {
-        val periodOfInterviewer: Period = slotService.getById(booking.interviewerSlotId).period
-        val periodOfCandidate: Period = slotService.getById(booking.candidateSlotId).period
-
+    private fun checkBookingForOverlapsWithSlots(booking: Booking): Mono<Unit> = Mono.zip(
+        slotService.getById(booking.interviewerSlotId),
+        slotService.getById(booking.candidateSlotId)
+    ).flatMap { tuple ->
+        val periodOfInterviewer: Period = tuple.t1.period
+        val periodOfCandidate: Period = tuple.t2.period
         val bookingPeriod: Period = booking.period
 
         if (
@@ -59,30 +61,34 @@ class BookingValidator(
             !periodService.isFirstInsideSecond(bookingPeriod, periodOfInterviewer) ||
             !periodService.isFirstInsideSecond(bookingPeriod, periodOfCandidate)
         ) {
-            throw BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING)
+            Mono.error(BookingException(BookingExceptionProfile.SLOTS_NOT_INTERSECTING))
+        } else {
+            Unit.toMono()
         }
     }
 
     private fun checkBookingForOverlapsWithOtherBookings(
-        booking: Booking
-    ) {
-        validatePeriodNotOverlappingWithOtherBookingPeriods(
-            booking.id,
-            booking.period,
-            slotService.getById(booking.interviewerSlotId).bookings
-        )
+        booking: Booking,
+    ): Mono<Unit> = Mono.`when`(
+        validateBookingIsApplicableToUser(booking.interviewerSlotId, booking),
+        validateBookingIsApplicableToUser(booking.candidateSlotId, booking),
+    ).thenReturn(Unit)
 
-        validatePeriodNotOverlappingWithOtherBookingPeriods(
-            booking.id,
-            booking.period,
-            slotService.getById(booking.candidateSlotId).bookings
-        )
-    }
+    private fun validateBookingIsApplicableToUser(userId: ObjectId, booking: Booking): Mono<Unit> =
+        slotService.getById(userId)
+            .doOnNext { user ->
+                validatePeriodNotOverlappingWithOtherBookingPeriods(
+                    booking.id,
+                    booking.period,
+                    user.bookings
+                )
+            }
+            .thenReturn(Unit)
 
     private fun validatePeriodNotOverlappingWithOtherBookingPeriods(
         updatingBookingId: ObjectId,
         period: Period,
-        bookings: Collection<Booking>
+        bookings: Collection<Booking>,
     ) {
         bookings.forEach { booking ->
             if (booking.id != updatingBookingId && periodService.areOverlapping(booking.period, period)) {

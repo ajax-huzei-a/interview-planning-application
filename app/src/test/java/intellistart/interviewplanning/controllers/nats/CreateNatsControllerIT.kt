@@ -14,9 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.findAllAndRemove
-import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.dropCollection
 import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
 import com.google.protobuf.Duration as ProtobufDuration
@@ -30,11 +29,11 @@ class CreateNatsControllerIT {
     lateinit var connection: Connection
 
     @Autowired
-    lateinit var mongoTemplate: MongoTemplate
+    lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
 
     @AfterEach
     fun cleanDB() {
-        mongoTemplate.findAllAndRemove<User>(Query())
+        reactiveMongoTemplate.dropCollection<User>().block()
     }
 
     @ParameterizedTest
@@ -52,7 +51,7 @@ class CreateNatsControllerIT {
         yearInput: Int,
         monthInput: Int,
         dayInput: Int,
-        emailTest: String
+        emailTest: String,
     ) {
         // GIVEN
         val fromDuration = ProtobufDuration.newBuilder().setSeconds(fromDurationSeconds).build()
@@ -85,7 +84,7 @@ class CreateNatsControllerIT {
         }.build()
 
         // WHEN
-        val actual = doRequest(
+        val actual: CreateSlotResponse = doRequest(
             createSlotRequest,
             CreateSlotResponse.parser()
         )

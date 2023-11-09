@@ -2,36 +2,33 @@ package intellistart.interviewplanning.beanpostprocessor
 
 import com.google.protobuf.GeneratedMessageV3
 import intellistart.interviewplanning.controllers.nats.NatsController
-import io.nats.client.Connection
-import io.nats.client.Dispatcher
-import io.nats.client.Message
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Component
-class NatsControllerBeanPostProcessor(private val connection: Connection) : BeanPostProcessor {
+class NatsControllerBeanPostProcessor : BeanPostProcessor {
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {
         if (bean is NatsController<*, *>) {
-            bean.initializeNatsController(connection)
+            initializeNatsController(bean)
         }
         return bean
     }
-}
 
-private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
-    NatsController<RequestT, ResponseT>.initializeNatsController(
-        connection: Connection
+    fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
+    initializeNatsController(
+        controller: NatsController<RequestT, ResponseT>
     ) {
-    createDispatcher(connection).apply {
-        subscribe(subject)
+        val dispatcher = controller.connection.createDispatcher { message ->
+            val parsedData = controller.parser.parseFrom(message.data)
+            Mono.defer { controller.handle(parsedData) }
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe {
+                    controller.connection.publish(message.replyTo, it.toByteArray())
+                }
+        }
+        dispatcher.subscribe(controller.subject)
     }
 }
-
-private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3>
-    NatsController<RequestT, ResponseT>.createDispatcher(connection: Connection): Dispatcher =
-    connection.createDispatcher { message: Message ->
-        val parsedData = parser.parseFrom(message.data)
-        val response = handle(parsedData)
-        connection.publish(message.replyTo, response.toByteArray())
-    }

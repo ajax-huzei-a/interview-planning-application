@@ -1,52 +1,49 @@
 package intellistart.interviewplanning.security;
 
-import intellistart.interviewplanning.model.user.User;
 import intellistart.interviewplanning.model.user.UserRepository;
-import java.util.HashSet;
-import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
-public class JwtUserDetailsService implements UserDetailsService {
+public class JwtUserDetailsService implements ReactiveUserDetailsService {
 
-  @Autowired
-  private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
-
-  public UserDetails loadUserByEmailAndName(String email, String name) {
-
-    JwtUserDetails jwtUserDetails = (JwtUserDetails) loadUserByUsername(email);
-    jwtUserDetails.setName(name);
-
-    return jwtUserDetails;
-  }
-
-  @Override
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-    User user = userRepository.findByEmail(email);
-
-    Set<GrantedAuthority> authorities = new HashSet<>();
-
-    if (user != null) {
-      authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
-    } else {
-      authorities.add(new SimpleGrantedAuthority("ROLE_CANDIDATE"));
+    public JwtUserDetailsService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    return new JwtUserDetails(email, null, passwordEncoder().encode(email), authorities);
-  }
+    public Mono<UserDetails> loadUserByEmailAndName(String email, String name) {
+        return findByUsername(email)
+                .map(userDetails -> {
+                    JwtUserDetails jwtUserDetails = (JwtUserDetails) userDetails;
+                    jwtUserDetails.setName(name);
+                    return jwtUserDetails;
+                });
+    }
+
+    @Override
+    public Mono<UserDetails> findByUsername(String username) {
+        return userRepository.findByEmail(username)
+                .map(user -> {
+                    Set<GrantedAuthority> authorities = new HashSet<>();
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+                    return (UserDetails) new JwtUserDetails(username, null, passwordEncoder.encode(username), authorities);
+                })
+                .switchIfEmpty(Mono.fromSupplier(() -> {
+                    Set<GrantedAuthority> authorities = new HashSet<>();
+                    authorities.add(new SimpleGrantedAuthority("ROLE_CANDIDATE"));
+                    return (UserDetails) new JwtUserDetails(username, null, passwordEncoder.encode(username), authorities);
+                }));
+    }
 }

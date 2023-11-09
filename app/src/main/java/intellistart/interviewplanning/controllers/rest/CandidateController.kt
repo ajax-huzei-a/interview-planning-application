@@ -1,16 +1,13 @@
 package intellistart.interviewplanning.controllers.rest
 
 import intellistart.interviewplanning.controllers.dto.SlotDto
-import intellistart.interviewplanning.controllers.dto.SlotsDto
 import intellistart.interviewplanning.controllers.dto.toDto
-import intellistart.interviewplanning.controllers.dto.toDtoList
 import intellistart.interviewplanning.model.period.PeriodService
 import intellistart.interviewplanning.model.slot.Slot
 import intellistart.interviewplanning.model.slot.SlotService
 import intellistart.interviewplanning.model.slot.validation.SlotValidator
 import intellistart.interviewplanning.security.JwtUserDetails
 import org.bson.types.ObjectId
-import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,48 +15,57 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmptyDeferred
+import reactor.kotlin.core.publisher.toMono
 
 @RestController
 @CrossOrigin
 class CandidateController(
     private val slotService: SlotService,
     private val slotValidator: SlotValidator,
-    private val periodService: PeriodService
+    private val periodService: PeriodService,
 ) {
 
     @PostMapping("/candidate/slot/create")
     fun createCandidateSlot(
         @RequestBody request: SlotDto,
-        authentication: Authentication
-    ): ResponseEntity<SlotDto> {
-        val candidateSlot = getCandidateSlotFromDto(request)
+        authentication: Authentication,
+    ): Mono<SlotDto> = Mono.defer {
         val jwtUserDetails = authentication.principal as JwtUserDetails
+        val candidateSlot = getCandidateSlotFromDto(request)
         slotValidator.validateCreating(candidateSlot, jwtUserDetails.email)
-        val createdCandidateSlot = slotService.create(candidateSlot, jwtUserDetails.email)
-        return ResponseEntity.ok(createdCandidateSlot.toDto())
+            .flatMap { slotService.create(candidateSlot, jwtUserDetails.email) }
+            .map {
+                it.toDto()
+            }
     }
 
     @PostMapping("/candidate/slot/update/{slotId}")
     fun updateCandidateSlot(
         @RequestBody request: SlotDto,
         @PathVariable("slotId") id: String,
-        authentication: Authentication
-    ): ResponseEntity<SlotDto> {
-        val candidateSlot = getCandidateSlotFromDto(request).copy(id = ObjectId(id))
+        authentication: Authentication,
+    ): Mono<SlotDto> = Mono.defer {
         val jwtUserDetails = authentication.principal as JwtUserDetails
+        val candidateSlot = getCandidateSlotFromDto(request).copy(id = ObjectId(id))
         slotValidator.validateUpdating(candidateSlot, jwtUserDetails.email)
-        val updatedCandidateSlot = slotService.update(candidateSlot, jwtUserDetails.email)
-        return ResponseEntity.ok(updatedCandidateSlot.toDto())
+            .flatMap { slotService.update(candidateSlot, jwtUserDetails.email) }
+            .map {
+                it.toDto()
+            }
     }
 
     @GetMapping("/candidate/slots")
     fun getAllSlotsOfCandidate(
-        authentication: Authentication
-    ): ResponseEntity<SlotsDto> {
+        authentication: Authentication,
+    ): Flux<SlotDto> {
         val jwtUserDetails = authentication.principal as JwtUserDetails
-        val candidateSlots = slotService
-            .getAllSlotsByEmail(jwtUserDetails.email)
-        return ResponseEntity.ok(candidateSlots.toDtoList())
+
+        return slotService.getAllSlotsByEmail(jwtUserDetails.email)
+            .map { it.toDto() }
+            .switchIfEmptyDeferred { SlotDto().toMono() }
     }
 
     private fun getCandidateSlotFromDto(

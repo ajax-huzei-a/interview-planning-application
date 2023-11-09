@@ -12,27 +12,30 @@ import intellistart.interviewplanning.model.slot.SlotService
 import intellistart.interviewplanning.model.slot.validation.SlotValidator
 import intellistart.interviewplanning.request.slot.create.proto.CreateSlotRequest
 import intellistart.interviewplanning.request.slot.create.proto.CreateSlotResponse
+import io.nats.client.Connection
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @Component
 class CreateSlotNatsController(
     private val slotService: SlotService,
     private val slotValidator: SlotValidator,
-    private val periodService: PeriodService
+    private val periodService: PeriodService,
+    override val connection: Connection,
 ) : NatsController<CreateSlotRequest, CreateSlotResponse> {
 
     override val subject: String = CREATE
 
     override val parser: Parser<CreateSlotRequest> = CreateSlotRequest.parser()
 
-    override fun handle(request: CreateSlotRequest): CreateSlotResponse = runCatching {
-        val slot = getSlotFromProto(request)
-        slotValidator.validateCreating(slot, request.email)
-        buildSuccessResponse(slotService.create(slot, request.email))
-    }.getOrElse {
-        buildFailureResponse(it)
-    }
+    override fun handle(request: CreateSlotRequest): Mono<CreateSlotResponse> =
+        Mono.fromSupplier { getSlotFromProto(request) }
+            .flatMap { slotValidator.validateCreating(it, request.email).thenReturn(it) }
+            .flatMap { slotService.create(it, request.email) }
+            .map { buildSuccessResponse(it) }
+            .onErrorResume { buildFailureResponse(it).toMono() }
 
     private fun buildFailureResponse(exc: Throwable): CreateSlotResponse =
         when (exc) {

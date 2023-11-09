@@ -17,14 +17,13 @@ spring:
             clientId: ${FACEBOOK_CLIENT_ID}
             clientSecret: ${FACEBOOK_SECRET}
             redirectUri: ${FACEBOOK_REDIRECT_URI}
+  redis:
+    host: ${REDIS_HOSTNAME}
+    port: ${REDIS_PORT}
 
   data:
     mongodb:
       uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongodb:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin
-
-redis:
-  host: ${REDIS_HOSTNAME}
-  port: ${REDIS_PORT}
 
 nats:
   url: ${NATS_URL}
