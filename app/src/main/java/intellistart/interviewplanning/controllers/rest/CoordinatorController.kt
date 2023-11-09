@@ -70,21 +70,25 @@ class CoordinatorController(
     fun updateBooking(
         @RequestBody bookingDto: BookingDto,
         @PathVariable id: String
-    ): Mono<BookingDto> = Mono.defer {
-        val booking = getFromDto(bookingDto).copy(id = ObjectId(id))
-        bookingValidator.validateUpdating(booking)
-            .then(bookingService.update(booking))
-            .map { it.toDto() }
+    ): Mono<BookingDto> = Mono.fromSupplier {
+        getFromDto(bookingDto).copy(id = ObjectId(id))
     }
+        .flatMap { booking ->
+            bookingValidator.validateUpdating(booking).thenReturn(booking)
+        }
+        .flatMap { booking -> bookingService.update(booking) }
+        .map { it.toDto() }
 
     @PostMapping("/booking/create")
     fun createBooking(@RequestBody bookingDto: BookingDto): Mono<BookingDto> =
-        Mono.defer {
-            val booking = getFromDto(bookingDto)
-            bookingValidator.validateCreating(booking)
-                .then(bookingService.create(booking))
-                .map { it.toDto() }
+        Mono.fromSupplier {
+            getFromDto(bookingDto)
         }
+            .flatMap { booking ->
+                bookingValidator.validateCreating(booking).thenReturn(booking)
+            }
+            .flatMap { booking -> bookingService.create(booking) }
+            .map { it.toDto() }
 
     @DeleteMapping("/booking/delete/{id}")
     fun deleteBooking(@PathVariable("id") bookingId: String): Mono<BookingDto> {

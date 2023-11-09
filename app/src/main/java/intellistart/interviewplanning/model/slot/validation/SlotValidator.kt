@@ -49,14 +49,12 @@ class SlotValidator(
                 slot.id != it.id && periodService.areOverlapping(slot.period, it.period)
             }.hasElements().flatMap {
                 Unit.toMono()
-            }.switchIfEmpty { SlotException(SlotExceptionProfile.SLOT_IS_OVERLAPPING).toMono() }
+            }.switchIfEmpty { SlotException(SlotExceptionProfile.SLOT_IS_OVERLAPPING).toMono() }// TODO fix this method
 
     private fun validateSlotIsBookingAndTheSlotExists(id: ObjectId): Mono<Unit> =
-        slotService.getById(id).flatMap { slot ->
+        slotService.getById(id).handle<Unit> { slot, sink ->
             if (slot.bookings.isNotEmpty()) {
-                Mono.error(SlotException(SlotExceptionProfile.SLOT_IS_BOOKED))
-            } else {
-                Unit.toMono()
+                sink.error(SlotException(SlotExceptionProfile.SLOT_IS_BOOKED))
             }
-        }
+        }.thenReturn(Unit)
 }

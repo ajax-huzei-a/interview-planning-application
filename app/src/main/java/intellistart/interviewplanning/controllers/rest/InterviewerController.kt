@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmptyDeferred
+import reactor.kotlin.core.publisher.toMono
 
 @RestController
 @CrossOrigin
@@ -34,7 +36,7 @@ class InterviewerController(
         val jwtUserDetails = authentication.principal as JwtUserDetails
         val interviewerSlot = getInterviewerSlotFromDto(slotDto)
         slotValidator.validateCreating(interviewerSlot, jwtUserDetails.email)
-            .then(slotService.create(interviewerSlot, jwtUserDetails.email))
+            .flatMap { slotService.create(interviewerSlot, jwtUserDetails.email) }
             .map {
                 it.toDto()
             }
@@ -49,7 +51,7 @@ class InterviewerController(
         val jwtUserDetails = authentication.principal as JwtUserDetails
         val interviewerSlot = getInterviewerSlotFromDto(slotDto).copy(id = ObjectId(slotId))
         slotValidator.validateUpdating(interviewerSlot, jwtUserDetails.email)
-            .then(slotService.update(interviewerSlot, jwtUserDetails.email))
+            .flatMap { slotService.update(interviewerSlot, jwtUserDetails.email) }
             .map {
                 it.toDto()
             }
@@ -63,7 +65,7 @@ class InterviewerController(
 
         return slotService.getAllSlotsByEmail(jwtUserDetails.email)
             .map { it.toDto() }
-            .defaultIfEmpty(SlotDto())
+            .switchIfEmptyDeferred { SlotDto().toMono() }
     }
 
     private fun getInterviewerSlotFromDto(

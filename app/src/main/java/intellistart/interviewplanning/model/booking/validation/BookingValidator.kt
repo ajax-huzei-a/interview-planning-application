@@ -13,8 +13,6 @@ import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import reactor.kotlin.core.util.function.component1
-import reactor.kotlin.core.util.function.component2
 
 @Component
 class BookingValidator(
@@ -71,26 +69,21 @@ class BookingValidator(
 
     private fun checkBookingForOverlapsWithOtherBookings(
         booking: Booking,
-    ): Mono<Unit> = Mono.zip(
-        slotService.getById(booking.interviewerSlotId),
-        slotService.getById(booking.candidateSlotId)
-    ).handle { (interviewerSlot, candidateSlot), sink ->
-        val interviewerBookings: Collection<Booking> = interviewerSlot.bookings
-        val candidateBookings: Collection<Booking> = candidateSlot.bookings
+    ): Mono<Unit> = Mono.`when`(
+        validateBookingIsApplicableToUser(booking.interviewerSlotId, booking),
+        validateBookingIsApplicableToUser(booking.candidateSlotId, booking),
+    ).thenReturn(Unit)
 
-        validatePeriodNotOverlappingWithOtherBookingPeriods(
-            booking.id,
-            booking.period,
-            interviewerBookings
-        )
-
-        validatePeriodNotOverlappingWithOtherBookingPeriods(
-            booking.id,
-            booking.period,
-            candidateBookings
-        )
-        sink.complete()
-    }
+    private fun validateBookingIsApplicableToUser(userId: ObjectId, booking: Booking): Mono<Unit> =
+        slotService.getById(userId)
+            .doOnNext { user ->
+                validatePeriodNotOverlappingWithOtherBookingPeriods(
+                    booking.id,
+                    booking.period,
+                    user.bookings
+                )
+            }
+            .thenReturn(Unit)
 
     private fun validatePeriodNotOverlappingWithOtherBookingPeriods(
         updatingBookingId: ObjectId,

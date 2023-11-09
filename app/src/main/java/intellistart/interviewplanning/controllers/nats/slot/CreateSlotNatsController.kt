@@ -29,15 +29,23 @@ class CreateSlotNatsController(
 
     override val parser: Parser<CreateSlotRequest> = CreateSlotRequest.parser()
 
-    override fun handle(request: CreateSlotRequest): Mono<CreateSlotResponse> =
-        Mono.defer {
-            runCatching {
-                val slot = getSlotFromProto(request)
-                slotValidator.validateCreating(slot, request.email)
-                    .then(slotService.create(slot, request.email))
-                    .map { buildSuccessResponse(it) }
-            }.getOrElse { Mono.just(buildFailureResponse(it)) }
-        }
+    override fun handle(request: CreateSlotRequest): Mono<CreateSlotResponse> = // Todo check if correct this soluction
+        Mono.fromCallable {
+            val slot = getSlotFromProto(request)
+            slotValidator.validateCreating(slot, request.email)
+                .then(slotService.create(slot, request.email))
+                .map { buildSuccessResponse(it) }
+        }.flatMap { it }
+            .onErrorResume { Mono.just(buildFailureResponse(it)) }
+//    override fun handle(request: CreateSlotRequest): Mono<CreateSlotResponse> =
+//        Mono.defer {
+//            runCatching {
+//                val slot = getSlotFromProto(request)
+//                slotValidator.validateCreating(slot, request.email)
+//                    .then(slotService.create(slot, request.email))
+//                    .map { buildSuccessResponse(it) }
+//            }.getOrElse { Mono.just(buildFailureResponse(it)) }
+//        }
 
     private fun buildFailureResponse(exc: Throwable): CreateSlotResponse =
         when (exc) {

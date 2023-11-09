@@ -30,30 +30,25 @@ class JwtService(
             }
     }
 
-    private fun generateAndCacheJwt(jwtRequest: JwtRequest): Mono<String> {
-        val userScopes = Mono.fromCallable {
+    private fun generateAndCacheJwt(jwtRequest: JwtRequest): Mono<String> =
+        Mono.fromCallable {
             facebookUtil.getScope(jwtRequest.facebookToken)
         }.onErrorMap {
             SecurityException(SecurityException.SecurityExceptionProfile.BAD_FACEBOOK_TOKEN)
         }
-
-        return userScopes.flatMap { scopes ->
-            val email = scopes[FacebookUtil.FacebookScopes.EMAIL]
-            val name = scopes[FacebookUtil.FacebookScopes.NAME]
-
-            authenticate(email)
-                .flatMap {
-                    userDetailsService.loadUserByEmailAndName(email, name)
-                }
-                .map { userDetails ->
-                    jwtUtil.generateToken(userDetails as JwtUserDetails)
-                }
-                .flatMap { jwt ->
-                    cacheService.setInCache(jwtRequest.facebookToken, jwt)
-                        .thenReturn(jwt)
-                }
-        }
-    }
+            .map { scopes ->
+                scopes[FacebookUtil.FacebookScopes.EMAIL] to scopes[FacebookUtil.FacebookScopes.NAME]
+            }
+            .doOnNextMono { (email, _) -> authenticate(email) }
+            .flatMap { (email, name) ->
+                userDetailsService.loadUserByEmailAndName(email, name)
+            }
+            .map { userDetails ->
+                jwtUtil.generateToken(userDetails as JwtUserDetails)
+            }
+            .doOnNextMono { jwt ->
+                cacheService.setInCache(jwtRequest.facebookToken, jwt)
+            }
 
     private fun authenticate(username: String?): Mono<Authentication> {
         return Mono.just(UsernamePasswordAuthenticationToken(username, username))
@@ -62,4 +57,6 @@ class JwtService(
                 throw SecurityException(SecurityException.SecurityExceptionProfile.BAD_CREDENTIALS)
             }
     }
+
+    fun <T> Mono<T>.doOnNextMono(mapper: (T) -> Mono<*>): Mono<T> = flatMap(mapper).then(this)
 }
