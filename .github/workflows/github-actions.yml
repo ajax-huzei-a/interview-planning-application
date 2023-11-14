@@ -28,7 +28,9 @@ jobs:
         run: ./gradlew assemble
 
       - name: Run Docker Compose
-        run: docker compose -f docker-compose.yml up --build --force-recreate -d application
+        run: |
+          docker compose -f docker-compose.yml up --build --force-recreate -d  \
+          mongodb redis nats schema-registry-interview-planning 
 
       - name: Run tests
         run: ./gradlew test
