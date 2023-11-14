@@ -31,7 +31,6 @@ dependencies {
     implementation("com.google.protobuf:protobuf-java:3.24.3")
     implementation(project(":internal-api"))
 
-
     implementation("org.springframework.kafka:spring-kafka:2.9.1")
     implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
     implementation("io.projectreactor:reactor-core:3.4.22")

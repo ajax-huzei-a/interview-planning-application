@@ -15,7 +15,7 @@ class SlotKafkaProducer(
 ) {
 
     fun produceNotification(protoSlot: Slot, id: String) {
-        val event = SlotUpdatedEvent.newBuilder().setSlotId(id).setSlot(protoSlot).build() // TODO check if it works
+        val event = SlotUpdatedEvent.newBuilder().setSlotId(id).setSlot(protoSlot).build()
         kafkaSender.send(
             SenderRecord.create(
                 ProducerRecord(

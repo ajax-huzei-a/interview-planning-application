@@ -1,6 +1,6 @@
 import com.google.protobuf.gradle.id
 
-plugins{
+plugins {
     id("com.google.protobuf") version "0.9.4"
 }
 
