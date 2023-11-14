@@ -45,3 +45,9 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
