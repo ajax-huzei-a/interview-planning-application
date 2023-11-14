@@ -118,6 +118,8 @@ class UpdateNatsControllerIT {
             UpdateSlotResponse.parser()
         )
 
+        Thread.sleep(60000)
+
         // THEN
         Assertions.assertThat(actual).isEqualTo(expectedSlotResponse)
     }
@@ -187,6 +189,8 @@ class UpdateNatsControllerIT {
             updateSlotRequest,
             UpdateSlotResponse.parser()
         )
+
+        Thread.sleep(60000)
 
         // THEN
         Assertions.assertThat(actual).isEqualTo(expectedSlotResponse)
