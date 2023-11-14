@@ -1,12 +1,12 @@
 server:
-  port: ${APPLICATION_PORT}
+  port: 8080
 
 jwt:
-  secret: ${JWT_SECRET}
-  validity: ${JWT_VALIDITY}
-  caching: ${JWT_CACHING}
+  secret: oneweek
+  validity: 86400
+  caching: 350
 
-first-coordinator-email: ${FIRST_COORDINATOR_EMAIL}
+first-coordinator-email: guuzey2001@gmail.com
 
 spring:
   security:
@@ -14,16 +14,35 @@ spring:
       client:
         registration:
           facebook:
-            clientId: ${FACEBOOK_CLIENT_ID}
-            clientSecret: ${FACEBOOK_SECRET}
-            redirectUri: ${FACEBOOK_REDIRECT_URI}
-  redis:
-    host: ${REDIS_HOSTNAME}
-    port: ${REDIS_PORT}
+            clientId: 240435898644410
+            clientSecret: c47082928d4e274077cd1e2a56e1d7be
+            redirectUri: https://localhost:8080/
 
+  redis:
+    host: redis
+    port: 6379
   data:
     mongodb:
-      uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongodb:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin
+      uri: mongodb://username:password@mongodb:27017/booking_db?authSource=admin
+
+  kafka:
+    bootstrap-servers: http://kafka-interview-planning:29092
+    properties:
+      schema:
+        registry:
+          url: http://schema-registry-interview-planning:8081
 
 nats:
-  url: ${NATS_URL}
+  url: nats://nats:4222
+
+grpc:
+  server:
+    port: 9091
+    security:
+      enabled: false
+
+logging:
+  level:
+    root: debug
+    org.springframework.data.*.*: debug
+    org.springframework.cache.*: debug

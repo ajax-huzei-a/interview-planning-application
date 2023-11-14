@@ -30,6 +30,17 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
     implementation("com.google.protobuf:protobuf-java:3.24.3")
     implementation(project(":internal-api"))
+
+
+    implementation("org.springframework.kafka:spring-kafka:2.9.1")
+    implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
+    implementation("io.projectreactor:reactor-core:3.4.22")
+
+    implementation("io.confluent:kafka-schema-registry-maven-plugin:7.5.1")
+    implementation("io.confluent:kafka-protobuf-serializer:7.5.1")
+
+    implementation("net.devh:grpc-spring-boot-starter:2.15.0.RELEASE")
+    implementation("net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE")
 }
 
 tasks.withType<Test> {

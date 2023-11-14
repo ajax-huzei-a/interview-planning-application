@@ -1,7 +1,11 @@
 package intellistart.interviewplanning
 
 object NatsSubject {
+
     private const val REQUEST_PREFIX = "intellistart.interviewplanning"
+
+    fun createSlotEventNatsSubject(slotId: String, eventType: String): String =
+        "$REQUEST_PREFIX.slot.$slotId.$eventType"
 
     object Slot {
         const val CREATE = "$REQUEST_PREFIX.slot.create"

@@ -1,0 +1,12 @@
+syntax="proto3";
+
+package intellistart.interviewplanning.output.pubsub.slot;
+
+import "intellistart/interviewplanning/commonmodels/slot/slot.proto";
+
+option java_multiple_files = true;
+
+message SlotUpdatedEvent {
+  string slotId = 1;
+  commonmodels.slot.Slot slot = 2;
+}

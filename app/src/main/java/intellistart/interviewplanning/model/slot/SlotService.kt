@@ -1,7 +1,9 @@
 package intellistart.interviewplanning.model.slot
 
+import intellistart.interviewplanning.controllers.dto.toProto
 import intellistart.interviewplanning.exceptions.SlotException
 import intellistart.interviewplanning.exceptions.SlotException.SlotExceptionProfile
+import intellistart.interviewplanning.kafka.SlotKafkaProducer
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -12,12 +14,17 @@ import java.time.LocalDate
 
 @Service
 class SlotService(
-    private val slotRepository: SlotRepository
+    private val slotRepository: SlotRepository,
+    private val slotKafkaProducer: SlotKafkaProducer
 ) {
 
     fun create(slot: Slot, email: String): Mono<Slot> = slotRepository.save(slot, email)
 
-    fun update(slot: Slot, email: String): Mono<Slot> = slotRepository.update(slot, email)
+    fun update(slot: Slot, email: String): Mono<Slot> =
+        slotRepository.update(slot, email)
+            .doOnNext {
+                slotKafkaProducer.produceNotification(it.toProto(), it.id.toHexString())
+            }
 
     fun getSlotsByEmailAndDate(email: String, date: LocalDate): Flux<Slot> =
         slotRepository.findByEmailAndDate(email, date)
