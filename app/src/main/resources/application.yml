@@ -14,13 +14,14 @@ spring:
       client:
         registration:
           facebook:
-            clientId: 240435898644410
-            clientSecret: c47082928d4e274077cd1e2a56e1d7be
+            clientId:
+            clientSecret:
             redirectUri: https://localhost:8080/
 
   redis:
     host: redis
     port: 6379
+
   data:
     mongodb:
       uri: mongodb://username:password@mongodb:27017/booking_db?authSource=admin

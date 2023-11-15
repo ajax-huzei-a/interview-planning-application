@@ -25,7 +25,7 @@ class KafkaConfig(
 ) {
 
     @Bean
-    fun kafkaSenderSLotUpdatedEvent(): KafkaSender<String, SlotUpdatedEvent> =
+    fun kafkaSenderSlotUpdatedEventSender(): KafkaSender<String, SlotUpdatedEvent> =
         createKafkaSender(producerProperties())
 
     @Bean

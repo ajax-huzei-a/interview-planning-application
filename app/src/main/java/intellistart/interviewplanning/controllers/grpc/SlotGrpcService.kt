@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 
 @GrpcService
-class GrpcService(
+class SlotGrpcService(
     private val slotService: SlotService,
     private val natsEventSubscriber: NatsEventSubscriber
 ) : ReactorSlotServiceGrpc.SlotServiceImplBase() {

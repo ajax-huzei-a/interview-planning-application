@@ -17,6 +17,7 @@ spring:
             clientId: 240435898644410
             clientSecret: c47082928d4e274077cd1e2a56e1d7be
             redirectUri: https://localhost:8080/
+
   redis:
     host: localhost
     port: 6379
