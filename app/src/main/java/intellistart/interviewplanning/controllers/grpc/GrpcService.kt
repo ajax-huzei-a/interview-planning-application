@@ -12,6 +12,7 @@ import net.devh.boot.grpc.server.service.GrpcService
 import org.bson.types.ObjectId
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 
 @GrpcService
 class GrpcService(
@@ -20,14 +21,13 @@ class GrpcService(
 ) : ReactorSlotServiceGrpc.SlotServiceImplBase() {
 
     override fun streamBySlotId(request: Mono<StreamBySlotIdRequest>): Flux<StreamBySlotIdResponse> {
-        return request.flatMapMany { streamSlotByIdRequest ->
-            slotService.getById(ObjectId(streamSlotByIdRequest.id))
-                .flatMapMany { initStateSlot ->
-                    natsEventSubscriber.subscribe(streamSlotByIdRequest.id)
-                        .map { slotUpdatedEvent -> buildSuccessResponse(slotUpdatedEvent) }
-                        .startWith(buildSuccessResponse(initStateSlot))
-                }
-                .onErrorResume { Mono.just(buildFailureResponse(it)) }
+        return request.flatMapMany { streamRequest ->
+            natsEventSubscriber.subscribe(streamRequest.id)
+                .map { slotUpdatedEvent -> buildSuccessResponse(slotUpdatedEvent) }
+                .startWith(
+                    slotService.getById(ObjectId(streamRequest.id)).map { buildSuccessResponse(it) }
+                )
+                .onErrorResume { buildFailureResponse(it).toMono() }
         }
     }
 

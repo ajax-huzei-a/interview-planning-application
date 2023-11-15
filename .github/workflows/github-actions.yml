@@ -33,7 +33,7 @@ jobs:
           mongodb redis nats schema-registry-interview-planning 
 
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew build
 
       - name: Shutdown
         if: always()

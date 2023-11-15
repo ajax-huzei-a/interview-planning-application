@@ -43,7 +43,7 @@ class KafkaConfig(
     ): KafkaReceiver<String, T> {
         properties[ConsumerConfig.GROUP_ID_CONFIG] = "slot-group"
         val options =
-            ReceiverOptions.create<String, T>(properties).subscription(setOf(KafkaTopic.UPDATE_SLOT_EVENT))
+            ReceiverOptions.create<String, T>(properties).subscription(setOf(KafkaTopic.UPDATED_SLOT_EVENT))
         return KafkaReceiver.create(options)
     }
 

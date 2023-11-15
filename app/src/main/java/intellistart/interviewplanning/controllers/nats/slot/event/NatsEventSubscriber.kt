@@ -13,7 +13,11 @@ class NatsEventSubscriber(private val connection: Connection) {
     fun subscribe(slotId: String): Flux<SlotUpdatedEvent> {
         val sink = Sinks.many().multicast().onBackpressureBuffer<SlotUpdatedEvent>()
         connection.createDispatcher { message ->
-            sink.tryEmitNext(SlotUpdatedEvent.parseFrom(message.data))
+            runCatching {
+                SlotUpdatedEvent.parseFrom(message.data)
+            }
+                .onSuccess(sink::tryEmitNext)
+                .onFailure(sink::tryEmitError)
         }.subscribe(NatsSubject.createSlotEventNatsSubject(slotId, "UPDATE"))
         return sink.asFlux()
     }

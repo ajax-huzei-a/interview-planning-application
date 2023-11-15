@@ -19,7 +19,7 @@ class SlotKafkaProducer(
         kafkaSender.send(
             SenderRecord.create(
                 ProducerRecord(
-                    KafkaTopic.UPDATE_SLOT_EVENT,
+                    KafkaTopic.UPDATED_SLOT_EVENT,
                     event.slotId,
                     event
                 ),

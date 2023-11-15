@@ -1,5 +1,5 @@
 package intellistart.interviewplanning
 
 object KafkaTopic {
-    const val UPDATE_SLOT_EVENT = "intellistart.interviewplanning.output.pubsub.slot.update"
+    const val UPDATED_SLOT_EVENT = "intellistart.interviewplanning.output.pubsub.slot.updated"
 }
