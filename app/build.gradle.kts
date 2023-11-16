@@ -30,6 +30,7 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
     implementation("com.google.protobuf:protobuf-java:3.24.3")
     implementation(project(":internal-api"))
+    implementation(project(":app:period-subdomain"))
 
     implementation("org.springframework.kafka:spring-kafka:2.9.1")
     implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
@@ -40,6 +41,60 @@ dependencies {
 
     implementation("net.devh:grpc-spring-boot-starter:2.15.0.RELEASE")
     implementation("net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE")
+}
+
+subprojects {
+    apply(plugin = "kotlin")
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+    apply(plugin = "io.gitlab.arturbosch.detekt")
+
+    dependencies {
+
+        implementation(project(":"))
+        implementation(project(":internal-api"))
+
+        implementation("javax.xml.bind:jaxb-api:2.3.1")
+        implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
+
+        implementation("io.netty:netty-resolver-dns-native-macos:4.1.100.Final:osx-aarch_64")
+
+        implementation("org.springframework.boot:spring-boot-starter-security")
+        implementation("org.springframework.boot:spring-boot-starter-webflux")
+        implementation("io.jsonwebtoken:jjwt:0.9.1")
+        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
+        implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
+        implementation("io.nats:jnats:2.16.14")
+        implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
+        implementation("org.projectlombok:lombok:1.18.20")
+        annotationProcessor("org.projectlombok:lombok:1.18.20")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("org.springframework.security:spring-security-test")
+        testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
+        implementation("com.google.protobuf:protobuf-java:3.24.3")
+
+        implementation("org.springframework.kafka:spring-kafka:2.9.1")
+        implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
+        implementation("io.projectreactor:reactor-core:3.4.22")
+
+        implementation("io.confluent:kafka-schema-registry-maven-plugin:7.5.1")
+        implementation("io.confluent:kafka-protobuf-serializer:7.5.1")
+
+        implementation("net.devh:grpc-spring-boot-starter:2.15.0.RELEASE")
+        implementation("net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE")
+    }
+
+    tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+        enabled = false
+    }
+
+    tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
+        enabled = false
+    }
+
 }
 
 tasks.withType<Test> {

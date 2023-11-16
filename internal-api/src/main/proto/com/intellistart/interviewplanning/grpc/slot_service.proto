@@ -1,0 +1,8 @@
+package intellistart.interviewplanning.grpc.slot_service;
+
+import "com/intellistart/interviewplanning/input/reqreply/slot/stream_by_slot_id.proto";
+
+service SlotService {
+    rpc streamBySlotId (com.intellistart.interviewplanning.request.slot.stream_by_slot_id.StreamBySlotIdRequest)
+        returns (stream com.intellistart.interviewplanning.request.slot.stream_by_slot_id.StreamBySlotIdResponse);
+}

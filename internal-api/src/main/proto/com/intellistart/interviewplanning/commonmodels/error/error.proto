@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package com.intellistart.interviewplanning.commonmodels.error;
+
+option java_multiple_files = true;
+
+message Error {
+
+}
