@@ -10,7 +10,6 @@ import reactor.core.publisher.Sinks
 @Component
 class NatsEventSubscriber(private val connection: Connection) {
 
-
     fun subscribe(slotId: String): Flux<SlotUpdatedEvent> {
         val sink = Sinks.many().unicast().onBackpressureBuffer<SlotUpdatedEvent>()
         connection.createDispatcher { message ->
