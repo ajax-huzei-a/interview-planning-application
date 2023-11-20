@@ -1,4 +1,4 @@
-package com.intellistart.interviewplanning.appltication.port
+package com.intellistart.interviewplanning.port
 
 import com.google.protobuf.Duration
 import com.google.type.Date

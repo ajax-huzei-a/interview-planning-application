@@ -2,8 +2,8 @@ package com.intellistart.interviewplanning.slot.infrastructure.adapters.nats.slo
 
 import com.google.protobuf.Parser
 import com.intellistart.interviewplanning.NatsSubject.Slot.CREATE
-import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPort
 import com.intellistart.interviewplanning.exceptions.UserException
+import com.intellistart.interviewplanning.port.PeriodOperationsInPort
 import com.intellistart.interviewplanning.request.slot.create.proto.CreateSlotRequest
 import com.intellistart.interviewplanning.request.slot.create.proto.CreateSlotResponse
 import com.intellistart.interviewplanning.slot.domain.exception.SlotException

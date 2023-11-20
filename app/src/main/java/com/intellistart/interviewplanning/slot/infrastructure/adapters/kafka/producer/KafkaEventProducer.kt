@@ -12,7 +12,7 @@ import reactor.kafka.sender.SenderRecord
 import reactor.kotlin.core.publisher.toMono
 
 @Component
-class Producer(
+class KafkaEventProducer(
     private val kafkaSender: KafkaSender<String, SlotUpdatedEvent>
 ) : ProducerOutPort {
 

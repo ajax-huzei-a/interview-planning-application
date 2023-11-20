@@ -1,6 +1,6 @@
 package com.intellistart.interviewplanning.slot.infrastructure.adapters.rest
 
-import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPort
+import com.intellistart.interviewplanning.port.PeriodOperationsInPort
 import com.intellistart.interviewplanning.security.JwtUserDetails
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.dto.SlotDto

@@ -2,10 +2,10 @@ package com.intellistart.interviewplanning.appltication.service
 
 import com.google.protobuf.Duration
 import com.google.type.Date
-import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPort
 import com.intellistart.interviewplanning.appltication.validation.PeriodValidator
 import com.intellistart.interviewplanning.domain.exception.PeriodException
 import com.intellistart.interviewplanning.domain.model.Period
+import com.intellistart.interviewplanning.port.PeriodOperationsInPort
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime

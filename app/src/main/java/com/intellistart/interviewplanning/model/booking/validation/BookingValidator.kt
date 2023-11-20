@@ -1,10 +1,10 @@
 package com.intellistart.interviewplanning.model.booking.validation
 
-import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPort
 import com.intellistart.interviewplanning.domain.model.Period
 import com.intellistart.interviewplanning.exceptions.BookingException
 import com.intellistart.interviewplanning.exceptions.BookingException.BookingExceptionProfile
 import com.intellistart.interviewplanning.model.booking.Booking
+import com.intellistart.interviewplanning.port.PeriodOperationsInPort
 import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component

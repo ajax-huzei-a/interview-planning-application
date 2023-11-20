@@ -1,6 +1,6 @@
 package com.intellistart.interviewplanning.slot.application.validation
 
-import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPort
+import com.intellistart.interviewplanning.port.PeriodOperationsInPort
 import com.intellistart.interviewplanning.slot.domain.exception.SlotException
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
