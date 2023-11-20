@@ -2,18 +2,18 @@ package com.intellistart.interviewplanning.slot.infrastructure.adapters.nats.eve
 
 import com.intellistart.interviewplanning.NatsSubject
 import com.intellistart.interviewplanning.output.pubsub.slot.SlotUpdatedEvent
-import com.intellistart.interviewplanning.slot.application.port.NatsEventSubscriberInPort
+import com.intellistart.interviewplanning.slot.port.EventSubscriberInPort
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
 
 @Component
-class NatsEventSubscriber(private val connection: Connection) : NatsEventSubscriberInPort {
+class EventSubscriber(private val connection: Connection) : EventSubscriberInPort {
 
     private val sink = Sinks.many().multicast().onBackpressureBuffer<SlotUpdatedEvent>()
 
-    override fun subscribe(slotId: String): Flux<SlotUpdatedEvent> {
+    override fun subscribeOnNatsSlotUpdatedEvent(slotId: String): Flux<SlotUpdatedEvent> {
         connection.createDispatcher { message ->
             runCatching {
                 SlotUpdatedEvent.parseFrom(message.data)

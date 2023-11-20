@@ -1,9 +1,9 @@
 package com.intellistart.interviewplanning.slot.infrastructure.adapters.reopository.mongo
 
 import com.intellistart.interviewplanning.model.user.User
-import com.intellistart.interviewplanning.slot.application.port.SlotRepositoryOutPort
+import com.intellistart.interviewplanning.slot.port.SlotRepositoryOutPort
 import com.intellistart.interviewplanning.slot.domain.model.Slot
-import com.intellistart.interviewplanning.slot.infrastructure.adapters.reopository.entity.SlotEntity
+import com.intellistart.interviewplanning.slot.infrastructure.adapters.reopository.mongo.entity.SlotEntity
 import com.intellistart.interviewplanning.slot.infrastructure.mapper.toDomain
 import com.intellistart.interviewplanning.slot.infrastructure.mapper.toEntity
 import org.bson.types.ObjectId

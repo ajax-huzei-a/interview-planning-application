@@ -6,8 +6,8 @@ import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPo
 import com.intellistart.interviewplanning.exceptions.UserException
 import com.intellistart.interviewplanning.request.slot.update.proto.UpdateSlotRequest
 import com.intellistart.interviewplanning.request.slot.update.proto.UpdateSlotResponse
-import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
-import com.intellistart.interviewplanning.slot.application.port.SlotValidatorInPort
+import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
+import com.intellistart.interviewplanning.slot.port.SlotValidatorInPort
 import com.intellistart.interviewplanning.slot.domain.exception.SlotException
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.adapters.nats.NatsController

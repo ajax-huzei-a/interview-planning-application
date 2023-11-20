@@ -5,7 +5,7 @@ import com.intellistart.interviewplanning.domain.model.Period
 import com.intellistart.interviewplanning.exceptions.BookingException
 import com.intellistart.interviewplanning.exceptions.BookingException.BookingExceptionProfile
 import com.intellistart.interviewplanning.model.booking.Booking
-import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
+import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono

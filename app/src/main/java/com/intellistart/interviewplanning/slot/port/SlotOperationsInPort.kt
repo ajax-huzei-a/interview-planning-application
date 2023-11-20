@@ -1,4 +1,4 @@
-package com.intellistart.interviewplanning.slot.application.port
+package com.intellistart.interviewplanning.slot.port
 
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import reactor.core.publisher.Flux

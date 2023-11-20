@@ -1,4 +1,4 @@
-package com.intellistart.interviewplanning.slot.infrastructure.adapters.reopository.entity
+package com.intellistart.interviewplanning.slot.infrastructure.adapters.reopository.mongo.entity
 
 import com.intellistart.interviewplanning.infrastructure.adapters.reopository.entity.PeriodEntity
 import com.intellistart.interviewplanning.model.booking.Booking

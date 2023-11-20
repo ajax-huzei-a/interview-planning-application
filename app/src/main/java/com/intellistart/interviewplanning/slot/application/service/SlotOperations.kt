@@ -1,10 +1,10 @@
 package com.intellistart.interviewplanning.slot.application.service
 
-import com.intellistart.interviewplanning.slot.application.port.SlotKafkaProducerOutPort
-import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
-import com.intellistart.interviewplanning.slot.application.port.SlotRepositoryOutPort
 import com.intellistart.interviewplanning.slot.domain.exception.SlotException
 import com.intellistart.interviewplanning.slot.domain.model.Slot
+import com.intellistart.interviewplanning.slot.port.ProducerOutPort
+import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
+import com.intellistart.interviewplanning.slot.port.SlotRepositoryOutPort
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -15,7 +15,7 @@ import java.time.LocalDate
 @Service
 class SlotOperations(
     private val slotRepository: SlotRepositoryOutPort,
-    private val slotKafkaProducer: SlotKafkaProducerOutPort
+    private val slotKafkaProducer: ProducerOutPort
 ) : SlotOperationsInPort {
 
     override fun create(slot: Slot, email: String): Mono<Slot> = slotRepository.save(slot, email)
@@ -23,7 +23,7 @@ class SlotOperations(
     override fun update(slot: Slot, email: String): Mono<Slot> =
         slotRepository.update(slot, email)
             .doOnNext {
-                slotKafkaProducer.produceNotification(it, it.id)
+                slotKafkaProducer.produceSlotNotificationToKafka(it, it.id)
             }
 
     override fun getSlotsByEmailAndDate(email: String, date: LocalDate): Flux<Slot> =
