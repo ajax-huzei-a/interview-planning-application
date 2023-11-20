@@ -6,12 +6,12 @@ import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPo
 import com.intellistart.interviewplanning.exceptions.UserException
 import com.intellistart.interviewplanning.request.slot.create.proto.CreateSlotRequest
 import com.intellistart.interviewplanning.request.slot.create.proto.CreateSlotResponse
-import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
-import com.intellistart.interviewplanning.slot.port.SlotValidatorInPort
 import com.intellistart.interviewplanning.slot.domain.exception.SlotException
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.adapters.nats.NatsController
 import com.intellistart.interviewplanning.slot.infrastructure.dto.toProto
+import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
+import com.intellistart.interviewplanning.slot.port.SlotValidatorInPort
 import io.nats.client.Connection
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component

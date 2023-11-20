@@ -7,3 +7,5 @@ include(
 )
 include("app:period-subdomain")
 findProject(":app:period-subdomain")?.name = "period-subdomain"
+include("app:period-subdomain")
+findProject(":app:period-subdomain")?.name = "period-subdomain"
