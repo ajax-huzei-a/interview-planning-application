@@ -5,8 +5,8 @@ import com.intellistart.interviewplanning.request.slot.stream_by_slot_id.StreamB
 import com.intellistart.interviewplanning.request.slot.stream_by_slot_id.StreamBySlotIdResponse
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.dto.toProto
-import com.intellistart.interviewplanning.slot.port.EventSubscriberInPort
-import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
+import com.intellistart.interviewplanning.slot.application.port.SlotUpdatesInPort
+import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
 import intellistart.interviewplanning.grpc.slot_service.ReactorSlotServiceGrpc
 import net.devh.boot.grpc.server.service.GrpcService
 import reactor.core.publisher.Flux
@@ -16,12 +16,12 @@ import reactor.kotlin.core.publisher.toMono
 @GrpcService
 class SlotGrpcService(
     private val slotService: SlotOperationsInPort,
-    private val natsEventSubscriber: EventSubscriberInPort
+    private val natsEventSubscriber: SlotUpdatesInPort
 ) : ReactorSlotServiceGrpc.SlotServiceImplBase() {
 
     override fun streamBySlotId(request: Mono<StreamBySlotIdRequest>): Flux<StreamBySlotIdResponse> {
         return request.flatMapMany { streamRequest ->
-            natsEventSubscriber.subscribeOnNatsSlotUpdatedEvent(streamRequest.id)
+            natsEventSubscriber.subscribe(streamRequest.id)
                 .map { slotUpdatedEvent -> buildSuccessResponse(slotUpdatedEvent) }
                 .startWith(
                     slotService.getById(streamRequest.id).map { buildSuccessResponse(it) }

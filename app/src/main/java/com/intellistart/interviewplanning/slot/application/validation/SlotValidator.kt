@@ -1,10 +1,10 @@
 package com.intellistart.interviewplanning.slot.application.validation
 
-import com.intellistart.interviewplanning.port.PeriodOperationsInPort
+import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPort
 import com.intellistart.interviewplanning.slot.domain.exception.SlotException
 import com.intellistart.interviewplanning.slot.domain.model.Slot
-import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
-import com.intellistart.interviewplanning.slot.port.SlotValidatorInPort
+import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
+import com.intellistart.interviewplanning.slot.application.port.SlotValidatorInPort
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.time.LocalDate

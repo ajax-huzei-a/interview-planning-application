@@ -1,4 +1,4 @@
-package com.intellistart.interviewplanning.port
+package com.intellistart.interviewplanning.appltication.port
 
 import java.time.LocalDate
 import java.time.LocalTime

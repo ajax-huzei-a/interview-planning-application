@@ -1,12 +1,12 @@
 package com.intellistart.interviewplanning.slot.infrastructure.adapters.rest
 
-import com.intellistart.interviewplanning.port.PeriodOperationsInPort
+import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPort
 import com.intellistart.interviewplanning.security.JwtUserDetails
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.dto.SlotDto
 import com.intellistart.interviewplanning.slot.infrastructure.dto.toDto
-import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
-import com.intellistart.interviewplanning.slot.port.SlotValidatorInPort
+import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
+import com.intellistart.interviewplanning.slot.application.port.SlotValidatorInPort
 import org.bson.types.ObjectId
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.CrossOrigin

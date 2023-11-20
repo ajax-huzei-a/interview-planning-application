@@ -5,7 +5,7 @@ import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.adapters.reopository.mongo.entity.SlotEntity
 import com.intellistart.interviewplanning.slot.infrastructure.mapper.toDomain
 import com.intellistart.interviewplanning.slot.infrastructure.mapper.toEntity
-import com.intellistart.interviewplanning.slot.port.SlotRepositoryOutPort
+import com.intellistart.interviewplanning.slot.application.port.SlotRepositoryOutPort
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate

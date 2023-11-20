@@ -4,7 +4,7 @@ import com.intellistart.interviewplanning.KafkaTopic
 import com.intellistart.interviewplanning.output.pubsub.slot.SlotUpdatedEvent
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.dto.toProto
-import com.intellistart.interviewplanning.slot.port.ProducerOutPort
+import com.intellistart.interviewplanning.slot.application.port.SlotsEventOutPort
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.stereotype.Component
 import reactor.kafka.sender.KafkaSender
@@ -12,11 +12,11 @@ import reactor.kafka.sender.SenderRecord
 import reactor.kotlin.core.publisher.toMono
 
 @Component
-class KafkaEventProducer(
+class KafkaEventSlotsEvent(
     private val kafkaSender: KafkaSender<String, SlotUpdatedEvent>
-) : ProducerOutPort {
+) : SlotsEventOutPort {
 
-    override fun produceSlotNotificationToKafka(slot: Slot, id: String) {
+    override fun publishEvent(slot: Slot, id: String) {
         val event = SlotUpdatedEvent.newBuilder().setSlotId(id).setSlot(slot.toProto()).build()
         kafkaSender.send(
             SenderRecord.create(

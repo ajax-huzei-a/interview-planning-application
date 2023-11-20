@@ -7,7 +7,7 @@ import com.intellistart.interviewplanning.request.slot.get_all.proto.GetAllSlots
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.adapters.nats.NatsController
 import com.intellistart.interviewplanning.slot.infrastructure.dto.toProto
-import com.intellistart.interviewplanning.slot.port.SlotOperationsInPort
+import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono

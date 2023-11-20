@@ -2,7 +2,7 @@ package com.intellistart.interviewplanning.appltication.validation
 
 import com.intellistart.interviewplanning.appltication.service.TimeService
 import com.intellistart.interviewplanning.domain.exception.PeriodException
-import com.intellistart.interviewplanning.port.PeriodValidatorInPort
+import com.intellistart.interviewplanning.appltication.port.PeriodValidatorInPort
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime
