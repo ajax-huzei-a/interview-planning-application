@@ -2,16 +2,16 @@ package com.intellistart.interviewplanning.slot.infrastructure.adapters.nats.slo
 
 import com.google.protobuf.Parser
 import com.intellistart.interviewplanning.NatsSubject
-import com.intellistart.interviewplanning.exceptions.UserException
 import com.intellistart.interviewplanning.appltication.port.PeriodOperationsInPort
+import com.intellistart.interviewplanning.exceptions.UserException
 import com.intellistart.interviewplanning.request.slot.update.proto.UpdateSlotRequest
 import com.intellistart.interviewplanning.request.slot.update.proto.UpdateSlotResponse
+import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
+import com.intellistart.interviewplanning.slot.application.port.SlotValidatorInPort
 import com.intellistart.interviewplanning.slot.domain.exception.SlotException
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.adapters.nats.NatsController
 import com.intellistart.interviewplanning.slot.infrastructure.dto.toProto
-import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
-import com.intellistart.interviewplanning.slot.application.port.SlotValidatorInPort
 import io.nats.client.Connection
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component

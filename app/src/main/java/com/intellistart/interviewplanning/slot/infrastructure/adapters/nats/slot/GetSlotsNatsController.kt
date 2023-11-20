@@ -4,10 +4,10 @@ import com.google.protobuf.Parser
 import com.intellistart.interviewplanning.NatsSubject
 import com.intellistart.interviewplanning.request.slot.get_all.proto.GetAllSlotsRequest
 import com.intellistart.interviewplanning.request.slot.get_all.proto.GetAllSlotsResponse
+import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
 import com.intellistart.interviewplanning.slot.domain.model.Slot
 import com.intellistart.interviewplanning.slot.infrastructure.adapters.nats.NatsController
 import com.intellistart.interviewplanning.slot.infrastructure.dto.toProto
-import com.intellistart.interviewplanning.slot.application.port.SlotOperationsInPort
 import io.nats.client.Connection
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
