@@ -1,41 +1,33 @@
-name: Checks
+name: Create Release Branch
 
 on:
   push:
-  pull_request:
     branches:
-      - '*'
+      - main
+  workflow_dispatch:
 
 jobs:
-  build:
+  create_release_branch:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      - name: Start MongoDB container
+      - name: Set up Git
         run: |
-          docker run -d --name mongo -p 27017:27017 \
-            -e MONGO_INITDB_ROOT_USERNAME=username \
-            -e MONGO_INITDB_ROOT_PASSWORD=password \
-            -e MONGO_INITDB_DATABASE=booking_db \
-            mongo:latest
+          git config user.name "${{ secrets.GITHUB_ACTOR }}"
+          git config user.email "${{ secrets.GITHUB_ACTOR }}@users.noreply.github.com"
 
-      - name: Start NATS container
-        run: docker run -d --name nats -p 4222:4222 nats:latest
+      - name: Create Release Branch
+        run: |
+          current_version=$(grep -oP 'version\s+"\K[0-9]+\.[0-9]+\.[0-9]+' build.gradle)
+          release_branch="release/${current_version}"
+          git checkout main
+          git branch "${release_branch}"
+          git checkout "${release_branch}"
+          git commit --allow-empty -m "Create release branch for version ${current_version}"
+          git push origin "${release_branch}"
 
-      - name: Start Redis container
-        run: docker run -d --name redis -p 6379:6379 redis:latest
-
-      - name: Setup JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'oracle'
-          java-version: '17'
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Compile and run checks
-        run: ./gradlew build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
