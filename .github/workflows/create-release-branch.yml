@@ -1,0 +1,33 @@
+name: Create Release Branch
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  create_release_branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config user.name "${{ secrets.GITHUB_ACTOR }}"
+          git config user.email "${{ secrets.GITHUB_ACTOR }}@users.noreply.github.com"
+
+      - name: Create Release Branch
+        run: |
+          current_version=$(grep -oP 'version\s+"\K[0-9]+\.[0-9]+\.[0-9]+' build.gradle)
+          release_branch="release/${current_version}"
+          git checkout main
+          git branch "${release_branch}"
+          git checkout "${release_branch}"
+          git commit --allow-empty -m "Create release branch for version ${current_version}"
+          git push origin "${release_branch}"
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
