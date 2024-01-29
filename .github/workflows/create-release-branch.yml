@@ -1,0 +1,41 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Start MongoDB container
+        run: |
+          docker run -d --name mongo -p 27017:27017 \
+            -e MONGO_INITDB_ROOT_USERNAME=username \
+            -e MONGO_INITDB_ROOT_PASSWORD=password \
+            -e MONGO_INITDB_DATABASE=booking_db \
+            mongo:latest
+
+      - name: Start NATS container
+        run: docker run -d --name nats -p 4222:4222 nats:latest
+
+      - name: Start Redis container
+        run: docker run -d --name redis -p 6379:6379 redis:latest
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'oracle'
+          java-version: '17'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Compile and run checks
+        run: ./gradlew build
